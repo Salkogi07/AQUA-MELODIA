@@ -119,6 +119,37 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &224154923
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 224154924}
+  m_Layer: 0
+  m_Name: Line
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &224154924
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 224154923}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 244235233}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &244235232
 GameObject:
   m_ObjectHideFlags: 0
@@ -148,7 +179,9 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 918925355}
+  - {fileID: 224154924}
   m_Father: {fileID: 1070915490}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &244235234
@@ -163,8 +196,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 77a29855a7234585830ff9a0440f6514, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PatternGenerator
-  poolManager: {fileID: 1070915491}
+  dotPoolManager: {fileID: 1070915491}
+  detectorPoolManager: {fileID: 1070915492}
   defaultDotSpacing: 0.3
+  defaultDetectionSpacing: 0.1
   defaultDotsPerFrame: 3
   defaultDrawDelayMs: 10
 --- !u!1 &519420028
@@ -388,6 +423,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &918925354
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 918925355}
+  m_Layer: 0
+  m_Name: Dot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &918925355
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 918925354}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 244235233}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1070915489
 GameObject:
   m_ObjectHideFlags: 0
@@ -398,6 +464,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1070915490}
   - component: {fileID: 1070915491}
+  - component: {fileID: 1070915492}
   m_Layer: 0
   m_Name: DotManager
   m_TagString: Untagged
@@ -434,8 +501,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DotPoolManager
   _dotPrefab: {fileID: 4187118561656484589, guid: de74d79cd54110749873257b7ccbe5ae, type: 3}
-  _poolParent: {fileID: 244235233}
-  _initialPoolSize: 200
+  _poolParent: {fileID: 918925355}
+  _initialPoolSize: 100
+  _maxPoolSize: 500
+--- !u!114 &1070915492
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1070915489}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72eaecf0e9b14517bfb8bc51d94c8672, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.Pattern.DetectorPoolManager
+  _detectorPrefab: {fileID: 6386814117199718486, guid: 299f6114be37d174cb54f2647a27657a, type: 3}
+  _poolParent: {fileID: 224154924}
+  _initialPoolSize: 300
   _maxPoolSize: 1000
 --- !u!1 &1564574377
 GameObject:
@@ -482,7 +565,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PatternTestController
   patternGenerator: {fileID: 244235234}
-  testPattern: {fileID: 11400000, guid: eb6061dfe218c364780923b5ad1154ea, type: 2}
+  testPattern: {fileID: 11400000, guid: e9b7b0ada32f7a641ba0723726b0ca1f, type: 2}
 --- !u!1 &1648644039
 GameObject:
   m_ObjectHideFlags: 0

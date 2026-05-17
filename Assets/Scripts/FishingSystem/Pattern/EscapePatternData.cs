@@ -17,7 +17,13 @@ namespace FishingSystem.Pattern
         [SerializeField] private int drawDelayMs = 10;
         public int DrawDelayMs => drawDelayMs;
         
+        [Header("간격 설정 (Spacing)")]
+        [Tooltip("눈에 보이는 비주얼 도트의 간격")]
         [SerializeField] private float dotSpacing = 0.3f;
         public float DotSpacing => dotSpacing;
+        
+        [Tooltip("보이지 않는 판정선 콜라이더의 간격 (더 작고 촘촘하게 추천)")]
+        [SerializeField] private float detectionSpacing = 0.1f;
+        public float DetectionSpacing => detectionSpacing;
     }
 }

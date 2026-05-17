@@ -12,7 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6b9be59a8800c7459ca6742bf500b57, type: 3}
   m_Name: Test02
   m_EditorClassIdentifier: Assembly-CSharp::EscapePatternData
-  points: []
-  dotsPerFrame: 3
-  drawDelayMs: 5
+  points:
+  - {x: 0, y: 0}
+  - {x: -2.51, y: -3.53}
+  - {x: 2.43, y: -2.29}
+  - {x: -3.96, y: -0.44}
+  - {x: 1.78, y: 2.29}
+  dotsPerFrame: 1
+  drawDelayMs: 6
   dotSpacing: 0.3
+  detectionSpacing: 0.1
