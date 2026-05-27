@@ -19,6 +19,18 @@ namespace FishingSystem.Pattern
         [SerializeField] private int defaultDotsPerFrame = 3; 
         [SerializeField] private int defaultDrawDelayMs = 10;
 
+        [Header("도트 색상 설정")]
+        [SerializeField] private Color startDotColor = Color.green;
+        [SerializeField] private Color normalDotColor = Color.white;
+        [SerializeField] private Color endDotColor = Color.red;
+
+        [Header("판정선(Detector) 설정")]
+        [Tooltip("체크하면 게임 뷰에서 판정선이 시각적으로 보입니다. (디버그용)")]
+        [SerializeField] private bool showDetector = true; 
+        [Tooltip("판정선 오브젝트의 Scale 크기를 조절합니다.")]
+        [SerializeField] private Vector3 detectorScale = Vector3.one;
+        [SerializeField] private Color detectorColor = new Color(1f, 1f, 0f, 0.5f);
+
         private readonly Subject<PatternDot> _onDotSpawned = new();
         public Observable<PatternDot> OnDotSpawned => _onDotSpawned;
 
@@ -51,30 +63,25 @@ namespace FishingSystem.Pattern
             if (patternData == null || patternData.Points.Count < 2) return;
 
             float currentVisualSpacing = patternData.DotSpacing > 0 ? patternData.DotSpacing : defaultDotSpacing;
-            
-            // [데이터 반영] 스크립터블 데이터를 정확히 가져옴
             float currentDetectSpacing = patternData.DetectionSpacing > 0 ? patternData.DetectionSpacing : defaultDetectionSpacing;
-            
             int currentDotsPerFrame = patternData.DotsPerFrame > 0 ? patternData.DotsPerFrame : defaultDotsPerFrame;
             int currentDrawDelayMs = patternData.DrawDelayMs >= 0 ? patternData.DrawDelayMs : defaultDrawDelayMs;
 
             var points = patternData.Points;
             Vector2 originPosition = (Vector2)transform.position;
 
-            // =================================================================
-            // 1. [판정선 맵 빌드] 데이터 스페이싱(currentDetectSpacing)을 반영하여 즉시 생성
-            // =================================================================
+            // 1. [판정선 맵 빌드] 표시 여부(showDetector) 인자 추가전달
             BuildDetectorLineImmediate(points, originPosition, currentDetectSpacing);
 
-            // =================================================================
-            // 2. [비주얼 점선 연출] 지정된 딜레이 규칙에 따라 순차 생성 (기존 유지)
-            // =================================================================
+            // 2. [비주얼 점선 연출]
             int currentFrameDotCount = 0;
             try
             {
                 Vector2 startOrigin = originPosition + points[0];
                 PatternDot firstDot = dotPoolManager.GetDot();
                 firstDot.transform.position = startOrigin;
+                firstDot.SetColor(startDotColor);
+                
                 _activeDots.Add(firstDot);
                 _onDotSpawned.OnNext(firstDot);
                 currentFrameDotCount++;
@@ -95,6 +102,8 @@ namespace FishingSystem.Pattern
                         Vector2 spawnPos = Vector2.Lerp(start, end, progress);
                         PatternDot dot = dotPoolManager.GetDot();
                         dot.transform.position = spawnPos;
+                        dot.SetColor(normalDotColor);
+                        
                         _activeDots.Add(dot);
                         _onDotSpawned.OnNext(dot);
                         
@@ -115,6 +124,11 @@ namespace FishingSystem.Pattern
                     }
                 }
 
+                if (_activeDots.Count > 0)
+                {
+                    _activeDots[^1].SetColor(endDotColor);
+                }
+
                 _onPatternComplete.OnNext(Unit.Default);
             }
             catch (OperationCanceledException)
@@ -123,20 +137,15 @@ namespace FishingSystem.Pattern
             }
         }
 
-        /// <summary>
-        /// [핵심 수정] 스크립터블 오브젝트의 DetectionSpacing 단위로 
-        /// 전체 경로를 오차 없이 촘촘하게 채우는 고정 간격 알고리즘
-        /// </summary>
         private void BuildDetectorLineImmediate(IReadOnlyList<Vector2> points, Vector2 origin, float spacing)
         {
             if (points.Count < 2) return;
 
-            // 시작 지점(정점 0번)에 무조건 첫 번째 판정선 생성
             PatternDetector firstDetector = detectorPoolManager.GetDetector();
             firstDetector.transform.position = origin + points[0];
+            firstDetector.InitializeDetector(detectorScale, detectorColor, showDetector);
             _activeDetectors.Add(firstDetector);
 
-            // 누적된 남은 거리를 추적하여 꺾인 선 영역에서도 등간격(spacing)이 유지되도록 함
             float distanceLeftFromPreviousSegment = spacing;
 
             for (int i = 0; i < points.Count - 1; i++)
@@ -147,37 +156,33 @@ namespace FishingSystem.Pattern
                 Vector2 direction = end - start;
                 float segmentLength = direction.magnitude;
                 
-                if (segmentLength < 0.001f) continue; // 거의 제자리인 정점 예외처리
+                if (segmentLength < 0.001f) continue;
                 
                 direction.Normalize();
 
-                // 이전 선분에서 남은 간격 버퍼를 정산하면서 현재 선분 위를 spacing 만큼 전진
                 float currentDistance = distanceLeftFromPreviousSegment;
 
                 while (currentDistance <= segmentLength)
                 {
-                    // 방향 벡터를 따라 정확한 스페이싱 위치 계산
                     Vector2 spawnPos = start + direction * currentDistance;
 
                     PatternDetector detector = detectorPoolManager.GetDetector();
                     detector.transform.position = spawnPos;
+                    detector.InitializeDetector(detectorScale, detectorColor, showDetector);
                     _activeDetectors.Add(detector);
 
-                    // 스크립터블에 기획된 Spacing 데이터만큼 전진
                     currentDistance += spacing;
                 }
 
-                // 선분의 끝에 도달했을 때, 다음 선분의 시작점까지 남은 오프셋 거리를 이월 계산
                 distanceLeftFromPreviousSegment = currentDistance - segmentLength;
             }
 
-            // [선택 사항] 패턴의 가장 마지막 정점 위치에도 완벽한 마무리를 위해 판정점을 강제 배치하고 싶다면 활성화
-            // (이미 누적 배치로 마지막 근처까지 채워졌으므로 오차 범위 판정을 원할 때 추가합니다)
             Vector2 finalPos = origin + points[^1];
             if (_activeDetectors.Count > 0 && Vector2.Distance(_activeDetectors[^1].transform.position, finalPos) > (spacing * 0.5f))
             {
                 PatternDetector finalDetector = detectorPoolManager.GetDetector();
                 finalDetector.transform.position = finalPos;
+                finalDetector.InitializeDetector(detectorScale, detectorColor, showDetector);
                 _activeDetectors.Add(finalDetector);
             }
         }
