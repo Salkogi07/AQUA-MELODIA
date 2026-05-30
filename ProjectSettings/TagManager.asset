@@ -12,7 +12,7 @@ TagManager:
   - 
   - Water
   - UI
-  - 
+  - Fishing Rod
   - 
   - 
   - 
@@ -44,6 +44,9 @@ TagManager:
     locked: 0
   - name: Line
     uniqueID: 293468755
+    locked: 0
+  - name: Fishing Rod
+    uniqueID: 456763555
     locked: 0
   m_RenderingLayers:
   - Default

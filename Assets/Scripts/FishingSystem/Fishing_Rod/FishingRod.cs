@@ -11,9 +11,9 @@ namespace FishingSystem.Fishing_Rod
         [SerializeField] private FishingLine fishingLine;
 
         [Header("연결할 오브젝트")]
-        [SerializeField] private Transform rodTip;           
-        [SerializeField] private Transform bobber;           
-        [SerializeField] private Transform castStartPosition; 
+        [SerializeField] private Transform rodTip;           // 낚싯대 끝 위치
+        [SerializeField] private Transform bobber;           // 낚시찌 위치
+        [SerializeField] private Transform castStartPosition; // 던지기 시작할 가상의 위치
 
         [Header("캐스팅(속도) 설정")]
         [SerializeField] private Vector2 castDirection = new Vector2(1.2f, 1f); 
@@ -23,6 +23,10 @@ namespace FishingSystem.Fishing_Rod
         private Rigidbody2D bobberRb;
         private CancellationTokenSource castCts;
         
+        // 찌가 날아갔는지 여부를 체크하는 플래그
+        private bool isCasted = false;
+
+        // R3: 상태 관리
         private readonly ReactiveProperty<FishingLineState> lineState = new(FishingLineState.Slack);
         public ReadOnlyReactiveProperty<FishingLineState> LineState => lineState;
 
@@ -40,10 +44,45 @@ namespace FishingSystem.Fishing_Rod
             {
                 fishingLine.Initialize(this);
             }
+
+            // [신규] 시작 시 찌를 대기 상태(고정)로 설정
+            ResetBobberToReady();
+        }
+
+        void Update()
+        {
+            // [신규] 던지기 전 상태라면, 캐릭터나 낚싯대가 움직여도 찌가 끝에 딱 붙어 부드럽게 쫓아오도록 고정
+            if (!isCasted && bobber != null)
+            {
+                bobber.position = GetTargetStartPosition();
+            }
         }
 
         /// <summary>
-        /// 찌를 던지는 로직 (이제 안착해도 줄이 자동으로 팽팽해지지 않습니다)
+        /// [신규] 찌를 낚싯대 끝에 물리 연산 없이 단단히 고정하는 메서드
+        /// (초기 시작 시, 또는 물고기를 잡고 난 후 다시 세팅할 때 호출 가능)
+        /// </summary>
+        public void ResetBobberToReady()
+        {
+            isCasted = false;
+            lineState.Value = FishingLineState.Slack;
+
+            if (bobber != null)
+            {
+                bobber.position = GetTargetStartPosition();
+            }
+
+            if (bobberRb != null)
+            {
+                // Kinematic으로 변경하여 중력이나 다른 마찰력의 영향을 받지 않고 고정시킴
+                bobberRb.bodyType = RigidbodyType2D.Kinematic;
+                bobberRb.linearVelocity = Vector2.zero;
+                bobberRb.angularVelocity = 0f;
+            }
+        }
+
+        /// <summary>
+        /// 찌를 조절된 속도로 발사 (발사 순간 고정이 풀립니다)
         /// </summary>
         public async UniTaskVoid CastBobberAsync()
         {
@@ -53,42 +92,44 @@ namespace FishingSystem.Fishing_Rod
             castCts?.Dispose();
             castCts = new CancellationTokenSource();
 
-            // 1. 초기 위치 및 속도 세팅
-            Vector3 startPos = castStartPosition != null ? castStartPosition.position : rodTip.position;
-            bobberRb.transform.position = startPos;
+            // 1. 발사 플래그 세팅 및 위치 최종 동기화
+            isCasted = true;
+            bobber.position = GetTargetStartPosition();
 
+            // 2. 물리 상태를 Dynamic으로 변경하여 중력과 속도가 적용되도록 전환
+            bobberRb.bodyType = RigidbodyType2D.Dynamic;
+
+            // 3. 정규화된 방향 벡터에 속도를 꽂아 넣어 즉시 날아가게 처리
             Vector2 launchVelocity = castDirection.normalized * castSpeed;
             bobberRb.linearVelocity = launchVelocity;
             bobberRb.angularVelocity = 0f;
 
-            // 던질 때는 당연히 느슨한 상태
             lineState.Value = FishingLineState.Slack;
 
-            Debug.Log($"<color=lime>🚀 캐스팅 완료! (속도: {castSpeed})</color>");
+            Debug.Log($"<color=lime>🚀 캐스팅 발사! 속도: {castSpeed}</color>");
 
             try
             {
-                // 찌가 날아가다 물에 안착(속도가 줄어듦)할 때까지만 대기
+                // 찌가 날아가다가 어딘가(물 등)에 안착해서 멈출 때까지 대기
                 await UniTask.WaitUntil(() => bobberRb.linearVelocity.magnitude < 0.2f, cancellationToken: castCts.Token);
-                
-                // 이제 안착해도 계속 Slack(느슨한 곡선) 상태를 유지합니다.
-                Debug.Log("<color=yellow>🌊 찌가 물에 안착했습니다. 물고기의 입질을 기다립니다...</color>");
+                Debug.Log("<color=yellow>🌊 찌 안착 완료, 입질 대기 중...</color>");
             }
             catch (System.OperationCanceledException)
             {
-                // 취소 예외 처리
+                // 예외 처리
             }
         }
 
-        /// <summary>
-        /// 물고기가 미끼를 물었을 때 외부 시스템에서 호출해주는 메서드
-        /// </summary>
         public void OnFishBite()
         {
-            // 물고기가 무는 순간 낚시줄을 팽팽하게 변경
             lineState.Value = FishingLineState.Taut;
-            
-            Debug.Log("<color=red>🎯 찌릿! 물고기가 미끼를 물었습니다! 줄이 팽팽해집니다.</color>");
+            Debug.Log("<color=red>🎯 줄 팽팽함! 물고기가 물었습니다.</color>");
+        }
+
+        // 공통 위치 반환 헬퍼 메서드
+        private Vector3 GetTargetStartPosition()
+        {
+            return castStartPosition != null ? castStartPosition.position : rodTip.position;
         }
 
         void OnDestroy()
