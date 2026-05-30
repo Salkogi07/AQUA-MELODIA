@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.Pool;
 
-namespace FishingSystem.Pattern
+namespace FishingSystem.Fishing_Pattern
 {
     public class DotPoolManager : MonoBehaviour
     {

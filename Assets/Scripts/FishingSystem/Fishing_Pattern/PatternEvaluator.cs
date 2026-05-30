@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using R3;
 
-namespace FishingSystem.Pattern
+namespace FishingSystem.Fishing_Pattern
 {
     public class PatternEvaluator : MonoBehaviour
     {

@@ -2,7 +2,7 @@
 using UnityEngine.Pool;
 using R3;
 
-namespace FishingSystem.Pattern
+namespace FishingSystem.Fishing_Pattern
 {
     [RequireComponent(typeof(BoxCollider2D))]
     public class PatternDetector : MonoBehaviour

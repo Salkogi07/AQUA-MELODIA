@@ -5,7 +5,7 @@ using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 using System.Collections.Generic;
 
-namespace FishingSystem.Pattern
+namespace FishingSystem.Fishing_Pattern
 {
     [CustomEditor(typeof(EscapePatternData))]
     public class EscapePatternDataEditor : Editor

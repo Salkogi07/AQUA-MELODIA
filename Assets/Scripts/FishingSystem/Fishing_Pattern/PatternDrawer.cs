@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 using R3;
 using Cysharp.Threading.Tasks;
 
-namespace FishingSystem.Pattern
+namespace FishingSystem.Fishing_Pattern
 {
     public class PatternDrawer : MonoBehaviour
     {
@@ -26,14 +26,12 @@ namespace FishingSystem.Pattern
         [Tooltip("곡선 부드러움 정도 (기본값 5 추천)")]
         [Range(1, 10)]
         [SerializeField] private int curveSmoothingSteps = 5;
-
-        // --- 추가된 잉크 시스템 변수 ---
+        
         private float _maxInkDistance = -1f; // -1이면 무제한 (안전장치)
         private float _currentInkUsed = 0f;
 
         // UI에서 잉크 잔량을 표시하기 위한 ReactiveProperty (1.0 = 100%, 0.0 = 0%)
         public ReactiveProperty<float> CurrentInkRatio { get; } = new(1f);
-        // -------------------------------
 
         private GameObject _currentLineObject;
         private LineRenderer _currentLineRenderer;
@@ -154,7 +152,6 @@ namespace FishingSystem.Pattern
                         _currentInkUsed += distance;
                         CurrentInkRatio.Value = 1f - (_currentInkUsed / _maxInkDistance);
                     }
-                    // ----------------------
 
                     AddRawPoint(mouseWorldPos);
                 }

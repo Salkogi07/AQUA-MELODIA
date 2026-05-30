@@ -2,10 +2,10 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Cysharp.Threading.Tasks;
-using FishingSystem.Pattern;
+using FishingSystem.Fishing_Pattern;
 using R3;
 
-namespace FishingSystem.Pattern
+namespace FishingSystem
 {
     public class PatternTestController : MonoBehaviour
     {

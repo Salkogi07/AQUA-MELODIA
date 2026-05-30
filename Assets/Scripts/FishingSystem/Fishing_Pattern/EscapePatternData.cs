@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace FishingSystem.Pattern
+namespace FishingSystem.Fishing_Pattern
 {
     [CreateAssetMenu(fileName = "NewEscapePattern", menuName = "FishingSystem/Escape Pattern")]
     public class EscapePatternData : ScriptableObject

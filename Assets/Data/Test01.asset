@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: Test01
   m_EditorClassIdentifier: Assembly-CSharp::EscapePatternData
   points:
-  - {x: 0.66, y: -1}
+  - {x: 0.38, y: -2.38}
   - {x: -2.16, y: 5.23}
-  - {x: -7.89, y: -5.68}
+  - {x: -9.31, y: -7.31}
   - {x: 4.25, y: 4.45}
-  - {x: 3.43, y: -6.05}
+  - {x: 2.81, y: -6.94}
   - {x: -9.48, y: 2.32}
   dotsPerFrame: 2
   drawDelayMs: 6

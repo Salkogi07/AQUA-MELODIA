@@ -5,7 +5,7 @@ using UnityEngine;
 using Cysharp.Threading.Tasks;
 using R3;
 
-namespace FishingSystem.Pattern
+namespace FishingSystem.Fishing_Pattern
 {
     public class PatternGenerator : MonoBehaviour
     {
