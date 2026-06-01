@@ -2,7 +2,7 @@
 using R3;
 using Cysharp.Threading.Tasks;
 using System.Threading;
-using FishingSystem.Fish;
+using FishingSystem.Fish; 
 
 namespace FishingSystem.Fishing_Rod
 {
@@ -14,28 +14,25 @@ namespace FishingSystem.Fishing_Rod
         [Header("🐟 입질 타이머 설정")]
         [SerializeField] private Vector2 biteDelayRange = new Vector2(2f, 5f); 
 
-        [Header("🎣 입질 물리 연출 설정")]
-        [Tooltip("입질 순간 찌를 아래로 순간적으로 쳐박는 힘 (부력 이펙터에 의해 다시 솟구칩니다)")]
+        [Header("⏱️ 반응 제한 시간 설정")]
+        [SerializeField] private float inputTimeLimit = 1.5f; 
+
+        [Header("🎣 입질 물리 연출 및 탐색 설정")]
         [SerializeField] private float bitePlungeForce = 8f; 
         [SerializeField] private LayerMask fishingZoneLayer = ~0;
         [SerializeField] private float detectionRadius = 1.2f;
 
-        private DisposableBag disposables;
+        private DisposableBag disposables; 
         private CancellationTokenSource biteCts;
-        
-        // 현재 입질이 온 물고기의 실시간 런타임 데이터
         private FishData currentHookedFish;
-        public FishData CurrentHookedFish => currentHookedFish;
+        
+        // 💡 입질 및 챔질 시퀀스가 내부적으로 진행 중인지 확인하는 플래그
+        private bool isProcessingBite = false; 
 
         void Start()
         {
-            if (fishingRod == null)
-            {
-                Debug.LogError("⚠️ BiteManager에 FishingRod가 연결되지 않았습니다!");
-                return;
-            }
+            if (fishingRod == null) return;
 
-            // 낚싯대의 찌 상태가 변경되는 것을 관찰합니다.
             fishingRod.BobberStateProperty
                 .Subscribe(OnBobberStateChanged)
                 .AddTo(ref disposables);
@@ -43,33 +40,37 @@ namespace FishingSystem.Fishing_Rod
 
         private void OnBobberStateChanged(BobberState state)
         {
-            // 새로운 캐스팅이나 리셋이 일어나면 기존 입질 타이머는 무조건 취소
-            CancelBiteTimer();
-
             if (state == BobberState.Settled)
             {
-                // 찌가 물에 안착했다면 입질 프로세스 작동!
+                CancelBiteTimer();
                 biteCts = new CancellationTokenSource();
                 StartBiteCountdownAsync(biteCts.Token).Forget();
             }
-            else if (state == BobberState.Ready)
+            else if (state == BobberState.Biting)
             {
-                // 회수 상태라면 들고 있던 물고기 정보 파괴
-                currentHookedFish = null;
+                // 💡 찌 상태가 Biting으로 변한 것은 입질이 시작되었다는 뜻이므로 타이머를 취소하지 않고 무시합니다.
+                return;
+            }
+            else
+            {
+                // Ready, Flying, Retrieving 상태로 변경되었을 때
+                // 💡 챔질 성공/실패로 인한 자동 회수가 아니라, 플레이어가 '대기 도중 임의로' 감아올렸을 때만 타이머를 취소합니다.
+                if (!isProcessingBite)
+                {
+                    CancelBiteTimer();
+                    currentHookedFish = null;
+                }
             }
         }
 
-        /// <summary>
-        /// 찌가 머무는 구역의 FishingZone을 체크하고 입질이 올 때까지 대기하는 태스크
-        /// </summary>
         private async UniTaskVoid StartBiteCountdownAsync(CancellationToken cancellationToken)
         {
             Transform bobber = fishingRod.Bobber;
             if (bobber == null) return;
 
-            // 1. 찌 위치 기반으로 FishingZone 탐색
             FishingZone currentZone = null;
             Collider2D[] hitColliders = Physics2D.OverlapCircleAll(bobber.position, detectionRadius, fishingZoneLayer);
+            
             foreach (var col in hitColliders)
             {
                 if (col.TryGetComponent<FishingZone>(out var zone))
@@ -79,59 +80,90 @@ namespace FishingSystem.Fishing_Rod
                 }
             }
 
-            if (currentZone == null)
-            {
-                Debug.LogWarning("⚠️ 찌가 위치한 곳에서 FishingZone을 찾지 못해 입질이 발생하지 않습니다.");
-                return;
-            }
+            if (currentZone == null) return;
 
-            Debug.Log($"<color=cyan>📍 [{currentZone.zoneName}] 입질 타이머 가동 시작...</color>");
+            Debug.Log($"<color=cyan>📍 [{currentZone.zoneName}] 입질 대기 시작...</color>");
 
             try
             {
-                // 2. 설정된 범위만큼 랜덤 대기
                 float waitTime = Random.Range(biteDelayRange.x, biteDelayRange.y);
                 await UniTask.Delay(System.TimeSpan.FromSeconds(waitTime), cancellationToken: cancellationToken);
 
-                // 3. 해당 낚시터 구역에서 물고기 랜덤 추첨
                 FishDataSO selectedData = currentZone.GetRandomFish();
                 if (selectedData == null) return;
 
-                // 4. 런타임 데이터 인스턴스 생성
                 currentHookedFish = new FishData(selectedData);
+                
+                // 💡 상태 변경 전에 플래그를 활성화하여 OnBobberStateChanged에서의 자가 취소를 방지합니다.
+                isProcessingBite = true; 
+                fishingRod.SetBobberState(BobberState.Biting);
 
-                // 5. 최종 입질 실행!
-                TriggerBite();
+                await WaitForPlayerReactionAsync(cancellationToken);
             }
-            catch (System.OperationCanceledException)
+            catch (System.OperationCanceledException) { }
+            finally
             {
-                // 대기 중 낚시줄을 감았거나 취소됨
+                // 💡 성공하든 실패하든 시퀀스가 완전히 종료되면 플래그를 안전하게 해제합니다.
+                isProcessingBite = false;
             }
         }
 
-        /// <summary>
-        /// 실제 물고기가 바늘을 물었을 때의 물리 연출 및 로그 출력
-        /// </summary>
-        private void TriggerBite()
+        private async UniTask WaitForPlayerReactionAsync(CancellationToken cancellationToken)
         {
-            // 낚싯대의 줄 상태를 팽팽함(Taut)으로 변경 요구
-            fishingRod.SetLineState(FishingLineState.Taut);
+            TriggerBitePhysics();
+            
+            Debug.Log($"<color=yellow>⏰ 찌가 들어갔습니다! {inputTimeLimit}초 안에 [마우스 좌클릭]으로 챔질하세요!!</color>");
 
-            // [물리 연출] 부력 이펙터 구역 안에서 찌를 아래로 순간 충격(Impulse)을 줘서 가라앉힘
+            using (var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken))
+            {
+                try
+                {
+                    var clickTask = UniTask.WaitUntil(() => Input.GetMouseButtonDown(0), cancellationToken: linkedCts.Token);
+                    var timeoutTask = UniTask.Delay(System.TimeSpan.FromSeconds(inputTimeLimit), cancellationToken: linkedCts.Token);
+
+                    int completedTaskIndex = await UniTask.WhenAny(timeoutTask, clickTask);
+                    linkedCts.Cancel();
+
+                    if (completedTaskIndex == 1)
+                    {
+                        OnCatchSuccess();
+                    }
+                    else
+                    {
+                        OnCatchFailed();
+                    }
+                }
+                catch (System.OperationCanceledException) { }
+            }
+        }
+
+        private void TriggerBitePhysics()
+        {
+            fishingRod.SetLineState(FishingLineState.Taut);
             Rigidbody2D bobberRb = fishingRod.BobberRb;
             if (bobberRb != null)
             {
-                bobberRb.linearVelocity = Vector2.zero; // 깔끔한 연출을 위해 기존 부력 속도 초기화
+                bobberRb.linearVelocity = Vector2.zero; 
                 bobberRb.AddForce(Vector2.down * bitePlungeForce, ForceMode2D.Impulse);
             }
 
-            // 어떤 등급의 물고기가 물었는지 가독성 높은 폰트 컬러 로그 출력
             if (currentHookedFish != null)
             {
-                string gradeColor = GetLogColorByGrade(currentHookedFish.Data.grade);
-                Debug.Log($"<color={gradeColor}>🎯 [입질 발생!] 등급: {currentHookedFish.Data.grade} | 이름: {currentHookedFish.Data.fishName} | 최대 기력: {currentHookedFish.Data.maxStamina}</color>");
-                Debug.Log($"<color=white>📊 스펙 -> 힘: {currentHookedFish.Data.strength}, 저항: {currentHookedFish.Data.resistance}, 민첩: {currentHookedFish.Data.agility}</color>");
+                Debug.Log($"<color=red>🎯 [물고기 물음!] 이름: {currentHookedFish.Data.fishName}</color>");
             }
+        }
+
+        private void OnCatchSuccess()
+        {
+            Debug.Log($"<color=#00FF00>⚔️ [낚시 성공] 성공적인 챔질! 물고기 {currentHookedFish.Data.fishName}(을)를 낚아 올렸습니다!</color>");
+            //fishingRod.RetrieveBobberAsync().Forget();
+        }
+
+        private void OnCatchFailed()
+        {
+            Debug.Log($"<color=#AAAAAA>💨 [놓침] 플레이어 반응 지연으로 물고기가 도망쳤습니다.</color>");
+            currentHookedFish = null;
+            //fishingRod.RetrieveBobberAsync().Forget();
         }
 
         private void CancelBiteTimer()
@@ -139,19 +171,6 @@ namespace FishingSystem.Fishing_Rod
             biteCts?.Cancel();
             biteCts?.Dispose();
             biteCts = null;
-        }
-
-        private string GetLogColorByGrade(FishGrade grade)
-        {
-            return grade switch
-            {
-                FishGrade.Common => "#FFFFFF",  // 일반: 흰색
-                FishGrade.Rare => "#00FFFF",    // 희귀: 하늘색
-                FishGrade.Epic => "#A020F0",    // 에픽: 보라색
-                FishGrade.Unique => "#FFA500",  // 유니크: 주황색
-                FishGrade.Legend => "#FF0000",  // 전설: 빨간색
-                _ => "#FFFFFF"
-            };
         }
 
         void OnDestroy()

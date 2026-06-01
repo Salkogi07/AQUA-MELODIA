@@ -20,11 +20,14 @@ namespace FishingSystem.Fishing_Rod
         [Range(0f, 100f)] 
         [SerializeField] private float castSpeed = 25f;                       
 
+        [Header("🎣 회수(릴링) 설정")]
+        [Tooltip("찌를 다시 감아올릴 때의 속도입니다.")]
+        [SerializeField] private float reelInSpeed = 18f;
+
         private Rigidbody2D bobberRb;
         private CancellationTokenSource castCts;
         private bool isCasted = false;
 
-        // R3: 상태 관리 (줄 상태 & 찌의 물리적 위치 상태)
         private readonly ReactiveProperty<FishingLineState> lineState = new(FishingLineState.Slack);
         public ReadOnlyReactiveProperty<FishingLineState> LineState => lineState;
 
@@ -33,7 +36,7 @@ namespace FishingSystem.Fishing_Rod
 
         public Transform RodTip => rodTip;
         public Transform Bobber => bobber;
-        public Rigidbody2D BobberRb => bobberRb; // 입질 시스템이 물리 연출을 할 수 있도록 개방
+        public Rigidbody2D BobberRb => bobberRb; 
 
         void Start()
         {
@@ -44,9 +47,41 @@ namespace FishingSystem.Fishing_Rod
 
         void Update()
         {
-            if (!isCasted && bobber != null)
+            // 던지기 전 대기 상태일 때만 낚싯대 끝에 고정
+            if (bobberState.Value == BobberState.Ready && bobber != null)
             {
                 bobber.position = GetTargetStartPosition();
+            }
+
+            // 🖱️ 통합 마우스 좌클릭 입력 처리
+            if (Input.GetMouseButtonDown(0))
+            {
+                HandleMouseInput();
+            }
+        }
+
+        private void HandleMouseInput()
+        {
+            switch (bobberState.Value)
+            {
+                case BobberState.Ready:
+                    // 1. 대기 상태일 때 클릭하면 던지기
+                    CastBobberAsync().Forget();
+                    break;
+
+                case BobberState.Flying:
+                case BobberState.Settled:
+                    // 2. 날아가는 중이거나 물에 떠 있을 때 클릭하면 즉시 회수 시작
+                    RetrieveBobberAsync().Forget();
+                    break;
+
+                case BobberState.Biting:
+                    // 3. 물고기가 물었을 때는 BiteManager가 전권을 가지고 타이밍을 체크하므로 여기선 무시합니다.
+                    break;
+
+                case BobberState.Retrieving:
+                    // 4. 이미 회수 중일 때는 중복 입력을 무시합니다.
+                    break;
             }
         }
 
@@ -54,7 +89,7 @@ namespace FishingSystem.Fishing_Rod
         {
             isCasted = false;
             lineState.Value = FishingLineState.Slack;
-            bobberState.Value = BobberState.Ready; // 상태 리셋
+            bobberState.Value = BobberState.Ready; 
 
             if (bobber != null) bobber.position = GetTargetStartPosition();
 
@@ -70,40 +105,81 @@ namespace FishingSystem.Fishing_Rod
         {
             if (bobber == null || bobberRb == null) return;
 
-            castCts?.Cancel();
-            castCts?.Dispose();
+            CleanCancellationToken();
             castCts = new CancellationTokenSource();
 
             isCasted = true;
             bobber.position = GetTargetStartPosition();
-
             bobberRb.bodyType = RigidbodyType2D.Dynamic;
-            bobberRb.constraints = RigidbodyConstraints2D.FreezeRotation;
 
             Vector2 launchVelocity = castDirection.normalized * castSpeed;
             bobberRb.linearVelocity = launchVelocity;
             bobberRb.angularVelocity = 0f;
 
             lineState.Value = FishingLineState.Slack;
-            bobberState.Value = BobberState.Flying; // 날아가는 중
+            bobberState.Value = BobberState.Flying; 
 
             Debug.Log($"<color=lime>🚀 캐스팅 발사! 속도: {castSpeed}</color>");
 
             try
             {
-                // 찌가 날아가다가 물에 안착해서 완전히 멈출 때까지 대기
                 await UniTask.WaitUntil(() => bobberRb.linearVelocity.magnitude < 0.2f, cancellationToken: castCts.Token);
                 
                 Debug.Log("<color=yellow>🌊 찌 안착 완료!</color>");
-                bobberState.Value = BobberState.Settled; // 안착 상태 알림 -> 입질 매니저가 이 신호를 감지합니다.
+                bobberState.Value = BobberState.Settled; 
+            }
+            catch (System.OperationCanceledException) { }
+        }
+
+        /// <summary>
+        /// 🎣 [신규] 찌를 플레이어 방향으로 자연스럽게 당겨오는 물리 회수 로직
+        /// </summary>
+        public async UniTaskVoid RetrieveBobberAsync()
+        {
+            if (bobber == null || bobberRb == null) return;
+
+            CleanCancellationToken();
+            castCts = new CancellationTokenSource();
+
+            bobberState.Value = BobberState.Retrieving;
+            lineState.Value = FishingLineState.Taut; // 감아올릴 때는 줄을 팽팽하게 세팅
+
+            bobberRb.bodyType = RigidbodyType2D.Dynamic; // 부력과 물리 마찰을 받도록 Dynamic 유지
+            
+            Debug.Log("<color=#99E6FF>🎣 릴을 감아 찌를 회수합니다...</color>");
+
+            try
+            {
+                while (true)
+                {
+                    Vector3 targetPos = GetTargetStartPosition();
+                    float distance = Vector3.Distance(bobber.position, targetPos);
+
+                    // 낚싯대 끝부분에 충분히 도달하면 회수 완료 탈출
+                    if (distance < 0.6f) break;
+
+                    // 플레이어 위치(낚싯대 끝) 방향으로 실시간 물리 속도 부여 (물 위를 스치듯 끌려옴)
+                    Vector2 pullDirection = (targetPos - bobber.position).normalized;
+                    bobberRb.linearVelocity = pullDirection * reelInSpeed;
+
+                    await UniTask.Yield(PlayerLoopTiming.Update, castCts.Token);
+                }
             }
             catch (System.OperationCanceledException)
             {
-                // 캐스팅 취소 시 처리
+                return; // 중간에 다른 상태로 캔슬 시 종료
             }
+
+            Debug.Log("<color=white>📥 찌 회수 완료. 다음 캐스팅 대기.</color>");
+            ResetBobberToReady();
         }
 
-        // 입질 시스템 등 외부 시스템이 낚싯줄의 상태를 제어할 수 있도록 메서드 제공
+        // 외부에서 찌 상태를 강제로 바꿀 수 있도록 개방 (BiteManager용)
+        public void SetBobberState(BobberState state)
+        {
+            bobberState.Value = state;
+        }
+
         public void SetLineState(FishingLineState state)
         {
             lineState.Value = state;
@@ -114,10 +190,16 @@ namespace FishingSystem.Fishing_Rod
             return castStartPosition != null ? castStartPosition.position : rodTip.position;
         }
 
-        void OnDestroy()
+        private void CleanCancellationToken()
         {
             castCts?.Cancel();
             castCts?.Dispose();
+            castCts = null;
+        }
+
+        void OnDestroy()
+        {
+            CleanCancellationToken();
             lineState.Dispose();
             bobberState.Dispose();
         }

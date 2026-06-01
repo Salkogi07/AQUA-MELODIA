@@ -1077,6 +1077,7 @@ MonoBehaviour:
   castStartPosition: {fileID: 923546521}
   castDirection: {x: -1, y: 1}
   castSpeed: 15
+  reelInSpeed: 20
 --- !u!114 &1133747702
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1091,6 +1092,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.Fishing_Rod.BiteManager
   fishingRod: {fileID: 1133747701}
   biteDelayRange: {x: 5, y: 10}
+  inputTimeLimit: 1.5
   bitePlungeForce: 4
   fishingZoneLayer:
     serializedVersion: 2

@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+﻿/*#if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
@@ -33,3 +33,4 @@ namespace FishingSystem.Fishing_Rod
     }
 }
 #endif
+*/
