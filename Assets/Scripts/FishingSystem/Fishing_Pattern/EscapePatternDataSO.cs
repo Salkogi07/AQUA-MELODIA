@@ -3,8 +3,8 @@ using UnityEngine;
 
 namespace FishingSystem.Fishing_Pattern
 {
-    [CreateAssetMenu(fileName = "NewEscapePattern", menuName = "FishingSystem/Escape Pattern")]
-    public class EscapePatternData : ScriptableObject
+    [CreateAssetMenu(fileName = "NewEscapePattern", menuName = "Fishing System/Escape Pattern")]
+    public class EscapePatternDataSO : ScriptableObject
     {
         [Header("탈출 경로 정점들 (Local 좌표 기준)")]
         [SerializeField] private List<Vector2> points = new List<Vector2>();

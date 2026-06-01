@@ -947,6 +947,7 @@ GameObject:
   - component: {fileID: 1133747699}
   - component: {fileID: 1133747700}
   - component: {fileID: 1133747701}
+  - component: {fileID: 1133747702}
   m_Layer: 6
   m_Name: FishStick
   m_TagString: Untagged
@@ -1076,6 +1077,30 @@ MonoBehaviour:
   castStartPosition: {fileID: 923546521}
   castDirection: {x: -1, y: 1}
   castSpeed: 15
+--- !u!114 &1133747702
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1133747697}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f358ea8b30146b2a8d114bbe0b12fe4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.Fishing_Rod.BiteManager
+  fishingRod: {fileID: 1133747701}
+  biteDelayRange: {x: 5, y: 10}
+  bitePlungeForce: 4
+  fishingZoneLayer:
+    serializedVersion: 2
+    m_Bits: 16
+  detectionRadius: 1.2
+--- !u!1 &1164583411 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2933080294895812739, guid: 63805a0e25c5a394abbbf81f68ff9f5a, type: 3}
+  m_PrefabInstance: {fileID: 1279283345}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1247940786
 GameObject:
   m_ObjectHideFlags: 0
@@ -1152,6 +1177,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Water-RW (Compute)
       objectReference: {fileID: 0}
+    - target: {fileID: 2933080294895812739, guid: 63805a0e25c5a394abbbf81f68ff9f5a, type: 3}
+      propertyPath: m_Layer
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 2933080294895812742, guid: 63805a0e25c5a394abbbf81f68ff9f5a, type: 3}
       propertyPath: m_LocalPosition.x
       value: -8
@@ -1192,10 +1221,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6822363506571518091, guid: 63805a0e25c5a394abbbf81f68ff9f5a, type: 3}
+      propertyPath: m_ColliderMask.m_Bits
+      value: 64
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 2933080294895812739, guid: 63805a0e25c5a394abbbf81f68ff9f5a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1990382183}
   m_SourcePrefab: {fileID: 100100000, guid: 63805a0e25c5a394abbbf81f68ff9f5a, type: 3}
 --- !u!1 &1564574377
 GameObject:
@@ -1489,6 +1525,23 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2933080294895812742, guid: 63805a0e25c5a394abbbf81f68ff9f5a, type: 3}
   m_PrefabInstance: {fileID: 1279283345}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1990382183
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1164583411}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1cb5268bd0e408cb86f44a4fefcdfcf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.Fish.FishingZone
+  zoneName: "\uC77C\uBC18 \uD638\uC218"
+  availableFishList:
+  - {fileID: 11400000, guid: 99764466b972a344ab9e0b64e8525ef6, type: 2}
+  - {fileID: 11400000, guid: 08f054c7f670f0b4a89e4019ac4f05fd, type: 2}
+  - {fileID: 11400000, guid: f1d30d794a6786547a7cd26699f03f27, type: 2}
 --- !u!1 &2097780360
 GameObject:
   m_ObjectHideFlags: 0

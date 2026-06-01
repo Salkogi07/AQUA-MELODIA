@@ -52,7 +52,7 @@ namespace FishingSystem.Fishing_Pattern
             CancelPreviousTask();
         }
 
-        public async UniTask GeneratePatternAsync(EscapePatternData patternData)
+        public async UniTask GeneratePatternAsync(EscapePatternDataSO patternDataSo)
         {
             CancelPreviousTask();
             _patternCts = new CancellationTokenSource();
@@ -60,14 +60,14 @@ namespace FishingSystem.Fishing_Pattern
 
             ClearCurrentPattern();
 
-            if (patternData == null || patternData.Points.Count < 2) return;
+            if (patternDataSo == null || patternDataSo.Points.Count < 2) return;
 
-            float currentVisualSpacing = patternData.DotSpacing > 0 ? patternData.DotSpacing : defaultDotSpacing;
-            float currentDetectSpacing = patternData.DetectionSpacing > 0 ? patternData.DetectionSpacing : defaultDetectionSpacing;
-            int currentDotsPerFrame = patternData.DotsPerFrame > 0 ? patternData.DotsPerFrame : defaultDotsPerFrame;
-            int currentDrawDelayMs = patternData.DrawDelayMs >= 0 ? patternData.DrawDelayMs : defaultDrawDelayMs;
+            float currentVisualSpacing = patternDataSo.DotSpacing > 0 ? patternDataSo.DotSpacing : defaultDotSpacing;
+            float currentDetectSpacing = patternDataSo.DetectionSpacing > 0 ? patternDataSo.DetectionSpacing : defaultDetectionSpacing;
+            int currentDotsPerFrame = patternDataSo.DotsPerFrame > 0 ? patternDataSo.DotsPerFrame : defaultDotsPerFrame;
+            int currentDrawDelayMs = patternDataSo.DrawDelayMs >= 0 ? patternDataSo.DrawDelayMs : defaultDrawDelayMs;
 
-            var points = patternData.Points;
+            var points = patternDataSo.Points;
             Vector2 originPosition = (Vector2)transform.position;
 
             // 1. [판정선 맵 빌드] 표시 여부(showDetector) 인자 추가전달

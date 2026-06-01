@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 465085849670155082}
   - component: {fileID: 6163323619924972446}
   - component: {fileID: 6822363506571518091}
-  m_Layer: 0
+  m_Layer: 4
   m_Name: Water-RW (Compute)
   m_TagString: Untagged
   m_Icon: {fileID: 0}

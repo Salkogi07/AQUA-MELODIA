@@ -7,10 +7,10 @@ using System.Collections.Generic;
 
 namespace FishingSystem.Fishing_Pattern
 {
-    [CustomEditor(typeof(EscapePatternData))]
-    public class EscapePatternDataEditor : Editor
+    [CustomEditor(typeof(EscapePatternDataSO))]
+    public class EscapePatternDataSOEditor : Editor
     {
-        private EscapePatternData _targetData;
+        private EscapePatternDataSO _targetDataSo;
         private SerializedProperty _pointsProperty;
 
         private int _selectedPointIndex = -1;
@@ -24,7 +24,7 @@ namespace FishingSystem.Fishing_Pattern
 
         private void OnEnable()
         {
-            _targetData = (EscapePatternData)target;
+            _targetDataSo = (EscapePatternDataSO)target;
             _pointsProperty = serializedObject.FindProperty("points");
         }
 
@@ -208,7 +208,7 @@ namespace FishingSystem.Fishing_Pattern
                     EditorStyles.miniLabel);
             }
 
-            IReadOnlyList<Vector2> points = _targetData.Points;
+            IReadOnlyList<Vector2> points = _targetDataSo.Points;
             List<Vector2> screenPositions = new List<Vector2>();
 
             for (int i = 0; i < points.Count; i++)

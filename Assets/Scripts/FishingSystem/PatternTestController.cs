@@ -15,7 +15,7 @@ namespace FishingSystem
         [SerializeField] private PatternDrawer patternDrawer; 
 
         [Header("Test Settings")]
-        [SerializeField] private EscapePatternData testPattern;
+        [SerializeField] private EscapePatternDataSO testPattern;
         [Tooltip("패턴이 모두 생성된 후 주어지는 드로잉 시간 (초)")]
         [SerializeField] private float drawTimeLimit = 3f;
         
@@ -98,15 +98,15 @@ namespace FishingSystem
         /// <summary>
         /// 패턴 데이터의 점들 사이의 총 길이를 계산합니다.
         /// </summary>
-        private float CalculatePatternLength(EscapePatternData data)
+        private float CalculatePatternLength(EscapePatternDataSO dataSo)
         {
-            if (data == null || data.Points == null || data.Points.Count < 2) 
+            if (dataSo == null || dataSo.Points == null || dataSo.Points.Count < 2) 
                 return 0f;
 
             float length = 0f;
-            for (int i = 0; i < data.Points.Count - 1; i++)
+            for (int i = 0; i < dataSo.Points.Count - 1; i++)
             {
-                length += Vector2.Distance(data.Points[i], data.Points[i + 1]);
+                length += Vector2.Distance(dataSo.Points[i], dataSo.Points[i + 1]);
             }
             return length;
         }
