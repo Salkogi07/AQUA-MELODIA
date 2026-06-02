@@ -25,8 +25,6 @@ namespace FishingSystem.Fishing_Rod
         private DisposableBag disposables; 
         private CancellationTokenSource biteCts;
         private FishData currentHookedFish;
-        
-        // 💡 입질 및 챔질 시퀀스가 내부적으로 진행 중인지 확인하는 플래그
         private bool isProcessingBite = false; 
 
         void Start()
@@ -48,13 +46,10 @@ namespace FishingSystem.Fishing_Rod
             }
             else if (state == BobberState.Biting)
             {
-                // 💡 찌 상태가 Biting으로 변한 것은 입질이 시작되었다는 뜻이므로 타이머를 취소하지 않고 무시합니다.
                 return;
             }
             else
             {
-                // Ready, Flying, Retrieving 상태로 변경되었을 때
-                // 💡 챔질 성공/실패로 인한 자동 회수가 아니라, 플레이어가 '대기 도중 임의로' 감아올렸을 때만 타이머를 취소합니다.
                 if (!isProcessingBite)
                 {
                     CancelBiteTimer();
@@ -94,21 +89,30 @@ namespace FishingSystem.Fishing_Rod
 
                 currentHookedFish = new FishData(selectedData);
                 
-                // 💡 상태 변경 전에 플래그를 활성화하여 OnBobberStateChanged에서의 자가 취소를 방지합니다.
                 isProcessingBite = true; 
                 fishingRod.SetBobberState(BobberState.Biting);
 
-                await WaitForPlayerReactionAsync(cancellationToken);
+                bool isSuccess = await WaitForPlayerReactionAsync(cancellationToken);
+                
+                isProcessingBite = false; 
+
+                if (isSuccess)
+                {
+                    OnCatchSuccess();
+                }
+                else
+                {
+                    OnCatchFailed();
+                }
             }
             catch (System.OperationCanceledException) { }
             finally
             {
-                // 💡 성공하든 실패하든 시퀀스가 완전히 종료되면 플래그를 안전하게 해제합니다.
                 isProcessingBite = false;
             }
         }
 
-        private async UniTask WaitForPlayerReactionAsync(CancellationToken cancellationToken)
+        private async UniTask<bool> WaitForPlayerReactionAsync(CancellationToken cancellationToken)
         {
             TriggerBitePhysics();
             
@@ -124,16 +128,12 @@ namespace FishingSystem.Fishing_Rod
                     int completedTaskIndex = await UniTask.WhenAny(timeoutTask, clickTask);
                     linkedCts.Cancel();
 
-                    if (completedTaskIndex == 1)
-                    {
-                        OnCatchSuccess();
-                    }
-                    else
-                    {
-                        OnCatchFailed();
-                    }
+                    return completedTaskIndex == 1; 
                 }
-                catch (System.OperationCanceledException) { }
+                catch (System.OperationCanceledException) 
+                {
+                    return false;
+                }
             }
         }
 
@@ -155,15 +155,27 @@ namespace FishingSystem.Fishing_Rod
 
         private void OnCatchSuccess()
         {
-            Debug.Log($"<color=#00FF00>⚔️ [낚시 성공] 성공적인 챔질! 물고기 {currentHookedFish.Data.fishName}(을)를 낚아 올렸습니다!</color>");
-            //fishingRod.RetrieveBobberAsync().Forget();
+            Debug.Log($"<color=#00FF00>⚔️ [챔질 성공] 성공적인 챔질! 물고기가 걸렸습니다.</color>");
+            
+            // 💡 [여기에 새로운 이벤트 연결]
+            // 예: FishingEventManager.Instance.StartFishingMiniGame(currentHookedFish);
+            // 새로운 이벤트를 시작할 때 찌 상태(BobberState)를 미니게임용 커스텀 상태로 전환해 제어하시면 편합니다.
+
+            // 현재는 임시로 즉시 자동 회수되도록 복구해 두었습니다.
+            fishingRod.RetrieveBobberAsync().Forget();
         }
 
         private void OnCatchFailed()
         {
-            Debug.Log($"<color=#AAAAAA>💨 [놓침] 플레이어 반응 지연으로 물고기가 도망쳤습니다.</color>");
+            Debug.Log($"<color=#AAAAAA>💨 [놓침] 플레이어가 놓쳐 물고기가 도망쳤습니다. 찌를 그대로 두고 재대기합니다.</color>");
             currentHookedFish = null;
-            //fishingRod.RetrieveBobberAsync().Forget();
+
+            Rigidbody2D bobberRb = fishingRod.BobberRb;
+            if (bobberRb != null) bobberRb.linearVelocity = Vector2.zero;
+
+            // 낚시에 실패하면 휠을 감지 않고 그 자리에서 다시 입질 타이머 가동
+            fishingRod.SetLineState(FishingLineState.Slack);
+            fishingRod.SetBobberState(BobberState.Settled);
         }
 
         private void CancelBiteTimer()

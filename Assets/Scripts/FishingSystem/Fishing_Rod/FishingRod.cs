@@ -21,7 +21,7 @@ namespace FishingSystem.Fishing_Rod
         [SerializeField] private float castSpeed = 25f;                       
 
         [Header("🎣 회수(릴링) 설정")]
-        [Tooltip("찌를 다시 감아올릴 때의 속도입니다.")]
+        [Range(0f, 100f)] 
         [SerializeField] private float reelInSpeed = 18f;
 
         private Rigidbody2D bobberRb;
@@ -47,13 +47,11 @@ namespace FishingSystem.Fishing_Rod
 
         void Update()
         {
-            // 던지기 전 대기 상태일 때만 낚싯대 끝에 고정
             if (bobberState.Value == BobberState.Ready && bobber != null)
             {
                 bobber.position = GetTargetStartPosition();
             }
 
-            // 🖱️ 통합 마우스 좌클릭 입력 처리
             if (Input.GetMouseButtonDown(0))
             {
                 HandleMouseInput();
@@ -65,22 +63,20 @@ namespace FishingSystem.Fishing_Rod
             switch (bobberState.Value)
             {
                 case BobberState.Ready:
-                    // 1. 대기 상태일 때 클릭하면 던지기
                     CastBobberAsync().Forget();
                     break;
 
                 case BobberState.Flying:
                 case BobberState.Settled:
-                    // 2. 날아가는 중이거나 물에 떠 있을 때 클릭하면 즉시 회수 시작
+                    // 일반 상황 혹은 허공 클릭 시 자동 회수
                     RetrieveBobberAsync().Forget();
                     break;
 
                 case BobberState.Biting:
-                    // 3. 물고기가 물었을 때는 BiteManager가 전권을 가지고 타이밍을 체크하므로 여기선 무시합니다.
+                    // 입질 중일 때는 BiteFish 스크립트가 챔질 입력을 처리함
                     break;
 
                 case BobberState.Retrieving:
-                    // 4. 이미 회수 중일 때는 중복 입력을 무시합니다.
                     break;
             }
         }
@@ -132,7 +128,7 @@ namespace FishingSystem.Fishing_Rod
         }
 
         /// <summary>
-        /// 🎣 [신규] 찌를 플레이어 방향으로 자연스럽게 당겨오는 물리 회수 로직
+        /// 찌를 낚싯대 방향으로 회수합니다.
         /// </summary>
         public async UniTaskVoid RetrieveBobberAsync()
         {
@@ -142,9 +138,9 @@ namespace FishingSystem.Fishing_Rod
             castCts = new CancellationTokenSource();
 
             bobberState.Value = BobberState.Retrieving;
-            lineState.Value = FishingLineState.Taut; // 감아올릴 때는 줄을 팽팽하게 세팅
+            lineState.Value = FishingLineState.Taut; 
 
-            bobberRb.bodyType = RigidbodyType2D.Dynamic; // 부력과 물리 마찰을 받도록 Dynamic 유지
+            bobberRb.bodyType = RigidbodyType2D.Dynamic; 
             
             Debug.Log("<color=#99E6FF>🎣 릴을 감아 찌를 회수합니다...</color>");
 
@@ -155,10 +151,8 @@ namespace FishingSystem.Fishing_Rod
                     Vector3 targetPos = GetTargetStartPosition();
                     float distance = Vector3.Distance(bobber.position, targetPos);
 
-                    // 낚싯대 끝부분에 충분히 도달하면 회수 완료 탈출
                     if (distance < 0.6f) break;
 
-                    // 플레이어 위치(낚싯대 끝) 방향으로 실시간 물리 속도 부여 (물 위를 스치듯 끌려옴)
                     Vector2 pullDirection = (targetPos - bobber.position).normalized;
                     bobberRb.linearVelocity = pullDirection * reelInSpeed;
 
@@ -167,14 +161,13 @@ namespace FishingSystem.Fishing_Rod
             }
             catch (System.OperationCanceledException)
             {
-                return; // 중간에 다른 상태로 캔슬 시 종료
+                return; 
             }
 
             Debug.Log("<color=white>📥 찌 회수 완료. 다음 캐스팅 대기.</color>");
             ResetBobberToReady();
         }
 
-        // 외부에서 찌 상태를 강제로 바꿀 수 있도록 개방 (BiteManager용)
         public void SetBobberState(BobberState state)
         {
             bobberState.Value = state;
