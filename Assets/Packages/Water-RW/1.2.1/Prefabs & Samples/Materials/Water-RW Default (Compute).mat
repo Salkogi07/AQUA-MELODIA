@@ -37,7 +37,8 @@ Material:
   m_Shader: {fileID: -6465566751694194690, guid: e8e40b1f383fb7542ac672f00d5e547c, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords: []
+  m_ValidKeywords:
+  - _ENABLE_LIGHTING
   m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -119,7 +120,7 @@ Material:
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
-    - _ENABLE_LIGHTING: 0
+    - _ENABLE_LIGHTING: 1
     - _EnableExternalAlpha: 0
     - _FadeDistance: 128
     - _GlossMapScale: 1
