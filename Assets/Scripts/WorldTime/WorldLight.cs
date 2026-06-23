@@ -10,7 +10,10 @@ namespace WorldTime
         private Light2D _light;
 
         [SerializeField] private WorldTime _worldTime;
-        [SerializeField] private Gradient _gradient;
+        
+        [Header("시각 효과")]
+        [SerializeField] private Gradient _gradient;       // 시간에 따른 색상 (0: 자정, 0.5: 정오)
+        [SerializeField] private AnimationCurve _intensityCurve; // 시간에 따른 밝기
 
         private void Awake()
         {
@@ -20,17 +23,23 @@ namespace WorldTime
 
         private void OnDestroy()
         {
-            _worldTime.WorldTimeChanged -= OnWorldTimeChanged;
+            if (_worldTime != null)
+                _worldTime.WorldTimeChanged -= OnWorldTimeChanged;
         }
 
         private void OnWorldTimeChanged(object sender, TimeSpan newTime)
         {
-            _light.color = _gradient.Evaluate(PercentOfDay(newTime));
+            // 하루 중 진행률 (0.0 ~ 1.0)
+            float timePercent = PercentOfDay(newTime);
+            
+            // 최종 색상 및 밝기 적용 (계절 보정 없이 직접 적용)
+            _light.color = _gradient.Evaluate(timePercent);
+            _light.intensity = _intensityCurve.Evaluate(timePercent);
         }
 
         private float PercentOfDay(TimeSpan timeSpan)
         {
-            return (float)timeSpan.TotalMinutes % WorldTimeConstants.MinutesInDay / WorldTimeConstants.MinutesInDay;
+            return (float)timeSpan.TotalMinutes / WorldTimeConstants.MinutesInDay;
         }
     }
 }

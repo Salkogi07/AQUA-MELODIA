@@ -738,6 +738,58 @@ MonoBehaviour:
     m_ColorSpace: -1
     m_NumColorKeys: 8
     m_NumAlphaKeys: 2
+  _intensityCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0.2
+      inSlope: 0.71270734
+      outSlope: 0.71270734
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.34755135
+    - serializedVersion: 3
+      time: 0.25
+      value: 0.4
+      inSlope: 2.361701
+      outSlope: 2.361701
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.15639806
+    - serializedVersion: 3
+      time: 0.5
+      value: 1
+      inSlope: -0.024089286
+      outSlope: -0.024089286
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.3633492
+    - serializedVersion: 3
+      time: 0.75
+      value: 0.4
+      inSlope: -2.3875482
+      outSlope: -2.3875482
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.1627171
+      outWeight: 0.15323853
+    - serializedVersion: 3
+      time: 1
+      value: 0.2
+      inSlope: -0.7399459
+      outSlope: -0.7399459
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.24012637
+      outWeight: 0
+    m_PreInfinity: 1
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _seasonIntensity: 0.15
 --- !u!1 &638697510
 GameObject:
   m_ObjectHideFlags: 0
@@ -799,7 +851,7 @@ GameObject:
   - component: {fileID: 670370023}
   - component: {fileID: 670370022}
   m_Layer: 0
-  m_Name: Systems
+  m_Name: TimeManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -817,7 +869,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 042b264ab4269f24581ba6b68a26fd19, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WorldTime.WorldTime
-  _dayLength: 15
+  _useRealTime: 0
+  _dayLengthInMinutes: 20
 --- !u!4 &670370023
 Transform:
   m_ObjectHideFlags: 0
