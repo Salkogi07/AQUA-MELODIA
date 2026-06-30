@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using R3;
+using FishingSystem.FishState;
 
 namespace FishingSystem.Fishing_Rod
 {
@@ -16,7 +17,7 @@ namespace FishingSystem.Fishing_Rod
         public float sagAmount = 0.5f;     
 
         private LineRenderer lineRenderer;
-        private FishingRod ownerRod;
+        private FishingRod _ownerRod;
         private System.IDisposable stateSubscription;
         private FishingLineState currentState = FishingLineState.Slack;
 
@@ -25,18 +26,18 @@ namespace FishingSystem.Fishing_Rod
             lineRenderer = GetComponent<LineRenderer>();
         }
         
-        public void Initialize(FishingRod rod)
+        public void Initialize(FishingRod rodTest)
         {
-            ownerRod = rod;
+            _ownerRod = rodTest;
             stateSubscription?.Dispose();
             
-            stateSubscription = ownerRod.LineState
+            stateSubscription = _ownerRod.LineState
                 .Subscribe(state => currentState = state);
         }
 
         void LateUpdate()
         {
-            if (ownerRod == null || ownerRod.RodTip == null || ownerRod.Bobber == null || lineRenderer == null) return;
+            if (_ownerRod == null || _ownerRod.rodTip == null || _ownerRod.bobber == null || lineRenderer == null) return;
 
             lineRenderer.startWidth = lineWidth;
             lineRenderer.endWidth = lineWidth;
@@ -54,16 +55,16 @@ namespace FishingSystem.Fishing_Rod
         void DrawStraightLine()
         {
             lineRenderer.positionCount = 2;
-            lineRenderer.SetPosition(0, ownerRod.RodTip.position);
-            lineRenderer.SetPosition(1, ownerRod.Bobber.position);
+            lineRenderer.SetPosition(0, _ownerRod.rodTip.position);
+            lineRenderer.SetPosition(1, _ownerRod.bobber.position);
         }
 
         void DrawCurvedLine()
         {
             lineRenderer.positionCount = curveSegments;
 
-            Vector3 start = ownerRod.RodTip.position;
-            Vector3 end = ownerRod.Bobber.position;
+            Vector3 start = _ownerRod.rodTip.position;
+            Vector3 end = _ownerRod.bobber.position;
 
             Vector3 controlPoint = Vector3.Lerp(start, end, 0.5f);
             controlPoint.y -= sagAmount;
