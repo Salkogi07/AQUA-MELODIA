@@ -44,6 +44,9 @@ TextureImporter:
   - first:
       213: -3361061738156230962
     second: player-fishing-loop_13
+  - first:
+      213: -8913226153292640764
+    second: player-fishing-loop_14
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -416,9 +419,9 @@ TextureImporter:
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: b7308f5b71dd54760800000000000000
+      spriteID: 7372aaa6429377e48bc9d6a1386575e5
       internalID: 7441597053206528891
       vertices: []
       indices: 
@@ -438,10 +441,32 @@ TextureImporter:
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: ec67a05282c1b51d0800000000000000
+      spriteID: 521b37bb3bcc1f54098f40e969ceec2f
       internalID: -3361061738156230962
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player-fishing-loop_14
+      rect:
+        serializedVersion: 2
+        x: 1736
+        y: 0
+        width: 124
+        height: 124
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ed10b994aef3bbc48aa0f27d0fafa773
+      internalID: -8913226153292640764
       vertices: []
       indices: 
       edges: []
@@ -450,7 +475,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 4cbaecdbbd3359a46ab88ce2f2aee3e1
+    spriteID: b63f6656f06c8884c93ce18ddd7e7cc4
     internalID: 0
     vertices: []
     indices: 
@@ -460,7 +485,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries:
       - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":14.0,"y":1.0},"gridSpriteSize":{"x":124.0,"y":124.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":15.0,"y":1.0},"gridSpriteSize":{"x":124.0,"y":124.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
       player-fishing-loop_0: -5789913331046658989
       player-fishing-loop_1: 6817107133623578783
@@ -468,6 +493,7 @@ TextureImporter:
       player-fishing-loop_11: 2736569091564642119
       player-fishing-loop_12: 7441597053206528891
       player-fishing-loop_13: -3361061738156230962
+      player-fishing-loop_14: -8913226153292640764
       player-fishing-loop_2: 2211297326423638617
       player-fishing-loop_3: 7473169969675895598
       player-fishing-loop_4: -6500436132636972290
