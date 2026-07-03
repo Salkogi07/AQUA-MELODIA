@@ -33,10 +33,10 @@ namespace FishingSystem.FishState
                 clicked = true;
                 cts?.Cancel(); // 타이머 취소
 
-                Debug.Log($"<color=#00FF00>⚔️ [챔질 성공] {fishingRod.CurrentHookedFish.Data.fishName}가 걸렸습니다!</color>");
-                // 미니게임 상태로 넘어가려면 여기서 stateMachine.ChangeState(fishingRod.MiniGameState) 등을 호출
-                
-                stateMachine.ChangeState(fishingRod.RetrievingState); // 일단 회수 상태로
+                Debug.Log($"<color=#00FF00>⚔️ [챔질 성공] {fishingRod.CurrentHookedFish.Data.fishName}가 걸렸습니다! 미니게임 시작!</color>");
+
+                // 회수(Retrieving)가 아닌 미니게임(MiniGame) 상태로 전환!
+                stateMachine.ChangeState(fishingRod.MiniGameState);
             }
         }
 

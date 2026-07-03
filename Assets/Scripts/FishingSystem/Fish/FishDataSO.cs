@@ -24,7 +24,9 @@ namespace FishingSystem.Fish
         public float agility = 3f;         
 
         [Header("패턴 데이터")]
-        [Tooltip("추후 구현될 미니게임 패턴 데이터 구조체나 리스트가 들어갈 자리")]
-        public EscapePatternDataSO patternData; 
+        [Tooltip("미니게임 진행 시 물고기의 움직임 패턴")]
+        public PatternDataSO patternData;
+        [Tooltip("물고기 발악 패턴")]
+        public EscapePatternDataSO escapePatternData; 
     }
 }

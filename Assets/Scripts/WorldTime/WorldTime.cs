@@ -17,8 +17,8 @@ namespace WorldTime
         private void Start()
         {
             // 00:00:00(자정)부터 시작합니다. 
-            // 원한다면 TimeSpan.FromHours(6) 등으로 시작 시간을 바꿀 수 있습니다.
-            _currentTime = TimeSpan.Zero; 
+            //_currentTime = TimeSpan.Zero;
+            _currentTime = TimeSpan.FromHours(7);
         }
 
         private void Update()

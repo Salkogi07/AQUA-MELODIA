@@ -27,5 +27,14 @@ namespace FishingSystem.FishState
                 fishingRod.OnAnimationEvent_ThrowBobber();
             }
         }
+        
+        // 낚시 실패 애니메이션 끝부분 이벤트
+        public void OnAnimationEvent_FailFinished()
+        {
+            if (fishingRod != null)
+            {
+                fishingRod.OnAnimationEvent_FailFinished();
+            }
+        }
     }
 }
