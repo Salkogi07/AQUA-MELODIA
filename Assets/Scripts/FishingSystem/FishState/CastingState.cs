@@ -24,7 +24,7 @@ namespace FishingSystem.FishState
 
         public override void Update()
         {
-            // 💡 아직 애니메이션에서 던지는 타이밍이 안 왔다면(던지기 전)
+            // 아직 애니메이션에서 던지는 타이밍이 안 왔다면(던지기 전)
             if (!hasThrown) 
             {
                 // 낚싯대를 휘두르는 동안 찌가 낚싯대 끝(또는 손)을 계속 따라가도록 고정시킵니다.

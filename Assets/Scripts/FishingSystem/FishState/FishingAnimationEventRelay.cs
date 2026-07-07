@@ -22,19 +22,21 @@ namespace FishingSystem.FishState
         public void OnAnimationEvent_ThrowBobber()
         {
             if (fishingRod != null)
-            {
-                // 부모에 있는 진짜 함수를 대신 호출(토스)해줍니다.
                 fishingRod.OnAnimationEvent_ThrowBobber();
-            }
         }
         
         // 낚시 실패 애니메이션 끝부분 이벤트
         public void OnAnimationEvent_FailFinished()
         {
             if (fishingRod != null)
-            {
                 fishingRod.OnAnimationEvent_FailFinished();
-            }
+        }
+        
+        // 회수 시 낚싯대를 획 당기는 타이밍 이벤트
+        public void OnAnimationEvent_PullBobber()
+        {
+            if (fishingRod != null)
+                fishingRod.OnAnimationEvent_PullBobber();
         }
     }
 }

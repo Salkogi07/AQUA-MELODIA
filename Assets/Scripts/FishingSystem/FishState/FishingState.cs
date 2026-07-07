@@ -15,7 +15,7 @@ namespace FishingSystem.FishState
             this.fishingRod = fishingRod;
             this.stateMachine = stateMachine;
             this.animBoolName = animBoolName;
-            this.anim = fishingRod.GetComponentInChildren<Animator>(); // 애니메이터 참조
+            this.anim = fishingRod.GetComponentInChildren<Animator>();
         }
 
         public virtual void Enter()

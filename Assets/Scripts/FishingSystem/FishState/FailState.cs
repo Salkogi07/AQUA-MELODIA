@@ -9,7 +9,7 @@ namespace FishingSystem.FishState
 
         public override void Enter()
         {
-            base.Enter(); // "IsFailed" 애니메이션 파라미터가 True가 됨
+            base.Enter();
             
             // 실패 시 즉시 낚싯줄을 느슨하게 하고 찌 물리 초기화
             fishingRod.SetLineState(FishingLineState.Slack);

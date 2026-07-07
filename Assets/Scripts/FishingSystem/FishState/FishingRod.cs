@@ -17,8 +17,12 @@ namespace FishingSystem.FishState
         public Vector2 castDirection = new Vector2(1.2f, 1f);
         [Range(0f, 100f)] public float castSpeed = 25f;
 
-        [Header("🎣 회수(릴링) 설정")]
-        [Range(0f, 100f)] public float reelInSpeed = 18f;
+        [Header("🖐️ 회수(손으로 잡기) 설정")]
+        public Transform catchHandPosition; 
+        [Tooltip("찌가 날아올 때의 포물선 최고 높이")]
+        public float retrieveArcHeight = 2.5f;
+        [Tooltip("찌가 손으로 날아오는데 걸리는 시간")]
+        public float retrieveDuration = 0.4f;
 
         [Header("🐟 입질 타이머 설정")]
         public Vector2 biteDelayRange = new Vector2(2f, 5f);
@@ -184,7 +188,6 @@ namespace FishingSystem.FishState
         
         public void OnAnimationEvent_ThrowBobber()
         {
-            // 현재 상태가 CastingState일 때만 실제 찌를 날리도록 안전장치 처리
             if (StateMachine.CurrentState == CastingState)
             {
                 CastingState.ExecuteCast();
@@ -193,11 +196,18 @@ namespace FishingSystem.FishState
         
         public void OnAnimationEvent_FailFinished()
         {
-            // 현재 상태가 FailedState일 때만 발동 (안전장치)
             if (StateMachine.CurrentState == FailedState)
             {
                 Debug.Log("<color=white>🔄 실패 연출 종료. 기본 대기 상태로 복귀합니다.</color>");
                 StateMachine.ChangeState(ReadyState);
+            }
+        }
+        
+        public void OnAnimationEvent_PullBobber()
+        {
+            if (StateMachine.CurrentState == RetrievingState)
+            {
+                RetrievingState.ExecutePull();
             }
         }
     }
