@@ -580,7 +580,6 @@ Transform:
   - {fileID: 923546521}
   - {fileID: 1247940787}
   - {fileID: 1596706285}
-  - {fileID: 1926226668}
   m_Father: {fileID: 730771051}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &414686182
@@ -1252,9 +1251,7 @@ MonoBehaviour:
   castStartPosition: {fileID: 923546521}
   castDirection: {x: -0.8, y: 0.8}
   castSpeed: 20
-  catchHandPosition: {fileID: 1926226668}
-  retrieveArcHeight: 2.5
-  retrieveDuration: 0.4
+  reelInSpeed: 50
   biteDelayRange: {x: 7, y: 12}
   inputTimeLimit: 1.5
   bitePlungeForce: 4
@@ -2497,37 +2494,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1833681518}
   m_CullTransparentMesh: 1
---- !u!1 &1926226667
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1926226668}
-  m_Layer: 0
-  m_Name: Hand
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1926226668
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1926226667}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 414686181}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1980009723
 GameObject:
   m_ObjectHideFlags: 0
