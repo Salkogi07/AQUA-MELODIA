@@ -194,6 +194,51 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 31090310}
   m_CullTransparentMesh: 1
+--- !u!1 &132202638
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 132202639}
+  - component: {fileID: 132202640}
+  m_Layer: 0
+  m_Name: Test
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &132202639
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 132202638}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &132202640
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 132202638}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 491eaac09fdf20442a76ce57f31ca7de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Testing
+  gameTimeSet: 0.1
 --- !u!1 &154435967
 GameObject:
   m_ObjectHideFlags: 0
@@ -1262,6 +1307,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 16
   detectionRadius: 1.2
+  snapParticlePrefab: {fileID: 3725896639099546286, guid: 15ae0312ce77d6c479e77b5267eda2c1, type: 3}
   wheelSensitivity: 0.05
   sweetSpotTolerance: 0.1
   fishDamageRate: 10
@@ -2963,3 +3009,4 @@ SceneRoots:
   - {fileID: 726661183}
   - {fileID: 670370023}
   - {fileID: 2144038896}
+  - {fileID: 132202639}
