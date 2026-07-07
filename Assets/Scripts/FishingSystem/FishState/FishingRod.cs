@@ -33,6 +33,10 @@ namespace FishingSystem.FishState
         public LayerMask fishingZoneLayer = ~0;
         public float detectionRadius = 1.2f;
         
+        [Header("💥 실패 연출")]
+        [Tooltip("줄이 끊어질 때 재생할 픽셀 파티클 프리팹")]
+        public GameObject snapParticlePrefab;
+        
         [Header("🎮 미니게임 규칙 및 릴(Reel) 설정")]
         [Tooltip("마우스 휠 1틱당 이동하는 조준점 속도")]
         public float wheelSensitivity = 0.05f; 
@@ -51,6 +55,8 @@ namespace FishingSystem.FishState
         public float patternMinX = -5f;
         [Tooltip("패턴에서 사용하는 X좌표의 최댓값 (예: 5)")]
         public float patternMaxX = 5f;
+        
+        public float DefaultGravity { get; private set; } 
 
         // --- 컴포넌트 프로퍼티 ---
         public Rigidbody2D BobberRb { get; private set; }
@@ -79,7 +85,11 @@ namespace FishingSystem.FishState
 
         private void Awake()
         {
-            if (bobber != null) BobberRb = bobber.GetComponent<Rigidbody2D>();
+            if (bobber != null)
+            {
+                BobberRb = bobber.GetComponent<Rigidbody2D>();
+                DefaultGravity = BobberRb.gravityScale; 
+            } 
 
             // 상태 초기화 (애니메이션 파라미터가 없다면 빈 문자열 전달)
             StateMachine = new FishingStateMachine();
@@ -131,6 +141,8 @@ namespace FishingSystem.FishState
             BobberRb.bodyType = RigidbodyType2D.Kinematic;
             BobberRb.linearVelocity = Vector2.zero;
             BobberRb.angularVelocity = 0f;
+            
+            BobberRb.gravityScale = DefaultGravity; 
         }
 
         public void ApplyCastPhysics()

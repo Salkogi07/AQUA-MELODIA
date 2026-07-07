@@ -4,6 +4,7 @@
     public enum FishingLineState 
     { 
         Slack, 
-        Taut 
+        Taut,
+        Snapped
     }
 }
