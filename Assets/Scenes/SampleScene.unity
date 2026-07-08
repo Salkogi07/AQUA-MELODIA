@@ -1697,6 +1697,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 726661183}
     m_Modifications:
     - target: {fileID: 465085849670155082, guid: 63805a0e25c5a394abbbf81f68ff9f5a, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 465085849670155082, guid: 63805a0e25c5a394abbbf81f68ff9f5a, type: 3}
       propertyPath: layersToInteractWith.m_Bits
       value: 64
       objectReference: {fileID: 0}
@@ -1751,6 +1755,18 @@ PrefabInstance:
     - target: {fileID: 2933080294895812742, guid: 63805a0e25c5a394abbbf81f68ff9f5a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2933080294895812743, guid: 63805a0e25c5a394abbbf81f68ff9f5a, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6163323619924972446, guid: 63805a0e25c5a394abbbf81f68ff9f5a, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6822363506571518091, guid: 63805a0e25c5a394abbbf81f68ff9f5a, type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6822363506571518091, guid: 63805a0e25c5a394abbbf81f68ff9f5a, type: 3}
       propertyPath: m_ColliderMask.m_Bits
@@ -2730,6 +2746,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.Fish.FishingZone
   zoneName: "\uC77C\uBC18 \uD638\uC218"
+  maxMoveRange: 5
   availableFishList:
   - {fileID: 11400000, guid: 99764466b972a344ab9e0b64e8525ef6, type: 2}
   - {fileID: 11400000, guid: 08f054c7f670f0b4a89e4019ac4f05fd, type: 2}

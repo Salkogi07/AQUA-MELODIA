@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using Cysharp.Threading.Tasks;
 using System.Threading;
-using FishingSystem.Fishing_Rod;
 using FishingSystem.Fish;
 
 namespace FishingSystem.FishState
@@ -21,7 +20,6 @@ namespace FishingSystem.FishState
 
         public override void Update()
         {
-            // 대기 중에 좌클릭하면 그냥 찌를 회수함
             if (Input.GetMouseButtonDown(0))
             {
                 stateMachine.ChangeState(fishingRod.RetrievingState);
@@ -30,8 +28,13 @@ namespace FishingSystem.FishState
 
         private async UniTaskVoid WaitAndBiteAsync(CancellationToken token)
         {
-            FishDataSO foundFish = fishingRod.SearchFishingZone();
-            if (foundFish == null) return; // 낚시존이 없으면 입질 안 옴
+            // 1. 낚시 구역 자체를 가져옵니다.
+            FishingZone foundZone = fishingRod.SearchFishingZone();
+            if (foundZone == null) return; // 낚시존이 없으면 입질 안 옴
+
+            // 2. 구역에서 물고기 데이터를 뽑습니다.
+            FishDataSO foundFish = foundZone.GetRandomFish();
+            if (foundFish == null) return;
 
             try
             {
@@ -39,7 +42,15 @@ namespace FishingSystem.FishState
                 await UniTask.Delay(System.TimeSpan.FromSeconds(waitTime), cancellationToken: token);
 
                 fishingRod.CurrentHookedFish = new FishData(foundFish);
-                stateMachine.ChangeState(fishingRod.BitingState); // 물고기가 물면 Biting 상태로 전환
+
+                // 💡 3. 미니게임에 낚시터의 크기를 반영 (덮어쓰기)
+                // maxMoveRange가 5f라면 minX는 -5f, maxX는 5f가 됩니다.
+                fishingRod.patternMinX = -foundZone.maxMoveRange;
+                fishingRod.patternMaxX = foundZone.maxMoveRange;
+                fishingRod.currentZoneCenterX = foundZone.transform.position.x;
+
+                // 물고기가 물었으므로 상태 전환
+                stateMachine.ChangeState(fishingRod.BitingState); 
             }
             catch (System.OperationCanceledException) { }
         }

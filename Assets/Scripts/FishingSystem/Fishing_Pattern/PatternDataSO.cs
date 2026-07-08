@@ -1,28 +1,27 @@
-﻿using UnityEngine;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace FishingSystem.Fishing_Pattern
 {
-    // 위치와 대기시간을 하나로 묶어주는 구조체 (인스펙터에 노출하기 위해 Serializable 추가)
     [System.Serializable]
-    public struct PatternNode
+    public class PatternNode
     {
-        [Tooltip("이동할 X 좌표")]
+        [Tooltip("목표 X 좌표")]
         public float targetPositionX;
         
-        [Tooltip("해당 좌표 도달 후 대기할 시간(초)")]
-        public float waitTime;
+        [Tooltip("해당 위치까지 이동하는 데 걸리는 시간 (초)")]
+        public float moveDuration = 1.5f;
+
+        [Tooltip("도착 후 머무르는 대기 시간 (초)")]
+        public float waitTime = 0.5f;
     }
 
-    [CreateAssetMenu(fileName = "NewPatternData", menuName = "Fishing System/Pattern Data")]
+    [CreateAssetMenu(fileName = "New Fish Pattern", menuName = "Fishing System/Pattern Data")]
     public class PatternDataSO : ScriptableObject
     {
-        [Header("🐟 물고기 이동 패턴 설정")]
-        [Tooltip("물고기가 순차적으로 이동할 좌표와 대기시간 목록입니다.")]
-        public List<PatternNode> patternNodes = new List<PatternNode>();
-
-        [Header("반복 설정")]
-        [Tooltip("패턴을 끝까지 돌았을 때 처음(0번 인덱스)부터 다시 반복할지 여부")]
+        [Tooltip("패턴이 끝나면 처음부터 다시 반복할지 여부")]
         public bool loopPattern = true;
+        
+        public List<PatternNode> patternNodes = new List<PatternNode>();
     }
 }

@@ -56,6 +56,8 @@ namespace FishingSystem.FishState
         [Tooltip("패턴에서 사용하는 X좌표의 최댓값 (예: 5)")]
         public float patternMaxX = 5f;
         
+        public float currentZoneCenterX = 0f; 
+        
         public float DefaultGravity { get; private set; } 
 
         // --- 컴포넌트 프로퍼티 ---
@@ -165,14 +167,14 @@ namespace FishingSystem.FishState
             }
         }
 
-        public FishDataSO SearchFishingZone()
+        public FishingZone SearchFishingZone()
         {
             Collider2D[] hitColliders = Physics2D.OverlapCircleAll(bobber.position, detectionRadius, fishingZoneLayer);
             foreach (var col in hitColliders)
             {
                 if (col.TryGetComponent<FishingZone>(out var zone))
                 {
-                    return zone.GetRandomFish();
+                    return zone;
                 }
             }
             return null;

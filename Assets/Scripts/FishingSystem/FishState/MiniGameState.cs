@@ -29,6 +29,8 @@ namespace FishingSystem.FishState
             hookedFish = fishingRod.CurrentHookedFish;
             currentFishPositionX = 0f; 
             initialBobberPosition = fishingRod.bobber.position; 
+            
+            initialBobberPosition.x = fishingRod.currentZoneCenterX;
 
             fishingRod.ResetBobberPhysics();
             fishingRod.SetLineState(FishingSystem.Fishing_Rod.FishingLineState.Taut);
@@ -139,7 +141,6 @@ namespace FishingSystem.FishState
             PatternDataSO pattern = hookedFish.Data.patternData;
             if (pattern == null || pattern.patternNodes.Count == 0) return; 
 
-            float moveSpeed = hookedFish.Data.agility;
             int patternIndex = 0;
 
             try
@@ -149,18 +150,40 @@ namespace FishingSystem.FishState
                     PatternNode currentNode = pattern.patternNodes[patternIndex];
                     float targetX = currentNode.targetPositionX;
                     float waitTime = currentNode.waitTime;
+                    float duration = currentNode.moveDuration;
 
-                    while (Mathf.Abs(currentFishPositionX - targetX) > 0.05f)
+                    float startX = currentFishPositionX;
+                    float timeElapsed = 0f;
+
+                    // 정해진 시간(duration) 동안 목표 위치로 이동
+                    if (duration > 0f)
                     {
-                        currentFishPositionX = Mathf.Lerp(currentFishPositionX, targetX, Time.deltaTime * moveSpeed);
-                        await UniTask.Yield(PlayerLoopTiming.Update, token);
-                    }
+                        while (timeElapsed < duration)
+                        {
+                            timeElapsed += Time.deltaTime;
+                            
+                            // 0 ~ 1 사이의 진행도
+                            float t = Mathf.Clamp01(timeElapsed / duration);
+                            
+                            // 부드러운 가속 및 감속 효과 (SmoothStep) - 물고기가 자연스럽게 헤엄치는 느낌
+                            t = t * t * (3f - 2f * t);
 
+                            currentFishPositionX = Mathf.Lerp(startX, targetX, t);
+                            
+                            await UniTask.Yield(PlayerLoopTiming.Update, token);
+                        }
+                    }
+                    
+                    // 시간이 다 되면 정확히 목표 위치에 고정
+                    currentFishPositionX = targetX;
+
+                    // 대기 시간 처리
                     if (waitTime > 0f)
                     {
                         await UniTask.Delay(System.TimeSpan.FromSeconds(waitTime), cancellationToken: token);
                     }
 
+                    // 다음 패턴으로
                     patternIndex++;
                     if (patternIndex >= pattern.patternNodes.Count)
                     {
