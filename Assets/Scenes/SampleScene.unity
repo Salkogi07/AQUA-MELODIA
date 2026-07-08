@@ -1315,6 +1315,10 @@ MonoBehaviour:
   stressDecreaseRate: 0.3
   patternMinX: -5
   patternMaxX: 5
+  currentZoneCenterX: 0
+  patternGenerator: {fileID: 244235234}
+  patternEvaluator: {fileID: 433269640}
+  patternDrawer: {fileID: 638697512}
 --- !u!1 &809622599
 GameObject:
   m_ObjectHideFlags: 0
@@ -2137,7 +2141,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1564574378
 Transform:
   m_ObjectHideFlags: 0

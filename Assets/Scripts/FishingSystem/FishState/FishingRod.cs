@@ -2,6 +2,7 @@
 using R3;
 using FishingSystem.Fishing_Rod;
 using FishingSystem.Fish;
+using FishingSystem.Fishing_Pattern;
 
 namespace FishingSystem.FishState
 {
@@ -58,7 +59,12 @@ namespace FishingSystem.FishState
         
         public float currentZoneCenterX = 0f; 
         
-        public float DefaultGravity { get; private set; } 
+        [Header("🖌️ 발악 패턴(선 그리기) 시스템")]
+        public PatternGenerator patternGenerator;
+        public PatternEvaluator patternEvaluator;
+        public PatternDrawer patternDrawer;
+
+        public float DefaultGravity { get; private set; }
 
         // --- 컴포넌트 프로퍼티 ---
         public Rigidbody2D BobberRb { get; private set; }
@@ -82,6 +88,7 @@ namespace FishingSystem.FishState
         public RetrievingState RetrievingState { get; private set; }
         public MiniGameState MiniGameState { get; private set; }
         public FailedState FailedState { get; private set; } 
+        public FinalStruggleState FinalStruggleState { get; private set; }
 
         public FishData CurrentHookedFish { get; set; }
 
@@ -101,7 +108,8 @@ namespace FishingSystem.FishState
             BitingState = new BitingState(this, StateMachine, "IsBiting");
             RetrievingState = new RetrievingState(this, StateMachine, "IsRetrieving");
             MiniGameState = new MiniGameState(this, StateMachine, "IsMiniGame");
-            FailedState = new FailedState(this, StateMachine, "IsFailed"); 
+            FinalStruggleState = new FinalStruggleState(this, StateMachine, "IsMiniGame");
+            FailedState = new FailedState(this, StateMachine, "IsFailed");
         }
 
         private void Start()
@@ -178,15 +186,6 @@ namespace FishingSystem.FishState
                 }
             }
             return null;
-        }
-        
-        public void StartFinalStrugglePattern()
-        {
-            Debug.Log("<color=red>🔥 [발악 패턴 시작] 물고기의 마지막 저항이 시작됩니다!!</color>");
-            // TODO: 발악 패턴 로직 또는 상태 연결
-            
-            // 임시로 회수 상태로 넘김
-            StateMachine.ChangeState(RetrievingState);
         }
 
         private void OnDestroy()

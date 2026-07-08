@@ -20,6 +20,6 @@ MonoBehaviour:
   - targetPositionX: 0
     moveDuration: 1.5
     waitTime: 1
-  - targetPositionX: 1
+  - targetPositionX: 5
     moveDuration: 1.5
     waitTime: 1

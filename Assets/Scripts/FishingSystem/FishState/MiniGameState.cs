@@ -117,7 +117,7 @@ namespace FishingSystem.FishState
             if (hookedFish.CurrentStamina <= 0)
             {
                 cts?.Cancel();
-                fishingRod.StartFinalStrugglePattern();
+                stateMachine.ChangeState(fishingRod.FinalStruggleState);
                 return;
             }
 

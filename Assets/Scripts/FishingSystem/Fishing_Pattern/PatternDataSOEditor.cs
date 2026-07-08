@@ -57,7 +57,7 @@ public class PatternDataSOEditor : Editor
             wait.floatValue = EditorGUILayout.FloatField("도착 대기 (초)", wait.floatValue);
             EditorGUILayout.EndHorizontal();
 
-            // 🎨 시각적 그래프 (미니맵) 그리기
+            // 시각적 그래프 (미니맵) 그리기
             DrawNodeGraph(targetX.floatValue);
 
             EditorGUILayout.EndVertical();

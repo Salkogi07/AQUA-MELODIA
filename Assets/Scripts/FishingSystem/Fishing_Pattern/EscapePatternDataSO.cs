@@ -25,5 +25,14 @@ namespace FishingSystem.Fishing_Pattern
         [Tooltip("보이지 않는 판정선 콜라이더의 간격 (더 작고 촘촘하게 추천)")]
         [SerializeField] private float detectionSpacing = 0.1f;
         public float DetectionSpacing => detectionSpacing;
+        
+        [Header("미니게임 설정")]
+        [Tooltip("선을 그릴 수 있는 제한 시간 (초)")]
+        [SerializeField] private float timeLimit = 3f;
+        public float TimeLimit => timeLimit;
+
+        [Tooltip("전체 패턴 길이 대비 제공할 잉크량의 배수 (1.2면 20% 여유 제공)")]
+        [SerializeField] private float inkBufferMultiplier = 1.2f;
+        public float InkBufferMultiplier => inkBufferMultiplier;
     }
 }
