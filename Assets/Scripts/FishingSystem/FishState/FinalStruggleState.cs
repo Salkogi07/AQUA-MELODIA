@@ -23,6 +23,7 @@ namespace FishingSystem.FishState
             fishingRod.ResetBobberPhysics();
 
             Debug.Log("<color=red>🔥 [발악 패턴 시작] 마우스를 드래그하여 선을 따라 그리세요!</color>");
+            fishingRod.patternCameraPoint.PlayCameraAction(.8f);
             StruggleRoutineAsync(cts.Token).Forget();
         }
 
@@ -71,9 +72,10 @@ namespace FishingSystem.FishState
                 drawer.ForceStopDrawing();
                 drawer.enabled = false;
                 evaluator.StopEvaluation();
-
+                
+                CameraManager.Instance.ResetCamera(.8f);
+                
                 float finalScore = evaluator.CompletionProgress.CurrentValue;
-
                 // 7. 점수에 따른 품질 결정 및 결과 처리
                 ApplyResult(finalScore);
             }

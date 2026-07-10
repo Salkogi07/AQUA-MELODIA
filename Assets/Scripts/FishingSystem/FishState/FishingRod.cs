@@ -60,6 +60,7 @@ namespace FishingSystem.FishState
         public float currentZoneCenterX = 0f; 
         
         [Header("🖌️ 발악 패턴(선 그리기) 시스템")]
+        public CameraTargetPoint patternCameraPoint;
         public PatternGenerator patternGenerator;
         public PatternEvaluator patternEvaluator;
         public PatternDrawer patternDrawer;
