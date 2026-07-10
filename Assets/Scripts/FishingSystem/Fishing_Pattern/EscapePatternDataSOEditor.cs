@@ -21,6 +21,11 @@ namespace FishingSystem.Fishing_Pattern
         private bool _isPanning = false;
 
         private const float MAX_PAN_LIMIT = 500f;
+        
+        // 캔버스 고정 사이즈 제한 (World Coordinate 기준)
+        // 예를 들어 10이면 X는 -10 ~ +10, Y는 -10 ~ +10 범위 내에서만 이동 가능
+        private const float CANVAS_LIMIT_X = 5f; 
+        private const float CANVAS_LIMIT_Y = 5f;
 
         private void OnEnable()
         {
@@ -49,7 +54,7 @@ namespace FishingSystem.Fishing_Pattern
             title.style.marginBottom = 5;
             root.Add(title);
 
-            Slider zoomSlider = new Slider("🔍 캔버스 줌 배율", 5f, 150f);
+            /*Slider zoomSlider = new Slider("🔍 캔버스 줌 배율", 5f, 150f);
             zoomSlider.value = _zoomScale;
             zoomSlider.RegisterValueChangedCallback(evt =>
             {
@@ -57,7 +62,7 @@ namespace FishingSystem.Fishing_Pattern
                 Repaint();
             });
             zoomSlider.style.marginBottom = 10;
-            root.Add(zoomSlider);
+            root.Add(zoomSlider);*/
 
             IMGUIContainer previewContainer = new IMGUIContainer(() => DrawPatternCanvas());
             previewContainer.style.height = 350;
@@ -78,10 +83,14 @@ namespace FishingSystem.Fishing_Pattern
 
                 if (_pointsProperty.arraySize > 1)
                 {
-                    Vector2 lastPos = _pointsProperty.GetArrayElementAtIndex(_pointsProperty.arraySize - 2)
-                        .vector2Value;
-                    _pointsProperty.GetArrayElementAtIndex(_pointsProperty.arraySize - 1).vector2Value =
-                        lastPos + new Vector2(1f, 0f);
+                    Vector2 lastPos = _pointsProperty.GetArrayElementAtIndex(_pointsProperty.arraySize - 2).vector2Value;
+                    Vector2 newPos = lastPos + new Vector2(1f, 0f);
+                    
+                    // [수정] 점 추가 시에도 캔버스 바깥으로 나가지 않도록 제한
+                    newPos.x = Mathf.Clamp(newPos.x, -CANVAS_LIMIT_X, CANVAS_LIMIT_X);
+                    newPos.y = Mathf.Clamp(newPos.y, -CANVAS_LIMIT_Y, CANVAS_LIMIT_Y);
+                    
+                    _pointsProperty.GetArrayElementAtIndex(_pointsProperty.arraySize - 1).vector2Value = newPos;
                 }
                 else
                 {
@@ -116,24 +125,19 @@ namespace FishingSystem.Fishing_Pattern
             // ----------------- 하단 고정 가이드 박스 UI -----------------
             VisualElement guideBox = new VisualElement();
             guideBox.style.marginTop = 12;
-
             guideBox.style.paddingTop = 10;
             guideBox.style.paddingBottom = 10;
             guideBox.style.paddingLeft = 10;
             guideBox.style.paddingRight = 10;
-
             guideBox.style.backgroundColor = new Color(0.22f, 0.22f, 0.22f, 1f);
-
             guideBox.style.borderTopWidth = 1;
             guideBox.style.borderBottomWidth = 1;
             guideBox.style.borderLeftWidth = 1;
             guideBox.style.borderRightWidth = 1;
-
             guideBox.style.borderTopColor = new Color(0.35f, 0.35f, 0.35f, 1f);
             guideBox.style.borderBottomColor = new Color(0.35f, 0.35f, 0.35f, 1f);
             guideBox.style.borderLeftColor = new Color(0.35f, 0.35f, 0.35f, 1f);
             guideBox.style.borderRightColor = new Color(0.35f, 0.35f, 0.35f, 1f);
-
             guideBox.style.borderTopLeftRadius = 6;
             guideBox.style.borderTopRightRadius = 6;
             guideBox.style.borderBottomLeftRadius = 6;
@@ -147,10 +151,10 @@ namespace FishingSystem.Fishing_Pattern
             guideBox.Add(guideTitle);
 
             Label helpLabel = new Label(
+                $"• [캔버스 제한] : 정점은 지정된 구역(±{CANVAS_LIMIT_X}, ±{CANVAS_LIMIT_Y})을 벗어날 수 없습니다.\n" +
                 "• [노란색 점 드래그] : 마우스 좌클릭으로 경로 위치 편집\n" +
                 "• [마우스 휠 스크롤] : 캔버스 공간 확대 / 축소 (Zoom)\n" +
                 "• [마우스 휠 버튼 클릭 드래그] : 카메라 시점 이동 (Pan)\n" +
-                "• [범위 차단] : 캔버스 밖 영역의 정점은 자동으로 숨겨집니다.\n" +
                 "• [원점 복귀] : 원점이 화면을 벗어나면 가장자리에 빨간 버튼이 생성됩니다.");
             helpLabel.style.color = new Color(0.85f, 0.85f, 0.85f, 1f);
             helpLabel.style.fontSize = 11;
@@ -197,15 +201,23 @@ namespace FishingSystem.Fishing_Pattern
 
             GUI.BeginGroup(rect);
             Vector2 localCenter = center - rect.position;
+            
+            // 고정된 캔버스 바운더리 시각화 
+            Vector2 topLeft = localCenter + new Vector2(-CANVAS_LIMIT_X * _zoomScale, -CANVAS_LIMIT_Y * _zoomScale);
+            Vector2 bottomRight = localCenter + new Vector2(CANVAS_LIMIT_X * _zoomScale, CANVAS_LIMIT_Y * _zoomScale);
+            Rect canvasBoundsRect = new Rect(topLeft.x, topLeft.y, bottomRight.x - topLeft.x, bottomRight.y - topLeft.y);
+            
+            // 캔버스 배경 및 테두리 그리기
+            Handles.DrawSolidRectangleWithOutline(canvasBoundsRect, new Color(0.25f, 0.25f, 0.25f, 0.4f), Color.white);
 
-            Handles.color = new Color(0.3f, 0.3f, 0.3f, 0.5f);
-            Handles.DrawLine(new Vector3(0, localCenter.y, 0), new Vector3(rect.width, localCenter.y, 0));
-            Handles.DrawLine(new Vector3(localCenter.x, 0, 0), new Vector3(localCenter.x, rect.height, 0));
+            // X, Y 축 보조선
+            Handles.color = new Color(0.4f, 0.4f, 0.4f, 0.5f);
+            Handles.DrawLine(new Vector3(topLeft.x, localCenter.y, 0), new Vector3(bottomRight.x, localCenter.y, 0));
+            Handles.DrawLine(new Vector3(localCenter.x, topLeft.y, 0), new Vector3(localCenter.x, bottomRight.y, 0));
 
             if (localCenter.x >= 0 && localCenter.x <= rect.width && localCenter.y >= 0 && localCenter.y <= rect.height)
             {
-                Handles.Label(new Vector3(localCenter.x + 5, localCenter.y + 5, 0), "(0, 0) 원점",
-                    EditorStyles.miniLabel);
+                Handles.Label(new Vector3(localCenter.x + 5, localCenter.y + 5, 0), "(0, 0) 원점", EditorStyles.miniLabel);
             }
 
             IReadOnlyList<Vector2> points = _targetDataSo.Points;
@@ -240,12 +252,7 @@ namespace FishingSystem.Fishing_Pattern
 
             for (int i = 0; i < screenPositions.Count; i++)
             {
-                if (screenPositions[i].x < 0 || screenPositions[i].x > rect.width ||
-                    screenPositions[i].y < 0 || screenPositions[i].y > rect.height)
-                {
-                    continue;
-                }
-
+                // 화면 밖으로 나가도 캔버스 제어가 유지되도록 클리핑 범위 여유를 줌 (또는 제외하지 않음)
                 Vector3 targetPos = new Vector3(screenPositions[i].x, screenPositions[i].y, 0);
 
                 Handles.color = (_selectedPointIndex == i) ? Color.green : Color.yellow;
@@ -265,7 +272,12 @@ namespace FishingSystem.Fishing_Pattern
             {
                 Vector2 mouseOffset = localMousePos - localCenter;
                 Vector2 newWorldPos = new Vector2(mouseOffset.x / _zoomScale, -mouseOffset.y / _zoomScale);
+                
+                // 드래그 시 고정된 캔버스 크기를 벗어나지 못하게 강제 (Clamp)
+                newWorldPos.x = Mathf.Clamp(newWorldPos.x, -CANVAS_LIMIT_X, CANVAS_LIMIT_X);
+                newWorldPos.y = Mathf.Clamp(newWorldPos.y, -CANVAS_LIMIT_Y, CANVAS_LIMIT_Y);
 
+                // 소수점 2자리까지만 반올림
                 newWorldPos.x = Mathf.Round(newWorldPos.x * 100f) / 100f;
                 newWorldPos.y = Mathf.Round(newWorldPos.y * 100f) / 100f;
 
