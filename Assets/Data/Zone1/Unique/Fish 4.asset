@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.Fish.FishDataSO
   grade: 3
   fishName: "\uAE08\uBD95\uC5B4"
-  fishSprite: {fileID: -3075085917154955859, guid: fe9c498e1d6952b46a56e30c23f6b26e, type: 3}
+  fishSprite: {fileID: 21300000, guid: fe9c498e1d6952b46a56e30c23f6b26e, type: 3}
   maxStamina: 100
   strength: 10
   resistance: 5

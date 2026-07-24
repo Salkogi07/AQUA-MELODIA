@@ -91,19 +91,19 @@ namespace FishingSystem.FishState
             {
                 Debug.Log("<color=#FFD700>🌟 [Perfect] 최고 품질(S등급)로 제압했습니다!</color>");
                 fishingRod.CurrentHookedFish.Quality = FishQuality.GradeS;
-                stateMachine.ChangeState(fishingRod.RetrievingState);
+                stateMachine.ChangeState(fishingRod.CaughtState);
             }
             else if (score >= 60f)
             {
                 Debug.Log("<color=#00FF00>✨ [Good] 우수 품질(A등급)로 제압했습니다!</color>");
                 fishingRod.CurrentHookedFish.Quality = FishQuality.GradeA;
-                stateMachine.ChangeState(fishingRod.RetrievingState);
+                stateMachine.ChangeState(fishingRod.CaughtState);
             }
             else if (score >= 30f)
             {
                 Debug.Log("<color=#FFFFFF>🐟 [Normal] 일반 품질(B등급)로 제압했습니다.</color>");
                 fishingRod.CurrentHookedFish.Quality = FishQuality.GradeB;
-                stateMachine.ChangeState(fishingRod.RetrievingState);
+                stateMachine.ChangeState(fishingRod.CaughtState);
             }
             else
             {

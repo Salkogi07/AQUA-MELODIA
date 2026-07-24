@@ -64,6 +64,11 @@ namespace FishingSystem.FishState
         public PatternGenerator patternGenerator;
         public PatternEvaluator patternEvaluator;
         public PatternDrawer patternDrawer;
+        
+        [Header("🏆 성공 연출 설정")]
+        public Transform fishHookPoint; // 찌(Bobber)의 하위 자식으로 설정된 Transform (물고기가 매달릴 곳)
+        public GameObject fishVisualPrefab; // 물고기 SpriteRenderer가 포함된 프리팹
+        public Transform showcaseMountPoint; // 플레이어 손 위 (자랑하기 위치)
 
         public float DefaultGravity { get; private set; }
 
@@ -90,6 +95,8 @@ namespace FishingSystem.FishState
         public MiniGameState MiniGameState { get; private set; }
         public FailedState FailedState { get; private set; } 
         public FinalStruggleState FinalStruggleState { get; private set; }
+        public CaughtState CaughtState { get; private set; }
+        public ShowcaseState ShowcaseState { get; private set; }
 
         public FishData CurrentHookedFish { get; set; }
 
@@ -111,6 +118,8 @@ namespace FishingSystem.FishState
             MiniGameState = new MiniGameState(this, StateMachine, "IsMiniGame");
             FinalStruggleState = new FinalStruggleState(this, StateMachine, "IsMiniGame");
             FailedState = new FailedState(this, StateMachine, "IsFailed");
+            CaughtState = new CaughtState(this, StateMachine, "IsCaught");
+            ShowcaseState = new ShowcaseState(this, StateMachine, "IsShowcase");
         }
 
         private void Start()
@@ -130,7 +139,14 @@ namespace FishingSystem.FishState
         {
             StateMachine.CurrentState?.FixedUpdate();
         }
-
+        
+        public bool ShouldShowcaseFish()
+        {
+            // 나중에 특정 등급 이상만 자랑하고 싶다면 여기서 필터링 가능
+            // return CurrentHookedFish.Data.grade >= FishGrade.Rare;
+            return true; 
+        }
+        
         public void SetLineState(FishingLineState state)
         {
             lineState.Value = state;
@@ -232,6 +248,10 @@ namespace FishingSystem.FishState
             if (StateMachine.CurrentState == RetrievingState)
             {
                 RetrievingState.ExecutePull();
+            }
+            else if (StateMachine.CurrentState == CaughtState)
+            {
+                CaughtState.ExecutePull();
             }
         }
     }
