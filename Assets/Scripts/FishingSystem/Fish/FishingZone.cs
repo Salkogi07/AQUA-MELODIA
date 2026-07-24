@@ -3,90 +3,68 @@ using System.Collections.Generic;
 
 namespace FishingSystem.Fish
 {
+    [System.Serializable]
+    public struct GradeChance
+    {
+        public FishGrade grade;
+        public float probability;
+    }
+
+    [System.Serializable]
+    public class FishSpawnEntry
+    {
+        public FishDataSO fishData;
+        public int weight = 10;
+        [HideInInspector] public float calculatedChance; // 에디터 표시용
+    }
+
     public class FishingZone : MonoBehaviour
     {
-        [Header("낚시터 설정")]
-        public string zoneName = "일반 호수";
-        
-        [Header("미니게임 범위 설정")]
-        [Tooltip("물고기가 좌우로 움직일 수 있는 최대 반경 (0을 기준으로 양옆)")]
+        public string zoneName = "새 낚시터";
         public float maxMoveRange = 5f;
 
-        [Header("이 구역에서 출현하는 물고기 목록")]
-        [SerializeField] private List<FishDataSO> availableFishList = new();
+        // 에디터에서 접근할 리스트
+        public List<GradeChance> gradeChances = new();
+        public List<FishSpawnEntry> fishSpawnList = new();
 
-        /// <summary>
-        /// 해당 구역의 물고기 풀에서 한 마리를 무작위로 추첨합니다.
-        /// </summary>
-        public FishDataSO GetRandomFish()
+        private void Awake()
         {
-            // 빈칸(null)으로 되어있는 데이터를 걸러냅니다.
-            List<FishDataSO> validFish = availableFishList.FindAll(f => f != null);
-
-            if (validFish.Count == 0)
+            // 게임 시작 시 등급 리스트가 비어있다면 초기화
+            if (gradeChances.Count == 0)
             {
-                Debug.LogWarning($"⚠️ [{zoneName}] 구역에 유효한 물고기 데이터가 없습니다!");
-                return null;
-            }
-            return validFish[Random.Range(0, validFish.Count)];
-        }
-        
-        private void OnDrawGizmos()
-        {
-            Gizmos.color = Color.blue;
-
-            Vector3 center = transform.position;
-            Vector3 leftLimit = center + Vector3.left * maxMoveRange;
-            Vector3 rightLimit = center + Vector3.right * maxMoveRange;
-
-            // 중앙선 (기준점)
-            Gizmos.DrawLine(center + Vector3.up * 0.5f, center + Vector3.down * 0.5f);
-            
-            // 범위를 나타내는 가로 선 (좌측 끝 ~ 우측 끝)
-            Gizmos.DrawLine(leftLimit, rightLimit);
-
-            // 좌측 끝 표시(수직선)
-            Gizmos.DrawLine(leftLimit + Vector3.up * 0.5f, leftLimit + Vector3.down * 0.5f);
-            
-            // 우측 끝 표시(수직선)
-            Gizmos.DrawLine(rightLimit + Vector3.up * 0.5f, rightLimit + Vector3.down * 0.5f);
-        }
-
-        #if UNITY_EDITOR
-        // 에디터(인스펙터)에서 값이 바뀔 때마다 자동으로 실행되는 검증 로직
-        private void OnValidate()
-        {
-            if (availableFishList != null)
-            {
-                for (int i = 0; i < availableFishList.Count; i++)
+                foreach (FishGrade grade in System.Enum.GetValues(typeof(FishGrade)))
                 {
-                    FishDataSO fish = availableFishList[i];
-                    
-                    // 패턴 데이터가 연결되어 있다면 검사
-                    if (fish != null && fish.patternData != null && fish.patternData.patternNodes != null)
-                    {
-                        bool isExceeding = false;
-                        
-                        // 물고기가 움직이는 노드 중 하나라도 낚시터 범위를 벗어나는지 확인
-                        foreach (var node in fish.patternData.patternNodes)
-                        {
-                            if (Mathf.Abs(node.targetPositionX) > maxMoveRange)
-                            {
-                                isExceeding = true;
-                                break;
-                            }
-                        }
-
-                        if (isExceeding)
-                        {
-                            Debug.LogWarning($"<color=orange>[{zoneName}] 경고: <b>'{fish.fishName}'</b> 물고기의 움직임 패턴이 낚시터 최대 크기({maxMoveRange})를 벗어납니다! 목록에서 제외(Null) 처리됩니다.</color>");
-                            // 목록에서 즉시 비워버려서 참조가 안 되도록 강제 처리
-                            availableFishList[i] = null; 
-                        }
-                    }
+                    gradeChances.Add(new GradeChance { grade = grade, probability = (grade == FishGrade.Common ? 100f : 0f) });
                 }
             }
         }
-        #endif
+
+        public FishDataSO GetRandomFish()
+        {
+            float roll = Random.Range(0f, 100f);
+            float cumulative = 0f;
+            FishGrade selectedGrade = FishGrade.Common;
+
+            foreach (var gc in gradeChances)
+            {
+                cumulative += gc.probability;
+                if (roll <= cumulative) { selectedGrade = gc.grade; break; }
+            }
+
+            var candidates = fishSpawnList.FindAll(f => f.fishData != null && f.fishData.grade == selectedGrade);
+            if (candidates.Count == 0) return null;
+
+            int totalWeight = 0;
+            foreach (var c in candidates) totalWeight += c.weight;
+            
+            int weightRoll = Random.Range(0, totalWeight);
+            int weightCumulative = 0;
+            foreach (var entry in candidates)
+            {
+                weightCumulative += entry.weight;
+                if (weightRoll < weightCumulative) return entry.fishData;
+            }
+            return candidates[0].fishData;
+        }
     }
 }

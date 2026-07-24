@@ -554,12 +554,12 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -3905641107989642526, guid: 6abf92df1d370a94a851ff6ff28639d2, type: 3}
+  m_Sprite: {fileID: 1061527380459089461, guid: 9f08bb8b126883a40bdae47e37e37066, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1.24, y: 1.24}
+  m_Size: {x: 3.875, y: 3.875}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -1183,7 +1183,7 @@ Transform:
   m_GameObject: {fileID: 730771050}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5, y: 2.37, z: 0}
+  m_LocalPosition: {x: 5, y: 2.4, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2723,10 +2723,33 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.Fish.FishingZone
   zoneName: "\uC77C\uBC18 \uD638\uC218"
   maxMoveRange: 5
-  availableFishList:
-  - {fileID: 11400000, guid: 99764466b972a344ab9e0b64e8525ef6, type: 2}
-  - {fileID: 11400000, guid: 08f054c7f670f0b4a89e4019ac4f05fd, type: 2}
-  - {fileID: 11400000, guid: f1d30d794a6786547a7cd26699f03f27, type: 2}
+  gradeChances:
+  - grade: 0
+    probability: 36
+  - grade: 1
+    probability: 35
+  - grade: 2
+    probability: 20
+  - grade: 3
+    probability: 8
+  - grade: 4
+    probability: 1
+  fishSpawnList:
+  - fishData: {fileID: 11400000, guid: 99764466b972a344ab9e0b64e8525ef6, type: 2}
+    weight: 1
+    calculatedChance: 0
+  - fishData: {fileID: 11400000, guid: 1edb0f8eab2283747884afda85d59eee, type: 2}
+    weight: 10
+    calculatedChance: 0
+  - fishData: {fileID: 11400000, guid: b659299584cb4fd4980b5b9128791aab, type: 2}
+    weight: 10
+    calculatedChance: 0
+  - fishData: {fileID: 11400000, guid: e54d9fc2ec6fcab46b2530b2a4984bf5, type: 2}
+    weight: 10
+    calculatedChance: 0
+  - fishData: {fileID: 11400000, guid: 3a41645a6828e624084659103794a9de, type: 2}
+    weight: 10
+    calculatedChance: 0
 --- !u!1 &2097780360
 GameObject:
   m_ObjectHideFlags: 0

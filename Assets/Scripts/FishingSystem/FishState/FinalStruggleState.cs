@@ -48,10 +48,7 @@ namespace FishingSystem.FishState
             try
             {
                 // 1. 초기화
-                drawer.enabled = false;
-                drawer.ClearAllDrawnLines();
-                patternSystem.ClearCurrentPattern();
-                evaluator.ResetEvaluation();
+                fishingRod.ResetPattern();
 
                 // 2. 잉크량 설정
                 float length = CalculatePatternLength(escapeData);

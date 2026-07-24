@@ -126,7 +126,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: player-fishing-bit
+  m_Name: player-bit
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -342,7 +342,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: player-fishing-start
+  m_Name: player-casting
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -507,7 +507,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: player-fishing-return
+  m_Name: player-return
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -568,7 +568,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: player-fishing-loop
+  m_Name: player-wait
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:

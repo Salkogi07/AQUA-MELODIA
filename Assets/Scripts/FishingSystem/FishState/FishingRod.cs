@@ -117,6 +117,8 @@ namespace FishingSystem.FishState
         {
             if (fishingLine != null) fishingLine.Initialize(this); // 낚시줄 초기화
             StateMachine.Initialize(ReadyState);
+            
+            ResetPattern();
         }
 
         private void Update()
@@ -187,6 +189,14 @@ namespace FishingSystem.FishState
                 }
             }
             return null;
+        }
+
+        public void ResetPattern()
+        {
+            patternDrawer.enabled = false;
+            patternDrawer.ClearAllDrawnLines();
+            patternGenerator.ClearCurrentPattern();
+            patternEvaluator.ResetEvaluation();
         }
 
         private void OnDestroy()

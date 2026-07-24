@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59d86cf3eae64b5797630851886ab24a, type: 3}
+  m_Name: Fish 5
+  m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.Fish.FishDataSO
+  grade: 4
+  fishName: "\uC815\uC5B4\uB9AC"
+  fishSprite: {fileID: -952422179615659004, guid: 998f7e851fe32304ea9c1ffeca1ddfa8, type: 3}
+  maxStamina: 100
+  strength: 10
+  resistance: 5
+  agility: 3
+  patternData: {fileID: 11400000, guid: aaf80290610d2bc47b89dc372b509935, type: 2}
+  escapePatternData: {fileID: 11400000, guid: d8769d0cb470be547bfa2c624967578d, type: 2}
