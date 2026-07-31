@@ -48,5 +48,8 @@ TagManager:
   - name: Line
     uniqueID: 293468755
     locked: 0
+  - name: Fish
+    uniqueID: 3265537947
+    locked: 0
   m_RenderingLayers:
   - Default

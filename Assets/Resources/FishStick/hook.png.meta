@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: fe9c498e1d6952b46a56e30c23f6b26e
+guid: aa8c5510271d14d499e27c8b3689f08c
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -3075085917154955859
-    second: test3-removebg-preview_0
+      213: -49532090776259237
+    second: hook_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -49,8 +49,8 @@ TextureImporter:
   spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
-  alignment: 0
-  spritePivot: {x: 0.5, y: 0.5}
+  alignment: 9
+  spritePivot: {x: 0.65694463, y: 0.7166669}
   spritePixelsToUnits: 32
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
@@ -100,23 +100,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: test3-removebg-preview_0
+      name: hook_0
       rect:
         serializedVersion: 2
-        x: 0
+        x: 4
         y: 3
-        width: 501
-        height: 350
+        width: 8
+        height: 10
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: dad2c2e96a91355d0800000000000000
-      internalID: -3075085917154955859
+      spriteID: b557c4c63d6005ff0800000000000000
+      internalID: -49532090776259237
       vertices: []
       indices: 
       edges: []
@@ -126,7 +126,7 @@ TextureImporter:
     physicsShape: []
     bones: []
     spriteID: 5e97eb03825dee720800000000000000
-    internalID: 0
+    internalID: 1537655665
     vertices: []
     indices: 
     edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      test3-removebg-preview_0: -3075085917154955859
+      hook_0: -49532090776259237
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

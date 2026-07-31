@@ -69,6 +69,7 @@ namespace FishingSystem.FishState
         public Transform fishHookPoint; // 찌(Bobber)의 하위 자식으로 설정된 Transform (물고기가 매달릴 곳)
         public GameObject fishVisualPrefab; // 물고기 SpriteRenderer가 포함된 프리팹
         public Transform showcaseMountPoint; // 플레이어 손 위 (자랑하기 위치)
+        public CameraTargetPoint showcaseCameraPoint;
 
         public float DefaultGravity { get; private set; }
 
@@ -252,6 +253,14 @@ namespace FishingSystem.FishState
             else if (StateMachine.CurrentState == CaughtState)
             {
                 CaughtState.ExecutePull();
+            }
+        }
+        
+        public void OnAnimationEvent_ShowcaseFish()
+        {
+            if (StateMachine.CurrentState == ShowcaseState)
+            {
+                ShowcaseState.RevealFish();
             }
         }
     }

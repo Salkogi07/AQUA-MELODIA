@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 998f7e851fe32304ea9c1ffeca1ddfa8
+guid: 1a9ed29f50410544486481fdbcf4ae5b
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -952422179615659004
-    second: test4-removebg-preview_0
+      213: -2114686101538272709
+    second: fish2_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,23 +100,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: test4-removebg-preview_0
+      name: fish2_0
       rect:
         serializedVersion: 2
-        x: 51
-        y: 38
-        width: 422
-        height: 213
+        x: 0
+        y: 0
+        width: 23
+        height: 11
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 40c2ec3e21158c2f0800000000000000
-      internalID: -952422179615659004
+      spriteID: b3a0b5ad13027a2e0800000000000000
+      internalID: -2114686101538272709
       vertices: []
       indices: 
       edges: []
@@ -126,7 +126,7 @@ TextureImporter:
     physicsShape: []
     bones: []
     spriteID: 5e97eb03825dee720800000000000000
-    internalID: 0
+    internalID: 1537655665
     vertices: []
     indices: 
     edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      test4-removebg-preview_0: -952422179615659004
+      fish2_0: -2114686101538272709
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

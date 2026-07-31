@@ -9,7 +9,8 @@ namespace FishingSystem.Fish
         [Header("물고기 기본 정보")]
         public FishGrade grade = FishGrade.Common;
         public string fishName = "이름 미정";
-        public Sprite fishSprite; 
+        public Sprite fishSprite;
+        public GameObject fishPrefab;
 
         [Header("스크립터블 데이터")]
         [Tooltip("물고기가 잡히기 까지의 체력")]

@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Fish 1 P
   m_EditorClassIdentifier: Assembly-CSharp::EscapePatternData
   points:
-  - {x: -1.67, y: 1.43}
-  - {x: 1.97, y: -1.97}
+  - {x: -1.91, y: 1.56}
+  - {x: 1.82, y: -2.06}
   dotsPerFrame: 2
   drawDelayMs: 6
   dotSpacing: 0.3

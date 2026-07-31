@@ -38,5 +38,12 @@ namespace FishingSystem.FishState
             if (fishingRod != null)
                 fishingRod.OnAnimationEvent_PullBobber();
         }
+        
+        // 자랑하기 애니메이션의 중간 타이밍(예: 손을 드는 시점)에 이 이벤트를 추가하세요!
+        public void OnAnimationEvent_ShowcaseFish()
+        {
+            if (fishingRod != null)
+                fishingRod.OnAnimationEvent_ShowcaseFish();
+        }
     }
 }
