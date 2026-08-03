@@ -22,6 +22,9 @@ namespace FishingSystem.FishState
             fishingRod.SetLineState(FishingLineState.Taut);
             fishingRod.ResetBobberPhysics();
 
+            // 발악 패턴 활성화 상태 플래그 설정 (동기화된 UI 활성화 유도)
+            fishingRod.IsStruggleActive.Value = true;
+
             Debug.Log("<color=red>🔥 [발악 패턴 시작] 마우스를 드래그하여 선을 따라 그리세요!</color>");
             fishingRod.patternCameraPoint.PlayCameraAction(.8f);
             StruggleRoutineAsync(cts.Token).Forget();
@@ -73,6 +76,7 @@ namespace FishingSystem.FishState
                 CameraManager.Instance.ResetCamera(.8f);
                 
                 float finalScore = evaluator.CompletionProgress.CurrentValue;
+                
                 // 7. 점수에 따른 품질 결정 및 결과 처리
                 ApplyResult(finalScore);
             }
@@ -130,6 +134,9 @@ namespace FishingSystem.FishState
             base.Exit();
             cts?.Cancel();
             cts?.Dispose();
+
+            // [추가] 발악 패턴 프로퍼티 비활성화 (UI 오작동 및 노출 차단)
+            fishingRod.IsStruggleActive.Value = false;
 
             // 나갈 때 선 및 도트 깔끔하게 지우기
             if (fishingRod.patternDrawer != null)

@@ -24,8 +24,8 @@ namespace FishingSystem.Fishing_Pattern
         
         // 캔버스 고정 사이즈 제한 (World Coordinate 기준)
         // 예를 들어 10이면 X는 -10 ~ +10, Y는 -10 ~ +10 범위 내에서만 이동 가능
-        private const float CANVAS_LIMIT_X = 5f; 
-        private const float CANVAS_LIMIT_Y = 5f;
+        private const float CANVAS_LIMIT_X = 4f; 
+        private const float CANVAS_LIMIT_Y = 4f;
 
         private void OnEnable()
         {

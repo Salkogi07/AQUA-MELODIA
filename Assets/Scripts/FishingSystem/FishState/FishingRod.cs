@@ -87,6 +87,9 @@ namespace FishingSystem.FishState
         // 캐스팅 충전 프로퍼티 (R3)
         public ReactiveProperty<float> CastPower { get; private set; } = new(0f);
         public ReactiveProperty<bool> IsCharging { get; private set; } = new(false);
+        
+        public ReactiveProperty<bool> IsStruggleActive { get; private set; } = new(false);
+        public ReactiveProperty<float> StruggleInkRatio { get; private set; } = new(1f);
 
         // --- 낚시터 매핑 좌표계 ---
         public float patternMinX { get; private set; }
@@ -206,7 +209,7 @@ namespace FishingSystem.FishState
             BobberRb.linearDamping = 0f;
         }
 
-        // [정밀 보정 적용] 찌 비행 마찰로 유실되는 에너지를 사전에 예측 연산하여 초기 속도를 보정합니다.
+        // 찌 비행 마찰로 유실되는 에너지를 사전에 예측 연산하여 초기 속도를 보정합니다.
         public void ApplyCastPhysics(float power)
         {
             if (BobberRb == null) return;
@@ -321,9 +324,10 @@ namespace FishingSystem.FishState
             LineStress.Dispose();
             FishHpRatio.Dispose();
             IsMiniGameActive.Dispose();
-            
             CastPower.Dispose();
             IsCharging.Dispose();
+            IsStruggleActive.Dispose();
+            StruggleInkRatio.Dispose();
         }
         
         public void OnAnimationEvent_ThrowBobber()
