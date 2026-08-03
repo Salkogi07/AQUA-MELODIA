@@ -15,6 +15,22 @@ namespace FishingSystem.FishState
         {
             base.Enter();
             cts = new CancellationTokenSource();
+            
+            fishingRod.StopBobberMovement(); 
+
+            // 착수한 위치에서 실제 수중 레이어 구역(Collider)을 다시 획득하여 할당합니다.
+            fishingRod.ActiveFishingZone = fishingRod.SearchFishingZone();
+            
+            if (fishingRod.ActiveFishingZone != null)
+            {
+                // 착수 구역 기준으로 가로 좌표계 실시간 매핑 동기화
+                fishingRod.UpdateZoneMapping(
+                    -fishingRod.ActiveFishingZone.maxMoveRange,
+                    fishingRod.ActiveFishingZone.maxMoveRange,
+                    fishingRod.ActiveFishingZone.transform.position.x
+                );
+            }
+            
             WaitAndBiteAsync(cts.Token).Forget();
         }
 
@@ -28,11 +44,13 @@ namespace FishingSystem.FishState
 
         private async UniTaskVoid WaitAndBiteAsync(CancellationToken token)
         {
-            // 1. 낚시 구역 자체를 가져옵니다.
-            FishingZone foundZone = fishingRod.SearchFishingZone();
-            if (foundZone == null) return; // 낚시존이 없으면 입질 안 옴
+            FishingZone foundZone = fishingRod.ActiveFishingZone;
+            if (foundZone == null)
+            {
+                Debug.LogWarning("⚠️ 찌가 낚시 구역(FishingZone Collider) 바깥에 착수하여 입질이 오지 않습니다.");
+                return; 
+            }
 
-            // 2. 구역에서 물고기 데이터를 뽑습니다.
             FishDataSO foundFish = foundZone.GetRandomFish();
             if (foundFish == null) return;
 
@@ -42,14 +60,6 @@ namespace FishingSystem.FishState
                 await UniTask.Delay(System.TimeSpan.FromSeconds(waitTime), cancellationToken: token);
 
                 fishingRod.CurrentHookedFish = new FishData(foundFish);
-
-                // 💡 3. 미니게임에 낚시터의 크기를 반영 (덮어쓰기)
-                // maxMoveRange가 5f라면 minX는 -5f, maxX는 5f가 됩니다.
-                fishingRod.patternMinX = -foundZone.maxMoveRange;
-                fishingRod.patternMaxX = foundZone.maxMoveRange;
-                fishingRod.currentZoneCenterX = foundZone.transform.position.x;
-
-                // 물고기가 물었으므로 상태 전환
                 stateMachine.ChangeState(fishingRod.BitingState); 
             }
             catch (System.OperationCanceledException) { }

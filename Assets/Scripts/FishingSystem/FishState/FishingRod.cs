@@ -18,6 +18,12 @@ namespace FishingSystem.FishState
         public Vector2 castDirection = new Vector2(1.2f, 1f);
         [Range(0f, 100f)] public float castSpeed = 25f;
 
+        [Header("🚀 캐스팅 물리 세부 설정")]
+        [Tooltip("공기 저항 (찌가 공중에서 비행할 때 비행 속도가 감속되는 비율)")]
+        public float castAirDamping = 1.1f;
+        [Tooltip("게이지 충전 속도")]
+        public float chargeSpeed = 1.5f;
+
         [Header("🖐️ 회수(손으로 잡기) 설정")]
         public Transform catchHandPosition; 
         [Tooltip("찌가 날아올 때의 포물선 최고 높이")]
@@ -51,14 +57,6 @@ namespace FishingSystem.FishState
         [Tooltip("오차범위를 맞췄을 때 스트레스(텐션)가 내려가는 속도 (0~1 기준)")]
         public float stressDecreaseRate = 0.3f; 
 
-        [Header("미니게임 좌표 매핑 (UI용)")]
-        [Tooltip("패턴에서 사용하는 X좌표의 최솟값 (예: -5)")]
-        public float patternMinX = -5f;
-        [Tooltip("패턴에서 사용하는 X좌표의 최댓값 (예: 5)")]
-        public float patternMaxX = 5f;
-        
-        public float currentZoneCenterX = 0f; 
-        
         [Header("🖌️ 발악 패턴(선 그리기) 시스템")]
         public CameraTargetPoint patternCameraPoint;
         public PatternGenerator patternGenerator;
@@ -66,9 +64,9 @@ namespace FishingSystem.FishState
         public PatternDrawer patternDrawer;
         
         [Header("🏆 성공 연출 설정")]
-        public Transform fishHookPoint; // 찌(Bobber)의 하위 자식으로 설정된 Transform (물고기가 매달릴 곳)
-        public GameObject fishVisualPrefab; // 물고기 SpriteRenderer가 포함된 프리팹
-        public Transform showcaseMountPoint; // 플레이어 손 위 (자랑하기 위치)
+        public Transform fishHookPoint; 
+        public GameObject fishVisualPrefab; 
+        public Transform showcaseMountPoint; 
         public CameraTargetPoint showcaseCameraPoint;
 
         public float DefaultGravity { get; private set; }
@@ -80,11 +78,23 @@ namespace FishingSystem.FishState
         private readonly ReactiveProperty<FishingLineState> lineState = new(FishingLineState.Slack);
         public ReadOnlyReactiveProperty<FishingLineState> LineState => lineState;
         
-        public ReactiveProperty<float> FishUiRatio { get; private set; } = new(0.5f); // 물고기 위치 (0~1)
-        public ReactiveProperty<float> PlayerReelRatio { get; private set; } = new(0.5f); // 플레이어 릴 위치 (0~1)
-        public ReactiveProperty<float> LineStress { get; private set; } = new(0f); // 줄의 스트레스/텐션 (1이 되면 끊어짐)
-        public ReactiveProperty<float> FishHpRatio { get; private set; } = new(1f); // 물고기 남은 체력 비율
-        public ReactiveProperty<bool> IsMiniGameActive { get; private set; } = new(false); // 미니게임 진행 여부 (UI 끄고 켜기 용도)
+        public ReactiveProperty<float> FishUiRatio { get; private set; } = new(0.5f); 
+        public ReactiveProperty<float> PlayerReelRatio { get; private set; } = new(0.5f); 
+        public ReactiveProperty<float> LineStress { get; private set; } = new(0f); 
+        public ReactiveProperty<float> FishHpRatio { get; private set; } = new(1f); 
+        public ReactiveProperty<bool> IsMiniGameActive { get; private set; } = new(false); 
+
+        // 캐스팅 충전 프로퍼티 (R3)
+        public ReactiveProperty<float> CastPower { get; private set; } = new(0f);
+        public ReactiveProperty<bool> IsCharging { get; private set; } = new(false);
+
+        // --- 낚시터 매핑 좌표계 ---
+        public float patternMinX { get; private set; }
+        public float patternMaxX { get; private set; }
+        public float currentZoneCenterX { get; private set; }
+
+        // 감지된 현재 활성 낚시터 정보
+        public FishingZone ActiveFishingZone { get; set; }
 
         // --- 상태 머신 및 상태들 ---
         public FishingStateMachine StateMachine { get; private set; }
@@ -109,7 +119,6 @@ namespace FishingSystem.FishState
                 DefaultGravity = BobberRb.gravityScale; 
             } 
 
-            // 상태 초기화 (애니메이션 파라미터가 없다면 빈 문자열 전달)
             StateMachine = new FishingStateMachine();
             ReadyState = new ReadyState(this, StateMachine, "IsReady");
             CastingState = new CastingState(this, StateMachine, "IsCasting");
@@ -125,7 +134,7 @@ namespace FishingSystem.FishState
 
         private void Start()
         {
-            if (fishingLine != null) fishingLine.Initialize(this); // 낚시줄 초기화
+            if (fishingLine != null) fishingLine.Initialize(this); 
             StateMachine.Initialize(ReadyState);
             
             ResetPattern();
@@ -140,13 +149,34 @@ namespace FishingSystem.FishState
         {
             StateMachine.CurrentState?.FixedUpdate();
         }
-        
-        public bool ShouldShowcaseFish()
+
+        public void UpdateZoneMapping(float minX, float maxX, float centerX)
         {
-            // 나중에 특정 등급 이상만 자랑하고 싶다면 여기서 필터링 가능
-            // return CurrentHookedFish.Data.grade >= FishGrade.Rare;
-            return true; 
+            patternMinX = minX;
+            patternMaxX = maxX;
+            currentZoneCenterX = centerX;
         }
+
+        public FishingZone FindNearestFishingZone()
+        {
+            FishingZone[] zones = FindObjectsByType<FishingZone>(FindObjectsSortMode.None);
+            if (zones == null || zones.Length == 0) return null;
+            
+            FishingZone closest = null;
+            float minDist = float.MaxValue;
+            foreach (var zone in zones)
+            {
+                float dist = Vector2.Distance(transform.position, zone.transform.position);
+                if (dist < minDist)
+                {
+                    minDist = dist;
+                    closest = zone;
+                }
+            }
+            return closest;
+        }
+
+        public bool ShouldShowcaseFish() => true; 
         
         public void SetLineState(FishingLineState state)
         {
@@ -173,14 +203,82 @@ namespace FishingSystem.FishState
             BobberRb.angularVelocity = 0f;
             
             BobberRb.gravityScale = DefaultGravity; 
+            BobberRb.linearDamping = 0f;
         }
 
-        public void ApplyCastPhysics()
+        // [정밀 보정 적용] 찌 비행 마찰로 유실되는 에너지를 사전에 예측 연산하여 초기 속도를 보정합니다.
+        public void ApplyCastPhysics(float power)
         {
             if (BobberRb == null) return;
             BobberRb.bodyType = RigidbodyType2D.Dynamic;
-            Vector2 launchVelocity = castDirection.normalized * castSpeed;
-            BobberRb.linearVelocity = launchVelocity;
+            
+            // 공기 저항 수치 적용
+            BobberRb.linearDamping = castAirDamping; 
+
+            if (ActiveFishingZone == null)
+            {
+                Vector2 fallbackVelocity = castDirection.normalized * (castSpeed * Mathf.Lerp(0.5f, 1.0f, power));
+                BobberRb.linearVelocity = fallbackVelocity;
+                return;
+            }
+
+            // 최대 파워(1.0) 일 때 마이너스 영역(-maxMoveRange)으로 투척 매핑 반전
+            float targetOffset = Mathf.Lerp(ActiveFishingZone.maxMoveRange, -ActiveFishingZone.maxMoveRange, power);
+            float targetX = ActiveFishingZone.transform.position.x + targetOffset;
+            float targetY = ActiveFishingZone.transform.position.y;
+
+            Vector3 startPos = GetTargetStartPosition();
+            
+            float g = Mathf.Abs(Physics2D.gravity.y) * BobberRb.gravityScale;
+            float dx = targetX - startPos.x;
+            float absDx = Mathf.Abs(dx);
+            float dy = startPos.y - targetY; 
+
+            // 좌우 방향성 수평각 판정
+            Vector2 launchDir = castDirection.normalized;
+            if (dx < 0) launchDir.x = -Mathf.Abs(launchDir.x);
+            else launchDir.x = Mathf.Abs(launchDir.x);
+
+            float angleRad = Mathf.Atan2(castDirection.y, Mathf.Abs(castDirection.x));
+            float cosTheta = Mathf.Cos(angleRad);
+            float tanTheta = Mathf.Sin(angleRad) / cosTheta;
+
+            float denominator = 2f * cosTheta * cosTheta * (dy + absDx * tanTheta);
+            if (denominator > 0.01f && absDx > 0.1f)
+            {
+                // 1. 공기 마찰이 없을 때의 순수 이상 속도 구하기
+                float idealSpeed = absDx * Mathf.Sqrt(g / denominator);
+                
+                // 2. 가상 비행 시간 예측 수식 구현 ( t = (v0y + sqrt(v0y^2 + 2g*dy)) / g )
+                float v0y = idealSpeed * Mathf.Sin(angleRad);
+                float verticalTerm = (v0y * v0y) + (2f * g * dy);
+                float estimatedFlightTime = 1.0f;
+                if (verticalTerm >= 0f)
+                {
+                    estimatedFlightTime = (v0y + Mathf.Sqrt(verticalTerm)) / g;
+                }
+
+                // 3. 지수 속도 손실 보정 멀티플라이어 계산 ( Factor = (d * t) / (1 - e^(-d * t)) )
+                float dragMultiplier = 1.0f;
+                if (castAirDamping > 0.01f)
+                {
+                    float dt = castAirDamping * estimatedFlightTime;
+                    dragMultiplier = dt / (1.0f - Mathf.Exp(-dt));
+                }
+
+                // 4. 감쇄가 메워진 최종 속도 조절
+                float compensatedSpeed = idealSpeed * dragMultiplier;
+                compensatedSpeed = Mathf.Clamp(compensatedSpeed, 2f, 120f); 
+                
+                Vector2 launchVelocity = launchDir * compensatedSpeed;
+                BobberRb.linearVelocity = launchVelocity;
+            }
+            else
+            {
+                Vector2 launchVelocity = launchDir * (castSpeed * Mathf.Lerp(0.5f, 1.0f, power));
+                BobberRb.linearVelocity = launchVelocity;
+            }
+
             BobberRb.angularVelocity = 0f;
         }
 
@@ -189,7 +287,6 @@ namespace FishingSystem.FishState
             if (BobberRb != null)
             {
                 BobberRb.bodyType = RigidbodyType2D.Dynamic;
-                
                 BobberRb.linearVelocity = Vector2.zero;
                 BobberRb.AddForce(Vector2.down * bitePlungeForce, ForceMode2D.Impulse);
             }
@@ -224,8 +321,10 @@ namespace FishingSystem.FishState
             LineStress.Dispose();
             FishHpRatio.Dispose();
             IsMiniGameActive.Dispose();
+            
+            CastPower.Dispose();
+            IsCharging.Dispose();
         }
-        
         
         public void OnAnimationEvent_ThrowBobber()
         {
@@ -239,7 +338,6 @@ namespace FishingSystem.FishState
         {
             if (StateMachine.CurrentState == FailedState)
             {
-                Debug.Log("<color=white>🔄 실패 연출 종료. 기본 대기 상태로 복귀합니다.</color>");
                 StateMachine.ChangeState(ReadyState);
             }
         }

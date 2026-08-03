@@ -1,5 +1,7 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections.Generic;
+using Random = UnityEngine.Random;
 
 namespace FishingSystem.Fish
 {
@@ -65,6 +67,23 @@ namespace FishingSystem.Fish
                 if (weightRoll < weightCumulative) return entry.fishData;
             }
             return candidates[0].fishData;
+        }
+        
+        private void OnDrawGizmosSelected()
+        {
+            // 기즈모 색상 설정 (예: 반투명 시안 색상)
+            Gizmos.color = new Color(0f, 1f, 1f, 0.75f);
+            Vector3 centerPos = transform.position;
+            
+            Vector3 leftLimit = centerPos + new Vector3(-maxMoveRange, 0, 0);
+            Vector3 rightLimit = centerPos + new Vector3(maxMoveRange, 0, 0);
+            
+            Gizmos.DrawLine(leftLimit, rightLimit);
+
+            const float limitTickHeight = 0.5f;
+            
+            Gizmos.DrawLine(leftLimit + new Vector3(0, -limitTickHeight, 0), leftLimit + new Vector3(0, limitTickHeight, 0));
+            Gizmos.DrawLine(rightLimit + new Vector3(0, -limitTickHeight, 0), rightLimit + new Vector3(0, limitTickHeight, 0));
         }
     }
 }
