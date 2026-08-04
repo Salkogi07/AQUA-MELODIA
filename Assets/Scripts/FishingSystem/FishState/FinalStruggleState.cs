@@ -63,7 +63,9 @@ namespace FishingSystem.FishState
                 
                 // 4. 생성 완료 후 그리기 시작
                 drawer.enabled = true;
-                evaluator.StartEvaluation();
+                
+                // [수정] 채점 장치 시작 시 드로어 정보를 동시 인계하여 연속 드로잉 간 리셋 연동
+                evaluator.StartEvaluation(drawer);
 
                 // 5. 제한 시간 대기 (플레이어가 그리는 시간)
                 await UniTask.Delay(System.TimeSpan.FromSeconds(escapeData.TimeLimit), cancellationToken: token);
@@ -135,7 +137,7 @@ namespace FishingSystem.FishState
             cts?.Cancel();
             cts?.Dispose();
 
-            // [추가] 발악 패턴 프로퍼티 비활성화 (UI 오작동 및 노출 차단)
+            // 발악 패턴 프로퍼티 비활성화 (UI 오작동 및 노출 차단)
             fishingRod.IsStruggleActive.Value = false;
 
             // 나갈 때 선 및 도트 깔끔하게 지우기

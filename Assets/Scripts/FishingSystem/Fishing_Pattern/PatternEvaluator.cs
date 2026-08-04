@@ -31,9 +31,9 @@ namespace FishingSystem.Fishing_Pattern
         }
 
         /// <summary>
-        /// 판정을 시작합니다. 생성된 판정선(Detector)들의 트리거 이벤트를 구독합니다.
+        /// 판정을 시작합니다. 생성된 판정선(Detector)들의 트리거 이벤트를 구독하며, 새 그리기가 감지되면 데이터를 리셋합니다.
         /// </summary>
-        public void StartEvaluation()
+        public void StartEvaluation(PatternDrawer drawer)
         {
             ResetEvaluation();
 
@@ -46,15 +46,14 @@ namespace FishingSystem.Fishing_Pattern
                 return;
             }
 
+            // 1. 각 디텍터들이 선과 충돌했을 때 스코어링 처리 구독
             foreach (var detector in activeDetectors)
             {
-                // 이미 트리거된 상태라면 (혹시 모를 예외 처리)
                 if (detector.IsTriggered.Value)
                 {
                     _triggeredCount++;
                 }
 
-                // R3: 판정선이 트리거되는 순간을 구독하여 점수를 올림
                 detector.IsTriggered
                     .Where(isTriggered => isTriggered)
                     .Subscribe(_ => 
@@ -65,7 +64,26 @@ namespace FishingSystem.Fishing_Pattern
                     .AddTo(_evaluationDisposables);
             }
 
-            // 초기 진행도 세팅
+            // 2. [추가] 제한시간 내 마우스를 떼고 새로 그리기 시작했을 때의 동적 리셋 통합 관리
+            if (drawer != null)
+            {
+                drawer.OnDrawStarted
+                    .Subscribe(_ =>
+                    {
+                        // 모든 디텍터 판정을 다시 활성 상태(False)로 롤백
+                        foreach (var detector in activeDetectors)
+                        {
+                            detector.ResetDetector();
+                        }
+
+                        // 내부 채점 변수 정화 및 UI 진행도 초기화
+                        _triggeredCount = 0;
+                        UpdateProgress();
+                    })
+                    .AddTo(_evaluationDisposables);
+            }
+
+            // 최초 수치 반영
             UpdateProgress();
         }
 
