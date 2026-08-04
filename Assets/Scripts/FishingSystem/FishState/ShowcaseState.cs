@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using Cysharp.Threading.Tasks;
 using System.Threading;
+using FishingSystem.Input_Helper;
 
 namespace FishingSystem.FishState
 {
@@ -111,7 +112,7 @@ namespace FishingSystem.FishState
 
         public override void Update()
         {
-            if (isRevealed && Input.GetMouseButtonDown(0))
+            if (isRevealed && FishingInput.GetLeftClickDown())
             {
                 stateMachine.ChangeState(fishingRod.ReadyState);
             }

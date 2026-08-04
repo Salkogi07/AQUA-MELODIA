@@ -1439,7 +1439,7 @@ MonoBehaviour:
   bobber: {fileID: 1247940787}
   castStartPosition: {fileID: 923546521}
   castDirection: {x: -2, y: 1}
-  castSpeed: 30
+  castSpeed: 25
   castAirDamping: 1.1
   chargeSpeed: 1.5
   catchHandPosition: {fileID: 1926226668}
@@ -2598,6 +2598,7 @@ MonoBehaviour:
   testPattern: {fileID: 11400000, guid: e9b7b0ada32f7a641ba0723726b0ca1f, type: 2}
   drawTimeLimit: 3
   inkBufferMultiplier: 1.2
+  _isTesting: 0
 --- !u!114 &1564574380
 MonoBehaviour:
   m_ObjectHideFlags: 0
