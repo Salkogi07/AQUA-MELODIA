@@ -90,6 +90,8 @@ namespace FishingSystem.FishState
         
         public ReactiveProperty<bool> IsStruggleActive { get; private set; } = new(false);
         public ReactiveProperty<float> StruggleInkRatio { get; private set; } = new(1f);
+        
+        public ReactiveProperty<FishData> ShowcaseFish { get; private set; } = new(null);
 
         // --- 낚시터 매핑 좌표계 ---
         public float patternMinX { get; private set; }
@@ -178,8 +180,6 @@ namespace FishingSystem.FishState
             }
             return closest;
         }
-
-        public bool ShouldShowcaseFish() => true; 
         
         public void SetLineState(FishingLineState state)
         {
@@ -328,6 +328,7 @@ namespace FishingSystem.FishState
             IsCharging.Dispose();
             IsStruggleActive.Dispose();
             StruggleInkRatio.Dispose();
+            ShowcaseFish.Dispose();
         }
         
         public void OnAnimationEvent_ThrowBobber()
