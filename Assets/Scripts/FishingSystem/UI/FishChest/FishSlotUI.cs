@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.UI;
 using FishingSystem.Fish;
 
@@ -10,6 +11,12 @@ namespace FishingSystem.UI
         [SerializeField] private Image fishSpriteImage;     // 물고기 이미지 컴포넌트
         [SerializeField] private Text fishNameText;          // 물고기 이름 텍스트
         [SerializeField] private Text fishDetailsText;       // 등급, 품질, 크기 종합 정보 텍스트
+
+        private void Awake()
+        {
+            fishSpriteImage.type = Image.Type.Simple;
+            fishSpriteImage.preserveAspect = true;
+        }
 
         /// <summary>
         /// 인계받은 개별 물고기 데이터를 분석하여 슬롯 UI 구성 요소에 정밀 사상합니다.

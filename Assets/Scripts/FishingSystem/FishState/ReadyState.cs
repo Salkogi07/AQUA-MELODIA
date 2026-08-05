@@ -67,7 +67,7 @@ namespace FishingSystem.FishState
             }
 
             // 2. 충전이 허가된 상태에서만 마우스 홀드 연산 작동
-            if (FishingInput.GetLeftClickHeld() && fishingRod.IsCharging.Value)
+            if (Input.GetMouseButton(0) && fishingRod.IsCharging.Value)
             {
                 fishingRod.CastPower.Value += Time.deltaTime * fishingRod.chargeSpeed * chargeDirection;
 

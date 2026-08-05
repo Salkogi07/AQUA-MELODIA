@@ -266,13 +266,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 152272356}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 7.59, y: -0.84, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 626022865}
-  m_Father: {fileID: 726661183}
+  m_Children: []
+  m_Father: {fileID: 1764964148}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &152272358
 SpriteRenderer:
@@ -1518,7 +1517,7 @@ GameObject:
   - component: {fileID: 626022866}
   - component: {fileID: 626022869}
   m_Layer: 0
-  m_Name: ChestUI
+  m_Name: FishChestUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1533,12 +1532,12 @@ RectTransform:
   m_GameObject: {fileID: 626022864}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.01, y: 0.01, z: 0.01}
+  m_LocalScale: {x: 0.02, y: 0.02, z: 0.01}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 922705628}
   - {fileID: 688442920}
-  m_Father: {fileID: 152272357}
+  m_Father: {fileID: 1764964148}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -1617,9 +1616,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 626022864}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dca08c1e3a8440c187d10b0247bb8aab, type: 3}
+  m_Script: {fileID: 11500000, guid: decf3ce6cefa42518bd3d4207c7f2420, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.UI.FishChestUI
+  m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.UI.FishChestUIView
   fishSlotPrefab: {fileID: 4388419886446589331, guid: db5d06045a06b124e9670461771ef87f, type: 3}
   listContainer: {fileID: 688442920}
   capacityText: {fileID: 922705629}
@@ -1775,7 +1774,7 @@ Transform:
   - {fileID: 2097780363}
   - {fileID: 1980009724}
   - {fileID: 556778701}
-  - {fileID: 152272357}
+  - {fileID: 1764964148}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &730771050
@@ -1836,7 +1835,7 @@ MonoBehaviour:
   retrieveDuration: 0.4
   biteDelayRange: {x: 7, y: 12}
   inputTimeLimit: 1.5
-  bitePlungeForce: 4
+  bitePlungeForce: 6
   fishingZoneLayer:
     serializedVersion: 2
     m_Bits: 16
@@ -3374,6 +3373,39 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1764964147
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1764964148}
+  m_Layer: 0
+  m_Name: Box
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1764964148
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1764964147}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 8, y: -0.5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 152272357}
+  - {fileID: 626022865}
+  m_Father: {fileID: 726661183}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1774348159
 GameObject:
   m_ObjectHideFlags: 0
@@ -4399,6 +4431,7 @@ GameObject:
   - component: {fileID: 2144038904}
   - component: {fileID: 2144038903}
   - component: {fileID: 2144038902}
+  - component: {fileID: 2144038905}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -4548,6 +4581,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.UI.FishingCast.FishingCastUIPresenter
   view: {fileID: 1256241562}
   model: {fileID: 730771052}
+--- !u!114 &2144038905
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2144038892}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a112c045e43945e19109daefc3b459d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.UI.FishChestUIPresenter
+  view: {fileID: 626022869}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
