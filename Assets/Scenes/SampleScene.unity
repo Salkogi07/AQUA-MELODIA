@@ -3286,7 +3286,7 @@ MonoBehaviour:
   lineWidth: 0.08
   leaderLineWidth: 0.06
   leaderLineAlpha: 0.6
-  curveSegments: 25
+  curveSegments: 30
   sagAmount: 0.2
   gravity: -12
   damping: 0.8
