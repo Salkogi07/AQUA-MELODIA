@@ -3,6 +3,7 @@ using R3;
 using FishingSystem.Fishing_Rod;
 using FishingSystem.Fish;
 using FishingSystem.Fishing_Pattern;
+using FishingSystem.Equipment;
 
 namespace FishingSystem.FishState
 {
@@ -13,6 +14,9 @@ namespace FishingSystem.FishState
         public Transform rodTip;
         public Transform bobber;
         public Transform castStartPosition;
+        
+        [Header("🔌 장비 연동")]
+        public PlayerFishingEquipment playerEquipment;
 
         [Header("캐스팅(속도) 설정")]
         public Vector2 castDirection = new Vector2(1.2f, 1f);
@@ -292,6 +296,50 @@ namespace FishingSystem.FishState
                 BobberRb.bodyType = RigidbodyType2D.Dynamic;
                 BobberRb.linearVelocity = Vector2.zero;
                 BobberRb.AddForce(Vector2.down * bitePlungeForce, ForceMode2D.Impulse);
+            }
+        }
+        
+        // 실시간 유효 기력 감소 속도 계산 (기본 스펙 + 장비 가산치)
+        public float EffectiveDamageRate
+        {
+            get
+            {
+                if (playerEquipment != null && playerEquipment.EquippedRod != null)
+                    return fishDamageRate + playerEquipment.EquippedRod.damageRateBonus;
+                return fishDamageRate;
+            }
+        }
+
+        // 실시간 유효 오차 허용 폭 계산 (기본 스펙 + 장비 가산치)
+        public float EffectiveSweetSpotTolerance
+        {
+            get
+            {
+                if (playerEquipment != null && playerEquipment.EquippedRod != null)
+                    return sweetSpotTolerance + playerEquipment.EquippedRod.sweetSpotBonus;
+                return sweetSpotTolerance;
+            }
+        }
+        
+        // 현재 장착한 낚싯대의 파워 (장착 해제 시 기본 baseline인 10f 반환)
+        public float EffectiveRodPower
+        {
+            get
+            {
+                if (playerEquipment != null && playerEquipment.EquippedRod != null)
+                    return playerEquipment.EquippedRod.rodPower;
+                return 10f; 
+            }
+        }
+
+        // 현재 장착한 낚싯대의 민첩 상쇄 스펙 (장착 해제 시 기본 baseline인 5f 반환)
+        public float EffectiveRodAgility
+        {
+            get
+            {
+                if (playerEquipment != null && playerEquipment.EquippedRod != null)
+                    return playerEquipment.EquippedRod.rodAgility;
+                return 5f; 
             }
         }
 

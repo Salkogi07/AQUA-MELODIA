@@ -55,7 +55,7 @@ namespace FishingSystem.UI.FishingMiniGame
             Observable.CombineLatest(
                     this.model.PlayerReelRatio, 
                     this.model.FishUiRatio, 
-                    (player, fish) => Mathf.Abs(player - fish) <= this.model.sweetSpotTolerance
+                    (player, fish) => Mathf.Abs(player - fish) <= this.model.EffectiveSweetSpotTolerance
                 )
                 .Subscribe(isSafe => 
                 {

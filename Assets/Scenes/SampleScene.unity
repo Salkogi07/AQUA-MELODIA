@@ -1787,6 +1787,7 @@ GameObject:
   m_Component:
   - component: {fileID: 730771051}
   - component: {fileID: 730771052}
+  - component: {fileID: 730771053}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -1826,6 +1827,7 @@ MonoBehaviour:
   rodTip: {fileID: 923546521}
   bobber: {fileID: 1247940787}
   castStartPosition: {fileID: 923546521}
+  playerEquipment: {fileID: 730771053}
   castDirection: {x: -2, y: 1}
   castSpeed: 25
   castAirDamping: 1.1
@@ -1854,6 +1856,19 @@ MonoBehaviour:
   fishVisualPrefab: {fileID: 4069598548445070687, guid: 28df409669ec4cf4e9166d17404b54e5, type: 3}
   showcaseMountPoint: {fileID: 555672203}
   showcaseCameraPoint: {fileID: 190195446}
+--- !u!114 &730771053
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 730771050}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f134cf14bacc43b189254afb05b45232, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.Equipment.PlayerFishingEquipment
+  equippedRod: {fileID: 11400000, guid: a999d0b4875df5b4cb88f36e6c1bb1e7, type: 2}
 --- !u!1 &774434300
 GameObject:
   m_ObjectHideFlags: 0
@@ -2409,7 +2424,7 @@ Transform:
   m_GameObject: {fileID: 1247940786}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.49, y: 0.47, z: 0}
+  m_LocalPosition: {x: -3.7982063, y: -2.5783868, z: 0}
   m_LocalScale: {x: 0.4, y: 0.4, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3008,7 +3023,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 361}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1502193895
@@ -3024,7 +3039,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
   m_Material: {fileID: 0}
-  m_Color: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -3033,11 +3048,11 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 50
+    m_FontSize: 60
     m_FontStyle: 1
     m_BestFit: 0
     m_MinSize: 3
-    m_MaxSize: 50
+    m_MaxSize: 60
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -3842,7 +3857,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -63}
+  m_AnchoredPosition: {x: 0, y: 298}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1971123651
@@ -3858,7 +3873,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
   m_Material: {fileID: 0}
-  m_Color: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
