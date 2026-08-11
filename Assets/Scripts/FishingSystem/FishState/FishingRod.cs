@@ -16,7 +16,7 @@ namespace FishingSystem.FishState
         public Transform castStartPosition;
         
         [Header("🔌 장비 연동")]
-        public PlayerFishingEquipment playerEquipment;
+        private PlayerFishingEquipment playerEquipment;
 
         [Header("캐스팅(속도) 설정")]
         public Vector2 castDirection = new Vector2(1.2f, 1f);
@@ -126,7 +126,9 @@ namespace FishingSystem.FishState
             {
                 BobberRb = bobber.GetComponent<Rigidbody2D>();
                 DefaultGravity = BobberRb.gravityScale; 
-            } 
+            }
+
+            playerEquipment = GetComponent<PlayerFishingEquipment>();
 
             StateMachine = new FishingStateMachine();
             ReadyState = new ReadyState(this, StateMachine, "IsReady");

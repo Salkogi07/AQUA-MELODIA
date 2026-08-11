@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.Equipment.FishingRodDataSO
   rodName: "\uAE30\uBCF8 \uB09A\uC2EF\uB300"
   rodPower: 10
-  rodAgility: 5
+  rodAgility: 0
   damageRateBonus: 10
   sweetSpotBonus: 0.1
