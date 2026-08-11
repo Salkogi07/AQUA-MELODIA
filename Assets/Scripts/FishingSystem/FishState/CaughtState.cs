@@ -2,6 +2,7 @@
 using Cysharp.Threading.Tasks;
 using System.Threading;
 using FishingSystem.Fish;
+using FishingSystem.Data;
 
 namespace FishingSystem.FishState
 {
@@ -231,8 +232,8 @@ namespace FishingSystem.FishState
                     // 조건 미달 시: 인벤토리에 즉시 추가 및 상자 물리 연출
                     Data.FishingDataManager.Instance.TryAddFish(fishingRod.CurrentHookedFish);
                     
-                    if (Inventory.FishChest.Instance != null)
-                        Inventory.FishChest.Instance.PlayShakeEffect();
+                    if (FishChest.Instance != null)
+                        FishChest.Instance.PlayShakeEffect();
 
                     // 바로 파괴 후 루프 복귀
                     if (spawnedFish != null) Object.Destroy(spawnedFish);

@@ -2,6 +2,7 @@
 using Cysharp.Threading.Tasks;
 using System.Threading;
 using FishingSystem.Input_Helper;
+using FishingSystem.Data;
 
 namespace FishingSystem.FishState
 {
@@ -79,9 +80,9 @@ namespace FishingSystem.FishState
             // 물고기를 펼쳐 자랑할 때 화면 텍스트 UI 렌더링
             fishingRod.ShowcaseFish.Value = fishingRod.CurrentHookedFish;
             
-            if (Inventory.FishChest.Instance != null)
+            if (FishChest.Instance != null)
             {
-                Inventory.FishChest.Instance.PlayShakeEffect();
+                FishChest.Instance.PlayShakeEffect();
             }
         }
 

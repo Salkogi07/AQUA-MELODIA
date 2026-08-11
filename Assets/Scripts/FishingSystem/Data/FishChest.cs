@@ -2,9 +2,8 @@
 using UnityEngine;
 using FishingSystem.Input_Helper;
 
-namespace FishingSystem.Inventory
+namespace FishingSystem.Data
 {
-    [RequireComponent(typeof(BoxCollider2D))]
     public class FishChest : MonoBehaviour
     {
         public static FishChest Instance { get; private set; }
