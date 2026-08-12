@@ -3,6 +3,7 @@ using R3;
 using FishingSystem.Fishing_Rod;
 using FishingSystem.Fish;
 using FishingSystem.Fishing_Pattern;
+using FishingSystem.Equipment;
 
 namespace FishingSystem.FishState
 {
@@ -13,6 +14,9 @@ namespace FishingSystem.FishState
         public Transform rodTip;
         public Transform bobber;
         public Transform castStartPosition;
+        
+        [Header("🔌 장비 연동")]
+        private PlayerFishingEquipment playerEquipment;
 
         [Header("캐스팅(속도) 설정")]
         public Vector2 castDirection = new Vector2(1.2f, 1f);
@@ -90,6 +94,8 @@ namespace FishingSystem.FishState
         
         public ReactiveProperty<bool> IsStruggleActive { get; private set; } = new(false);
         public ReactiveProperty<float> StruggleInkRatio { get; private set; } = new(1f);
+        
+        public ReactiveProperty<FishData> ShowcaseFish { get; private set; } = new(null);
 
         // --- 낚시터 매핑 좌표계 ---
         public float patternMinX { get; private set; }
@@ -120,7 +126,9 @@ namespace FishingSystem.FishState
             {
                 BobberRb = bobber.GetComponent<Rigidbody2D>();
                 DefaultGravity = BobberRb.gravityScale; 
-            } 
+            }
+
+            playerEquipment = GetComponent<PlayerFishingEquipment>();
 
             StateMachine = new FishingStateMachine();
             ReadyState = new ReadyState(this, StateMachine, "IsReady");
@@ -178,8 +186,6 @@ namespace FishingSystem.FishState
             }
             return closest;
         }
-
-        public bool ShouldShowcaseFish() => true; 
         
         public void SetLineState(FishingLineState state)
         {
@@ -294,6 +300,50 @@ namespace FishingSystem.FishState
                 BobberRb.AddForce(Vector2.down * bitePlungeForce, ForceMode2D.Impulse);
             }
         }
+        
+        // 실시간 유효 기력 감소 속도 계산 (기본 스펙 + 장비 가산치)
+        public float EffectiveDamageRate
+        {
+            get
+            {
+                if (playerEquipment != null && playerEquipment.EquippedRod != null)
+                    return fishDamageRate + playerEquipment.EquippedRod.damageRateBonus;
+                return fishDamageRate;
+            }
+        }
+
+        // 실시간 유효 오차 허용 폭 계산 (기본 스펙 + 장비 가산치)
+        public float EffectiveSweetSpotTolerance
+        {
+            get
+            {
+                if (playerEquipment != null && playerEquipment.EquippedRod != null)
+                    return sweetSpotTolerance + playerEquipment.EquippedRod.sweetSpotBonus;
+                return sweetSpotTolerance;
+            }
+        }
+        
+        // 현재 장착한 낚싯대의 파워 (장착 해제 시 기본 baseline인 10f 반환)
+        public float EffectiveRodPower
+        {
+            get
+            {
+                if (playerEquipment != null && playerEquipment.EquippedRod != null)
+                    return playerEquipment.EquippedRod.rodPower;
+                return 10f; 
+            }
+        }
+
+        // 현재 장착한 낚싯대의 민첩 상쇄 스펙 (장착 해제 시 기본 baseline인 5f 반환)
+        public float EffectiveRodAgility
+        {
+            get
+            {
+                if (playerEquipment != null && playerEquipment.EquippedRod != null)
+                    return playerEquipment.EquippedRod.rodAgility;
+                return 5f; 
+            }
+        }
 
         public FishingZone SearchFishingZone()
         {
@@ -328,6 +378,7 @@ namespace FishingSystem.FishState
             IsCharging.Dispose();
             IsStruggleActive.Dispose();
             StruggleInkRatio.Dispose();
+            ShowcaseFish.Dispose();
         }
         
         public void OnAnimationEvent_ThrowBobber()

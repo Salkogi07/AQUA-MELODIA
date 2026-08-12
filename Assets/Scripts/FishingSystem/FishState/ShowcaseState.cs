@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using Cysharp.Threading.Tasks;
 using System.Threading;
+using FishingSystem.Input_Helper;
+using FishingSystem.Data;
 
 namespace FishingSystem.FishState
 {
@@ -25,8 +27,7 @@ namespace FishingSystem.FishState
             // 찌 비활성화 및 낚싯줄 숨김
             fishingRod.bobber.gameObject.SetActive(false);
             fishingRod.SetLineState(FishingSystem.Fishing_Rod.FishingLineState.None);
-
-            // 1. 카메라 연출 시작 (1.2초)
+            
             float cameraDuration = 1f;
             fishingRod.showcaseCameraPoint.PlayCameraAction(cameraDuration);
 
@@ -44,10 +45,8 @@ namespace FishingSystem.FishState
                 fishObject.gameObject.SetActive(false);
             }
 
-            // 2. 비동기로 카메라 연출 시간을 대기한 후 애니메이션을 재생합니다.
+            // 비동기로 카메라 연출 시간을 대기한 후 애니메이션을 재생합니다.
             WaitCameraAndPlayAnimationAsync(cameraDuration, cts.Token).Forget();
-
-            Debug.Log("<color=orange>✨ [자랑하기 진입] 카메라 연출이 시작됩니다. 완료 후 캐릭터 모션이 재생됩니다.</color>");
         }
 
         // 카메라 이동이 끝날 때까지 대기한 후 캐릭터 애니메이션을 트리거하는 루틴
@@ -76,11 +75,15 @@ namespace FishingSystem.FishState
             isRevealed = true;
 
             fishObject.gameObject.SetActive(true);
-            
-            // 원래 크기(originalScale)를 기준으로 팝업 애니메이션을 진행합니다.
             PopUpFishVisualAsync().Forget();
+
+            // 물고기를 펼쳐 자랑할 때 화면 텍스트 UI 렌더링
+            fishingRod.ShowcaseFish.Value = fishingRod.CurrentHookedFish;
             
-            Debug.Log("<color=orange>🌟 [자랑하기 성공] 물고기가 나타났습니다! 클릭 시 복귀합니다.</color>");
+            if (FishChest.Instance != null)
+            {
+                FishChest.Instance.PlayShakeEffect();
+            }
         }
 
         // 물고기가 뿅 하고 나타나는 스케일 보간 애니메이션
@@ -111,7 +114,7 @@ namespace FishingSystem.FishState
 
         public override void Update()
         {
-            if (isRevealed && Input.GetMouseButtonDown(0))
+            if (isRevealed && FishingInput.GetLeftClickDown())
             {
                 stateMachine.ChangeState(fishingRod.ReadyState);
             }
@@ -119,13 +122,14 @@ namespace FishingSystem.FishState
 
         public override void Exit()
         {
-            // 지연 대기 해제용 토큰 취소
             cts?.Cancel();
             cts?.Dispose();
 
             base.Exit();
             if (fishObject != null) Object.Destroy(fishObject);
             
+            fishingRod.ShowcaseFish.Value = null;
+
             fishingRod.bobber.gameObject.SetActive(true);
             fishingRod.CurrentHookedFish = null;
             isRevealed = false;

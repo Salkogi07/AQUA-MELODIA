@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using FishingSystem.Input_Helper;
 
 namespace FishingSystem.FishState
 {
@@ -32,7 +33,7 @@ namespace FishingSystem.FishState
                 return; 
             }
 
-            if (Input.GetMouseButtonDown(0))
+            if (FishingInput.GetLeftClickDown())
             {
                 stateMachine.ChangeState(fishingRod.RetrievingState);
                 return;

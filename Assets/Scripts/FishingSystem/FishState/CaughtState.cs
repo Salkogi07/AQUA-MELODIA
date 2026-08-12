@@ -2,6 +2,7 @@
 using Cysharp.Threading.Tasks;
 using System.Threading;
 using FishingSystem.Fish;
+using FishingSystem.Data;
 
 namespace FishingSystem.FishState
 {
@@ -215,8 +216,31 @@ namespace FishingSystem.FishState
                 
                 if (fishPivot != null) Object.Destroy(fishPivot);
 
-                fishingRod.ShowcaseState.SetFishObject(spawnedFish);
-                stateMachine.ChangeState(fishingRod.ShowcaseState);
+                bool isShowcaseWorthy = Data.FishingDataManager.Instance.RegisterAndCheckRecord(fishingRod.CurrentHookedFish);
+
+                if (isShowcaseWorthy)
+                {
+                    // 보관함에 보관
+                    Data.FishingDataManager.Instance.TryAddFish(fishingRod.CurrentHookedFish);
+
+                    // 자랑하기 상태 진입
+                    fishingRod.ShowcaseState.SetFishObject(spawnedFish);
+                    stateMachine.ChangeState(fishingRod.ShowcaseState);
+                }
+                else
+                {
+                    // 조건 미달 시: 인벤토리에 즉시 추가 및 상자 물리 연출
+                    Data.FishingDataManager.Instance.TryAddFish(fishingRod.CurrentHookedFish);
+                    
+                    if (FishChest.Instance != null)
+                        FishChest.Instance.PlayShakeEffect();
+
+                    // 바로 파괴 후 루프 복귀
+                    if (spawnedFish != null) Object.Destroy(spawnedFish);
+                    
+                    Debug.Log("<color=cyan>📦 이미 보유한 등급 및 크기 이하의 수종입니다. 상자로 수납되었습니다.</color>");
+                    stateMachine.ChangeState(fishingRod.ReadyState);
+                }
             }
             catch (System.OperationCanceledException) { }
         }

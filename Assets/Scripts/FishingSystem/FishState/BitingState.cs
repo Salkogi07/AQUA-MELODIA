@@ -3,6 +3,7 @@ using Cysharp.Threading.Tasks;
 using System.Threading;
 using FishingSystem.Fishing_Rod;
 using FishingSystem.Fish;
+using FishingSystem.Input_Helper;
 
 namespace FishingSystem.FishState
 {
@@ -28,7 +29,7 @@ namespace FishingSystem.FishState
 
         public override void Update()
         {
-            if (Input.GetMouseButtonDown(0) && !clicked)
+            if (FishingInput.GetLeftClickDown() && !clicked)
             {
                 clicked = true;
                 cts?.Cancel(); // 타이머 취소

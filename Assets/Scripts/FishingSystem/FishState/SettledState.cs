@@ -2,6 +2,7 @@
 using Cysharp.Threading.Tasks;
 using System.Threading;
 using FishingSystem.Fish;
+using FishingSystem.Input_Helper;
 
 namespace FishingSystem.FishState
 {
@@ -36,7 +37,7 @@ namespace FishingSystem.FishState
 
         public override void Update()
         {
-            if (Input.GetMouseButtonDown(0))
+            if (FishingInput.GetLeftClickDown())
             {
                 stateMachine.ChangeState(fishingRod.RetrievingState);
             }
