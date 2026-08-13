@@ -1,31 +1,52 @@
 ﻿using System;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using FishingSystem.Fish;
 
 namespace FishingSystem.UI
 {
-    public class FishSlotUI : MonoBehaviour
+    public class FishSlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         [Header("슬롯 내부 UI 구성요소")]
-        [SerializeField] private Image fishSpriteImage;     // 물고기 이미지 컴포넌트
-        [SerializeField] private Text fishNameText;          // 물고기 이름 텍스트
-        [SerializeField] private Text fishDetailsText;       // 등급, 품질, 크기 종합 정보 텍스트
+        [SerializeField] private Image fishSpriteImage;
+
+        [Header("테두리 하이라이트 설정")]
+        [Tooltip("슬롯의 외곽 테두리 이미지 컴포넌트를 연결하세요.")]
+        [SerializeField] private Image borderImage;
+        [SerializeField] private Color normalColor = Color.white;
+        [SerializeField] private Color highlightColor = Color.yellow;
+
+        private FishData _fishData;
+        private FishTooltipUI _tooltipUI; 
+        private RectTransform _rectTransform;
+
+        public FishData CurrentFishData => _fishData;
 
         private void Awake()
         {
-            fishSpriteImage.type = Image.Type.Simple;
-            fishSpriteImage.preserveAspect = true;
+            _rectTransform = GetComponent<RectTransform>();
+
+            if (fishSpriteImage != null)
+            {
+                fishSpriteImage.type = Image.Type.Simple;
+                fishSpriteImage.preserveAspect = true;
+            }
+
+            // 초기 테두리 색상 지정
+            if (borderImage != null)
+            {
+                borderImage.color = normalColor;
+            }
         }
 
-        /// <summary>
-        /// 인계받은 개별 물고기 데이터를 분석하여 슬롯 UI 구성 요소에 정밀 사상합니다.
-        /// </summary>
-        public void SetupSlot(FishData fish)
+        public void SetupSlot(FishData fish, FishTooltipUI tooltipUI)
         {
+            _fishData = fish;
+            _tooltipUI = tooltipUI; 
+
             if (fish == null) return;
 
-            // 1. 물고기 스프라이트 렌더링
             if (fishSpriteImage != null)
             {
                 if (fish.Data.fishSprite != null)
@@ -35,21 +56,55 @@ namespace FishingSystem.UI
                 }
                 else
                 {
-                    // 등록된 전용 이미지가 없는 경우 감춤 처리
                     fishSpriteImage.gameObject.SetActive(false); 
                 }
             }
+        }
 
-            // 2. 이름 텍스트 갱신
-            if (fishNameText != null)
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            if (_fishData == null || _tooltipUI == null) return;
+
+            // 시각 피드백: 테두리 색상 변경
+            if (borderImage != null)
             {
-                fishNameText.text = fish.Data.fishName;
+                borderImage.color = highlightColor;
             }
 
-            // 3. 디테일 속성 텍스트 갱신
-            if (fishDetailsText != null)
+            // 대기 시간 없이 즉시 슬롯 위치 기준으로 툴팁 노출
+            if (_rectTransform != null)
             {
-                fishDetailsText.text = $"품질: {fish.Quality}\n크기: {fish.Length:F1}cm";
+                _tooltipUI.Show(_fishData, _rectTransform);
+            }
+        }
+
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            CancelHover();
+        }
+
+        private void OnDisable()
+        {
+            CancelHover();
+        }
+
+        private void OnDestroy()
+        {
+            CancelHover();
+        }
+
+        private void CancelHover()
+        {
+            // 시각 피드백 원상 복구
+            if (borderImage != null)
+            {
+                borderImage.color = normalColor;
+            }
+
+            // 즉시 툴팁 비활성화
+            if (_tooltipUI != null)
+            {
+                _tooltipUI.Hide();
             }
         }
     }
