@@ -23,6 +23,8 @@ namespace FishingSystem.Data
         
         private readonly Subject<FishData> _onFishAdded = new();
         public Observable<FishData> OnFishAdded => _onFishAdded;
+        private readonly Subject<FishData> _onFishRemoved = new();
+        public Observable<FishData> OnFishRemoved => _onFishRemoved;
 
         private void Awake()
         {
@@ -78,6 +80,16 @@ namespace FishingSystem.Data
             
             return true;
         }
+        
+        public bool TryRemoveFish(FishData fish)
+        {
+            if (_storedFish.Remove(fish))
+            {
+                _onFishRemoved.OnNext(fish);
+                return true;
+            }
+            return false;
+        }
 
         public void UpgradeCapacity(int amount)
         {
@@ -88,6 +100,7 @@ namespace FishingSystem.Data
         private void OnDestroy()
         {
             _onFishAdded.Dispose();
+            _onFishRemoved.Dispose();
         }
     }
 }

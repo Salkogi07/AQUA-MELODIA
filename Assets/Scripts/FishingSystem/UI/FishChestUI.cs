@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using System.Collections.Generic;
 using FishingSystem.Data;
+using R3;
 
 namespace FishingSystem.UI
 {
@@ -14,14 +16,44 @@ namespace FishingSystem.UI
         [Header("용량 표시")]
         [SerializeField] private Text capacityText;
 
+        [Header("연결할 툴팁 UI")]
+        [SerializeField] private FishTooltipUI tooltipUI;
+
+        private readonly CompositeDisposable _disposables = new();
+
         private void OnEnable()
         {
+            var manager = FishingDataManager.Instance;
+            if (manager == null) return;
+
+            // 1. 활성화 시점에 이전 렌더링 내역 최신 정보로 한 번 맞추기
             RefreshStoredFishList();
+
+            // 2. 실시간 반응형 대응 구독 시작
+            manager.OnFishAdded
+                .Subscribe(fish =>
+                {
+                    AddFishSlot(fish);
+                    UpdateCapacity(manager);
+                })
+                .AddTo(_disposables);
+
+            manager.OnFishRemoved
+                .Subscribe(fish =>
+                {
+                    RemoveFishSlot(fish);
+                    UpdateCapacity(manager);
+                })
+                .AddTo(_disposables);
+        }
+
+        private void OnDisable()
+        {
+            _disposables.Clear();
         }
 
         public void RefreshStoredFishList()
         {
-            // 기존 렌더링되어 있던 자식 스크롤 카드들 초기 청소
             foreach (Transform child in listContainer)
             {
                 Destroy(child.gameObject);
@@ -30,23 +62,50 @@ namespace FishingSystem.UI
             var manager = FishingDataManager.Instance;
             if (manager == null) return;
 
-            // 보관된 물고기 개수만큼 슬롯 아이템 생성 및 주입
             foreach (var fish in manager.StoredFish)
             {
-                GameObject slotObj = Instantiate(fishSlotPrefab, listContainer);
-                
-                // 신규 전용 컴포넌트(FishSlotUI)를 호출하여 텍스트 및 스프라이트 처리 위임
-                if (slotObj.TryGetComponent<FishSlotUI>(out var slotUI))
-                {
-                    slotUI.SetupSlot(fish);
-                }
-                else
-                {
-                    Debug.LogWarning($"⚠️ 생성된 슬롯 프리팹({slotObj.name})에 'FishSlotUI' 스크립트 조립이 누락되었습니다.");
-                }
+                AddFishSlot(fish);
             }
 
-            // 용량 텍스트 출력
+            UpdateCapacity(manager);
+        }
+
+        private void AddFishSlot(Fish.FishData fish)
+        {
+            if (fish == null) return;
+
+            GameObject slotObj = Instantiate(fishSlotPrefab, listContainer);
+            if (slotObj.TryGetComponent<FishSlotUI>(out var slotUI))
+            {
+                slotUI.SetupSlot(fish, tooltipUI);
+            }
+            else
+            {
+                Destroy(slotObj);
+                Debug.LogWarning($"⚠️ 생성된 슬롯 프리팹({slotObj.name})에 'FishSlotUI' 스크립트가 없습니다.");
+            }
+        }
+
+        private void RemoveFishSlot(Fish.FishData fish)
+        {
+            if (fish == null) return;
+
+            foreach (Transform child in listContainer)
+            {
+                if (child.TryGetComponent<FishSlotUI>(out var slotUI))
+                {
+                    // 메모리상 동일 인스턴스인 경우 제거 타겟으로 지정
+                    if (object.ReferenceEquals(slotUI.CurrentFishData, fish))
+                    {
+                        Destroy(child.gameObject);
+                        break;
+                    }
+                }
+            }
+        }
+
+        private void UpdateCapacity(FishingDataManager manager)
+        {
             if (capacityText != null)
             {
                 capacityText.text = $"{manager.StoredFish.Count} / {manager.MaxCapacity}";
