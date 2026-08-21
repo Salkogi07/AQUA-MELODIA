@@ -48,7 +48,7 @@ namespace FishingSystem.Fish
 
         public FishDataSO GetRandomFish()
         {
-            // 우회 추가된 CurrentBait 프로퍼티를 활용하여 안전하게 수입[cite: 1, 2]
+            // 우회 추가된 CurrentBait 프로퍼티를 활용하여 안전하게 수입
             BaitDataSO activeBait = BaitManager.Instance != null ? BaitManager.Instance.CurrentBait : null;
 
             if (enableDebugLog)
@@ -87,7 +87,7 @@ namespace FishingSystem.Fish
                 return null;
             }
 
-            // 3. 내부 가중치 스탯 보정 적용 및 최종 물고기 선별[cite: 1]
+            // 3. 내부 가중치 스탯 보정 적용 및 최종 물고기 선별
             int totalWeight = 0;
             Dictionary<FishSpawnEntry, int> modifiedWeightCache = new();
 
@@ -104,7 +104,7 @@ namespace FishingSystem.Fish
 
                 if (enableDebugLog)
                 {
-                    Debug.Log($" - 후보: <b>{entry.fishData.name}</b> | 최종 가중치: <b>{modifiedWeight}</b>");
+                    Debug.Log($" - 후보: <b>{entry.fishData.fishName}</b> | 최종 가중치: <b>{modifiedWeight}</b>");
                 }
             }
 
@@ -128,10 +128,10 @@ namespace FishingSystem.Fish
 
             if (enableDebugLog)
             {
-                Debug.Log($"<color=green>🏆 [최종 물고기 당첨]</color> 가중치 총합: {totalWeight} | 추첨 값: {weightRoll} | 당첨 물고기: <b>{selectedFish.name}</b>");
+                Debug.Log($"<color=green>🏆 [최종 물고기 당첨]</color> 가중치 총합: {totalWeight} | 추첨 값: {weightRoll} | 당첨 물고기: <b>{selectedFish.fishName}</b>");
             }
 
-            // 4. 적용했던 스탯 원복 처리[cite: 1]
+            // 4. 적용했던 스탯 원복 처리
             foreach (var entry in candidates)
             {
                 RevertBaitWeightInfluence(entry, activeBait);
@@ -141,7 +141,7 @@ namespace FishingSystem.Fish
         }
 
         /// <summary>
-        /// 미끼 성능을 검사하여 실시간 등급 확률 가산치를 적용하고 100% 합계를 재산출합니다.[cite: 1]
+        /// 미끼 성능을 검사하여 실시간 등급 확률 가산치를 적용하고 100% 합계를 재산출합니다.
         /// </summary>
         private List<GradeChance> CalculateDynamicGradeChances(BaitDataSO bait)
         {
@@ -156,7 +156,7 @@ namespace FishingSystem.Fish
             float totalBoostAmount = 0f;
             string boostDetails = "";
 
-            // [조건 1] 특정 저격 물고기 미끼에 의한 등급 확률 향상[cite: 1]
+            // [조건 1] 특정 저격 물고기 미끼에 의한 등급 확률 향상
             foreach (var pref in bait.preferredFishList)
             {
                 if (pref.targetFish != null && pref.gradeChanceBoost > 0f)
@@ -167,7 +167,7 @@ namespace FishingSystem.Fish
                 }
             }
 
-            // [조건 2] 지역 기반 특정 등급 미끼에 의한 등급 확률 향상[cite: 1]
+            // [조건 2] 지역 기반 특정 등급 미끼에 의한 등급 확률 향상
             foreach (var bonus in bait.regionGradeBonusList)
             {
                 if (bonus.targetRegion == this.zoneRegion && bonus.gradeChanceBoost > 0f)
@@ -178,7 +178,7 @@ namespace FishingSystem.Fish
                 }
             }
 
-            // [정규화] 상승한 보너스 확률 합계만큼 하위 등급(Common 등)에서 감산 처리하여 전체 확률 100% 균형을 맞춤[cite: 1]
+            // [정규화] 상승한 보너스 확률 합계만큼 하위 등급(Common 등)에서 감산 처리하여 전체 확률 100% 균형을 맞춤
             if (totalBoostAmount > 0f)
             {
                 NormalizeChances(adjustedChances, totalBoostAmount);
@@ -211,7 +211,7 @@ namespace FishingSystem.Fish
         {
             float remainingToDeduct = deductAmount;
             
-            // 확률을 깎아낼 대상 순서 (Common -> Rare -> Epic 순으로 차감하며 보정)[cite: 1]
+            // 확률을 깎아낼 대상 순서 (Common -> Rare -> Epic 순으로 차감하며 보정)
             FishGrade[] orderOfReduction = { FishGrade.Common, FishGrade.Rare, FishGrade.Epic };
 
             foreach (var grade in orderOfReduction)

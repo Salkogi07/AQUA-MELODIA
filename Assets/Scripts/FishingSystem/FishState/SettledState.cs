@@ -19,7 +19,7 @@ namespace FishingSystem.FishState
             
             fishingRod.StopBobberMovement(); 
 
-            // 착수한 위치에서 실제 수중 레이어 구역(Collider)을 다시 획득하여 할당합니다.
+            // 착수한 위치에서 실제 수중 레이어 구역(Collider)을 획득하여 할당합니다.
             fishingRod.ActiveFishingZone = fishingRod.SearchFishingZone();
             
             if (fishingRod.ActiveFishingZone != null)
@@ -52,14 +52,21 @@ namespace FishingSystem.FishState
                 return; 
             }
 
-            FishDataSO foundFish = foundZone.GetRandomFish();
-            if (foundFish == null) return;
-
             try
             {
+                // 1. 물고기가 찌 주변으로 다가오는 대기 시간을 먼저 보냅니다.
                 float waitTime = Random.Range(fishingRod.biteDelayRange.x, fishingRod.biteDelayRange.y);
                 await UniTask.Delay(System.TimeSpan.FromSeconds(waitTime), cancellationToken: token);
 
+                // 2. 대기가 끝나고 찌를 물기 직전(BitingState 진입 직전)에 실제로 물고기를 추첨합니다.
+                FishDataSO foundFish = foundZone.GetRandomFish();
+                if (foundFish == null)
+                {
+                    Debug.LogWarning("⚠️ 입질 타이밍에 물고기를 추첨하는 데 실패했습니다. 조건에 맞는 물고기 데이터가 없거나 확률 설정 오류일 수 있습니다.");
+                    return;
+                }
+
+                // 3. 당첨된 물고기 데이터를 생성하고 입질 상태로 전환합니다.
                 fishingRod.CurrentHookedFish = new FishData(foundFish);
                 stateMachine.ChangeState(fishingRod.BitingState); 
             }
