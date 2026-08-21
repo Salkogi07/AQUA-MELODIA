@@ -204,6 +204,8 @@ GameObject:
   m_Component:
   - component: {fileID: 64626358}
   - component: {fileID: 64626359}
+  - component: {fileID: 64626360}
+  - component: {fileID: 64626361}
   m_Layer: 0
   m_Name: DataManager
   m_TagString: Untagged
@@ -239,6 +241,32 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.Data.FishingDataManager
   _maxCapacity: 10
+--- !u!114 &64626360
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 64626357}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6fd94eccb846490592286ef6e26c9b67, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.Bait.BaitManager
+  equippedBait: {fileID: 11400000, guid: 41e653b8787dc054d9b4b4a61266404a, type: 2}
+--- !u!114 &64626361
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 64626357}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f134cf14bacc43b189254afb05b45232, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.Equipment.PlayerFishingEquipment
+  equippedRod: {fileID: 11400000, guid: a999d0b4875df5b4cb88f36e6c1bb1e7, type: 2}
 --- !u!1 &152272356
 GameObject:
   m_ObjectHideFlags: 0
@@ -1789,7 +1817,6 @@ GameObject:
   m_Component:
   - component: {fileID: 730771051}
   - component: {fileID: 730771052}
-  - component: {fileID: 730771053}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -1825,6 +1852,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7fa436455ca458abf94e7bce7f2e56f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.FishState.FishingRod
+  enableDebugLog: 1
   fishingLine: {fileID: 1596706287}
   rodTip: {fileID: 923546521}
   bobber: {fileID: 1247940787}
@@ -1857,19 +1885,6 @@ MonoBehaviour:
   fishVisualPrefab: {fileID: 4069598548445070687, guid: 28df409669ec4cf4e9166d17404b54e5, type: 3}
   showcaseMountPoint: {fileID: 555672203}
   showcaseCameraPoint: {fileID: 190195446}
---- !u!114 &730771053
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 730771050}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f134cf14bacc43b189254afb05b45232, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.Equipment.PlayerFishingEquipment
-  equippedRod: {fileID: 11400000, guid: a999d0b4875df5b4cb88f36e6c1bb1e7, type: 2}
 --- !u!1 &774434300
 GameObject:
   m_ObjectHideFlags: 0
@@ -4264,7 +4279,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1cb5268bd0e408cb86f44a4fefcdfcf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.Fish.FishingZone
+  enableDebugLog: 1
   zoneName: "\uC77C\uBC18 \uD638\uC218"
+  zoneRegion: 0
   maxMoveRange: 8
   gradeChances:
   - grade: 0
@@ -4279,19 +4296,29 @@ MonoBehaviour:
     probability: 1
   fishSpawnList:
   - fishData: {fileID: 11400000, guid: 99764466b972a344ab9e0b64e8525ef6, type: 2}
-    weight: 10
+    weight:
+      baseValue: 1
+      Modifiers: 
     calculatedChance: 0
   - fishData: {fileID: 11400000, guid: 1edb0f8eab2283747884afda85d59eee, type: 2}
-    weight: 10
+    weight:
+      baseValue: 1
+      Modifiers: 
     calculatedChance: 0
   - fishData: {fileID: 11400000, guid: b659299584cb4fd4980b5b9128791aab, type: 2}
-    weight: 10
+    weight:
+      baseValue: 1
+      Modifiers: 
     calculatedChance: 0
   - fishData: {fileID: 11400000, guid: e54d9fc2ec6fcab46b2530b2a4984bf5, type: 2}
-    weight: 10
+    weight:
+      baseValue: 1
+      Modifiers: 
     calculatedChance: 0
   - fishData: {fileID: 11400000, guid: 3a41645a6828e624084659103794a9de, type: 2}
-    weight: 10
+    weight:
+      baseValue: 1
+      Modifiers: 
     calculatedChance: 0
 --- !u!1 &2061296646
 GameObject:

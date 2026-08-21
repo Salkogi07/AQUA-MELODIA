@@ -22,7 +22,6 @@ namespace FishingSystem.FishState
         {
             hasThrown = true;
             fishingRod.ApplyCastPhysics(savedPower); 
-            Debug.Log($"<color=lime>🚀 물리 탄도 캐스팅 발사! 세기: {savedPower * 100f:F1}%</color>");
         }
 
         public override void Update()

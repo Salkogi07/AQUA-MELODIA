@@ -9,6 +9,9 @@ namespace FishingSystem.FishState
 {
     public class FishingRod : MonoBehaviour
     {
+        [Header("🔍 디버그 및 확률 모니터링 설정")]
+        public bool enableDebugLog = true;
+        
         [Header("연결할 하위 컴포넌트")]
         public FishingLine fishingLine;
         public Transform rodTip;
@@ -219,6 +222,12 @@ namespace FishingSystem.FishState
         public void ApplyCastPhysics(float power)
         {
             if (BobberRb == null) return;
+            
+            if (enableDebugLog)
+            {
+                Debug.Log($"<color=yellow>[캐스팅 실행]</color> 충전 파워: {power * 100f:F1}% | 기본 속도: {castSpeed}");
+            }
+            
             BobberRb.bodyType = RigidbodyType2D.Dynamic;
             
             // 공기 저항 수치 적용
@@ -301,36 +310,48 @@ namespace FishingSystem.FishState
             }
         }
         
-        // 실시간 유효 기력 감소 속도 계산 (기본 스펙 + 장비 가산치)
+        // 실시간 유효 기력 감소 속도 계산
         public float EffectiveDamageRate
         {
             get
             {
-                if (playerEquipment != null && playerEquipment.EquippedRod != null)
-                    return fishDamageRate + playerEquipment.EquippedRod.damageRateBonus;
-                return fishDamageRate;
+                var equip = PlayerFishingEquipment.Instance != null ? PlayerFishingEquipment.Instance : playerEquipment;
+                float bonus = (equip != null && equip.EquippedRod != null) ? equip.EquippedRod.damageRateBonus : 0f;
+                float finalVal = fishDamageRate + bonus;
+                
+                LogProbabilityCalculation("기력 감소 속도 (DamageRate)", fishDamageRate, bonus, finalVal, "/초");
+        
+                return finalVal;
             }
         }
 
-        // 실시간 유효 오차 허용 폭 계산 (기본 스펙 + 장비 가산치)
+        // 실시간 유효 오차 허용 폭 계산
         public float EffectiveSweetSpotTolerance
         {
             get
             {
-                if (playerEquipment != null && playerEquipment.EquippedRod != null)
-                    return sweetSpotTolerance + playerEquipment.EquippedRod.sweetSpotBonus;
-                return sweetSpotTolerance;
+                var equip = PlayerFishingEquipment.Instance != null ? PlayerFishingEquipment.Instance : playerEquipment;
+                float bonus = (equip != null && equip.EquippedRod != null) ? equip.EquippedRod.sweetSpotBonus : 0f;
+                float finalVal = sweetSpotTolerance + bonus;
+        
+                LogProbabilityCalculation("오차 허용 폭 (Tolerance)", sweetSpotTolerance, bonus, finalVal);
+        
+                return finalVal;
             }
         }
         
-        // 현재 장착한 낚싯대의 파워 (장착 해제 시 기본 baseline인 10f 반환)
+        // 현재 장착한 낚싯대의 파워
         public float EffectiveRodPower
         {
             get
             {
-                if (playerEquipment != null && playerEquipment.EquippedRod != null)
-                    return playerEquipment.EquippedRod.rodPower;
-                return 10f; 
+                var equip = PlayerFishingEquipment.Instance != null ? PlayerFishingEquipment.Instance : playerEquipment;
+                float baseline = 10f;
+                float bonus = (equip != null && equip.EquippedRod != null) ? equip.EquippedRod.rodPower : baseline;
+        
+                LogProbabilityCalculation("낚싯대 파워 (RodPower)", baseline, bonus - baseline, bonus);
+        
+                return bonus; 
             }
         }
 
@@ -339,10 +360,22 @@ namespace FishingSystem.FishState
         {
             get
             {
-                if (playerEquipment != null && playerEquipment.EquippedRod != null)
-                    return playerEquipment.EquippedRod.rodAgility;
+                var equip = PlayerFishingEquipment.Instance != null ? PlayerFishingEquipment.Instance : playerEquipment;
+                if (equip != null && equip.EquippedRod != null)
+                    return equip.EquippedRod.rodAgility;
                 return 5f; 
             }
+        }
+        
+        private void LogProbabilityCalculation(string actionName, float baseVal, float bonusVal, float finalVal, string unit = "")
+        {
+            if (!enableDebugLog) return;
+    
+            string sign = bonusVal >= 0 ? "+" : "";
+            Debug.Log($"<color=cyan>[낚시 시스템 확률/증감 분석]</color> <b>{actionName}</b> 실행됨:\n" +
+                      $" - 기본값: {baseVal}{unit}\n" +
+                      $" - 보정치: {sign}{bonusVal}{unit}\n" +
+                      $" - 최종 적용값: <b>{finalVal}{unit}</b>");
         }
 
         public FishingZone SearchFishingZone()

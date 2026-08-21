@@ -8,6 +8,7 @@ namespace FishingSystem.Fish
     {
         [Header("물고기 기본 정보")]
         public FishGrade grade = FishGrade.Common;
+        public FishingRegion habitatRegion = FishingRegion.Ocean;
         public string fishName = "이름 미정";
         public Sprite fishSprite;
         public GameObject fishPrefab;

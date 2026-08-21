@@ -2,6 +2,7 @@
 using UnityEditor;
 using System.Collections.Generic;
 using System.Linq;
+using FishingSystem.Bait;
 
 namespace FishingSystem.Fish
 {
@@ -25,12 +26,19 @@ namespace FishingSystem.Fish
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
-
+            
             EditorGUILayout.Space(10);
+            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+            EditorGUILayout.LabelField("<b>🔍 디버그 설정</b>", new GUIStyle(EditorStyles.label) { richText = true });
+            zone.enableDebugLog = EditorGUILayout.Toggle("확률 로그 출력 활성화", zone.enableDebugLog);
+            EditorGUILayout.EndVertical();
+
+            EditorGUILayout.Space(5);
             EditorGUILayout.LabelField($"<size=13><b>[ {zone.zoneName} ] 설정</b></size>", new GUIStyle(EditorStyles.label) { richText = true });
 
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
             zone.zoneName = EditorGUILayout.TextField("낚시터 이름", zone.zoneName);
+            zone.zoneRegion = (FishingRegion)EditorGUILayout.EnumPopup("지역 유형", zone.zoneRegion); 
             zone.maxMoveRange = EditorGUILayout.FloatField("최대 이동 범위", zone.maxMoveRange);
             EditorGUILayout.EndVertical();
 
@@ -101,7 +109,8 @@ namespace FishingSystem.Fish
             {
                 var gradeInfo = zone.gradeChances.FirstOrDefault(g => g.grade == grade);
                 var fishInGrade = zone.fishSpawnList.Where(f => f.fishData != null && f.fishData.grade == grade).ToList();
-                int totalWeight = fishInGrade.Sum(f => f.weight);
+                // GetValue() 호출로 전면 수정
+                int totalWeight = fishInGrade.Sum(f => f.weight.GetValue()); 
 
                 EditorGUILayout.BeginVertical(EditorStyles.helpBox);
                 
@@ -116,7 +125,6 @@ namespace FishingSystem.Fish
                         DrawFishEntry(entry, totalWeight, gradeInfo.probability);
                     }
 
-                    // 드래그 앤 드롭 슬롯 (반응형 적용)
                     EditorGUILayout.BeginHorizontal();
                     GUILayout.Space(10);
                     GUI.color = new Color(0.8f, 1f, 0.8f);
@@ -127,7 +135,9 @@ namespace FishingSystem.Fish
                         if (newFish.grade == grade)
                         {
                             Undo.RecordObject(zone, "Add Fish");
-                            zone.fishSpawnList.Add(new FishSpawnEntry { fishData = newFish, weight = 10 });
+                            FishSpawnEntry newEntry = new FishSpawnEntry { fishData = newFish };
+                            newEntry.weight.SetDefaultValue(10); 
+                            zone.fishSpawnList.Add(newEntry);
                         }
                         else EditorUtility.DisplayDialog("경고", "등급이 맞지 않습니다.", "확인");
                     }
@@ -139,16 +149,13 @@ namespace FishingSystem.Fish
 
         private void DrawFishEntry(FishSpawnEntry entry, int totalWeight, float gradeProb)
         {
-            // 전체를 감싸는 컨테이너 (여백 포함)
             Rect containerRect = EditorGUILayout.BeginVertical();
-            GUILayout.Space(42); // 두 줄 분량의 높이 확보
+            GUILayout.Space(42); 
             EditorGUILayout.EndVertical();
 
-            // 배경 박스 그리기
             Rect boxRect = new Rect(containerRect.x + 5, containerRect.y + 2, containerRect.width - 10, 38);
             GUI.Box(boxRect, "", EditorStyles.helpBox);
 
-            // 1. 아이콘 (박스 내부 절대 좌표 기반)
             Rect iconRect = new Rect(boxRect.x + 5, boxRect.y + 5, 28, 28);
             if (entry.fishData.fishSprite != null)
             {
@@ -157,11 +164,9 @@ namespace FishingSystem.Fish
             }
             else GUI.Box(iconRect, "");
 
-            // 2. 물고기 이름
             Rect nameRect = new Rect(boxRect.x + 38, boxRect.y + 4, boxRect.width - 70, 18);
             GUI.Label(nameRect, entry.fishData.fishName, EditorStyles.boldLabel);
 
-            // 3. 제거 버튼 (X) - 오른쪽 끝에 고정
             Rect xBtnRect = new Rect(boxRect.xMax - 25, boxRect.y + 4, 20, 18);
             if (GUI.Button(xBtnRect, "X"))
             {
@@ -170,20 +175,21 @@ namespace FishingSystem.Fish
                 return;
             }
 
-            // 4. 가중치 라벨 및 필드
             Rect weightLabelRect = new Rect(boxRect.x + 38, boxRect.y + 20, 40, 16);
             GUI.Label(weightLabelRect, "가중치", EditorStyles.miniLabel);
 
             Rect weightFieldRect = new Rect(boxRect.x + 75, boxRect.y + 20, 35, 16);
-            int newWeight = EditorGUI.IntField(weightFieldRect, entry.weight);
-            if (newWeight != entry.weight)
+            
+            // GetValue() 호출로 전면 수정
+            int currentVal = entry.weight.GetValue();
+            int newWeight = EditorGUI.IntField(weightFieldRect, currentVal);
+            if (newWeight != currentVal)
             {
                 Undo.RecordObject(zone, "Change Weight");
-                entry.weight = Mathf.Max(1, newWeight);
+                entry.weight.SetDefaultValue(Mathf.Max(1, newWeight));
             }
 
-            // 5. 확률 정보 (자동 우측 정렬)
-            float inGradeChance = totalWeight > 0 ? ((float)entry.weight / totalWeight) * 100f : 0f;
+            float inGradeChance = totalWeight > 0 ? ((float)entry.weight.GetValue() / totalWeight) * 100f : 0f;
             float overallChance = (gradeProb / 100f) * inGradeChance;
             string chanceText = $"등급 내:{inGradeChance:F1}% | 전체:{overallChance:F2}%";
             
@@ -191,7 +197,6 @@ namespace FishingSystem.Fish
             chanceStyle.alignment = TextAnchor.MiddleRight;
             chanceStyle.normal.textColor = new Color(0.7f, 0.7f, 0.7f);
 
-            // 창 너비에 따라 확률 텍스트 위치 가변 조절
             Rect chanceRect = new Rect(boxRect.x + 115, boxRect.y + 20, boxRect.width - 125, 16);
             GUI.Label(chanceRect, chanceText, chanceStyle);
         }
