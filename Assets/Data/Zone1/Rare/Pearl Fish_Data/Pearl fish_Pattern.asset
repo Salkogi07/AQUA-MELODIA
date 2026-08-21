@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80c9585100c74c6ba909790ec1d32159, type: 3}
+  m_Name: Pearl fish_Pattern
+  m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.Fishing_Pattern.PatternDataSO
+  loopPattern: 1
+  patternNodes:
+  - targetPositionX: -2
+    moveDuration: 2
+    waitTime: 0.5
+  - targetPositionX: -1.13
+    moveDuration: 0.5
+    waitTime: 0.5
+  - targetPositionX: -0.27
+    moveDuration: 0.64
+    waitTime: 1
+  - targetPositionX: 0.7
+    moveDuration: 0.6
+    waitTime: 1.28
+  - targetPositionX: 3.86
+    moveDuration: 0.94
+    waitTime: 1.87
+  - targetPositionX: -3.77
+    moveDuration: 1.5
+    waitTime: 2.33

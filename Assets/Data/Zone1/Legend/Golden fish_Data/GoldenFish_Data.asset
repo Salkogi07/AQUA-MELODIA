@@ -20,6 +20,6 @@ MonoBehaviour:
   maxLength: 120
   maxStamina: 1000
   strength: 8
-  agility: 12
-  patternData: {fileID: 0}
-  escapePatternData: {fileID: 0}
+  agility: 8
+  patternData: {fileID: 11400000, guid: 372dbd0ffd45ce741a5c7dc1ecc46e7f, type: 2}
+  escapePatternData: {fileID: 11400000, guid: 464afc716113f514badd95026dc27ba9, type: 2}

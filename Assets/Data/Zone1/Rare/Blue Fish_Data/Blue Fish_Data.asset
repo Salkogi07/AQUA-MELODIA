@@ -12,14 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59d86cf3eae64b5797630851886ab24a, type: 3}
   m_Name: Blue Fish_Data
   m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.Fish.FishDataSO
-  grade: 0
-  fishName: "\uC774\uB984 \uBBF8\uC815"
+  grade: 1
+  fishName: "\uD30C\uB780\uBB3C\uACE0\uAE30"
   fishSprite: {fileID: 0}
-  fishPrefab: {fileID: 0}
+  fishPrefab: {fileID: 4069598548445070687, guid: 1d931e96104d1a44999d4d0d56dd1c46, type: 3}
   minLength: 10
   maxLength: 120
-  maxStamina: 100
-  strength: 10
+  maxStamina: 300
+  strength: 2
   agility: 3
-  patternData: {fileID: 0}
-  escapePatternData: {fileID: 0}
+  patternData: {fileID: 11400000, guid: 5fea668b31dc2b944b562b84b19fca21, type: 2}
+  escapePatternData: {fileID: 11400000, guid: eeff4c9f77c90cb478f254ed5258ca3b, type: 2}

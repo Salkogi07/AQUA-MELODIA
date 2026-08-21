@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59d86cf3eae64b5797630851886ab24a, type: 3}
+  m_Name: Sheet music fish_Data
+  m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.Fish.FishDataSO
+  grade: 3
+  fishName: "\uC545\uBCF4\uBB3C\uACE0\uAE30"
+  fishSprite: {fileID: 0}
+  fishPrefab: {fileID: 0}
+  minLength: 10
+  maxLength: 120
+  maxStamina: 370
+  strength: 2
+  agility: 6
+  patternData: {fileID: 11400000, guid: 8ef2264b7ce69b14eb24c27ade57045d, type: 2}
+  escapePatternData: {fileID: 11400000, guid: 3703c8c7e9b9e6740b8ba2878846f3b2, type: 2}

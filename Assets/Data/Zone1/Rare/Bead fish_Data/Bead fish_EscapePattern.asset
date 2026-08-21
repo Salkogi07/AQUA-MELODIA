@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6b9be59a8800c7459ca6742bf500b57, type: 3}
+  m_Name: Bead fish_EscapePattern
+  m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.Fishing_Pattern.EscapePatternDataSO
+  points:
+  - {x: -0.94, y: 1.88}
+  - {x: 0.79, y: 1.85}
+  - {x: 1.66, y: 0.48}
+  - {x: 1.64, y: -0.85}
+  - {x: 0.44, y: -2.22}
+  - {x: -0.86, y: -2.25}
+  - {x: -1.96, y: -0.88}
+  - {x: -2.04, y: 0.4}
+  - {x: -1.21, y: 1.58}
+  dotsPerFrame: 3
+  drawDelayMs: 10
+  dotSpacing: 0.3
+  detectionSpacing: 0.1
+  timeLimit: 3
+  inkBufferMultiplier: 1.2

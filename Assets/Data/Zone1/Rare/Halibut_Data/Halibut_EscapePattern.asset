@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6b9be59a8800c7459ca6742bf500b57, type: 3}
+  m_Name: Halibut_EscapePattern
+  m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.Fishing_Pattern.EscapePatternDataSO
+  points:
+  - {x: -0.19, y: 2.18}
+  - {x: -1.04, y: 1.75}
+  - {x: -3.09, y: -0.92}
+  - {x: -2.79, y: -1.52}
+  - {x: 0.49, y: -1.72}
+  - {x: 1.41, y: -1.25}
+  - {x: 2.29, y: 1.85}
+  - {x: 0.36, y: 2.22}
+  dotsPerFrame: 3
+  drawDelayMs: 10
+  dotSpacing: 0.3
+  detectionSpacing: 0.1
+  timeLimit: 3
+  inkBufferMultiplier: 1.2

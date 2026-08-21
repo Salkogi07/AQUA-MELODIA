@@ -14,6 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.Fishing_Pattern.PatternDataSO
   loopPattern: 1
   patternNodes:
-  - targetPositionX: -0.59
+  - targetPositionX: -1.45
+    moveDuration: 1.15
+    waitTime: 1.45
+  - targetPositionX: -2.59
+    moveDuration: 1.15
+    waitTime: 0.5
+  - targetPositionX: 1.45
+    moveDuration: 1.5
+    waitTime: 0.5
+  - targetPositionX: 2.56
     moveDuration: 1.5
     waitTime: 0.5

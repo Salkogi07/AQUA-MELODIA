@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59d86cf3eae64b5797630851886ab24a, type: 3}
+  m_Name: Red fish_Data
+  m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.Fish.FishDataSO
+  grade: 0
+  fishName: "\uBE68\uAC04\uBB3C\uACE0\uAE30"
+  fishSprite: {fileID: 0}
+  fishPrefab: {fileID: 4069598548445070687, guid: 28df409669ec4cf4e9166d17404b54e5, type: 3}
+  minLength: 10
+  maxLength: 120
+  maxStamina: 125
+  strength: 2
+  agility: 2
+  patternData: {fileID: 11400000, guid: 334646bb4ac00ae48b5df3af9643a35c, type: 2}
+  escapePatternData: {fileID: 11400000, guid: cae52554146984045896db21ea9bf093, type: 2}

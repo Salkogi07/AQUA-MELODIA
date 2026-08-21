@@ -12,7 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6b9be59a8800c7459ca6742bf500b57, type: 3}
   m_Name: Blue fish_Pattern 1
   m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.Fishing_Pattern.EscapePatternDataSO
-  points: []
+  points:
+  - {x: -1.66, y: 2.2}
+  - {x: 0.21, y: -3.05}
+  - {x: 2.06, y: -0.72}
+  - {x: -0.71, y: -0.32}
+  - {x: 1.19, y: 1.85}
+  - {x: -1.01, y: 2.15}
   dotsPerFrame: 3
   drawDelayMs: 10
   dotSpacing: 0.3

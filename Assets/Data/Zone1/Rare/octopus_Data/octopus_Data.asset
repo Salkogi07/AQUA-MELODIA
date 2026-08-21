@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59d86cf3eae64b5797630851886ab24a, type: 3}
+  m_Name: octopus_Data
+  m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.Fish.FishDataSO
+  grade: 1
+  fishName: "\uBB38\uC5B4"
+  fishSprite: {fileID: 0}
+  fishPrefab: {fileID: 4069598548445070687, guid: 3bc2b0ef465d456429a14d222eaf8213, type: 3}
+  minLength: 10
+  maxLength: 120
+  maxStamina: 400
+  strength: 3
+  agility: 2
+  patternData: {fileID: 11400000, guid: 43a405d5c738ade46b7ed68e3de73de3, type: 2}
+  escapePatternData: {fileID: 11400000, guid: 1d7882c0245b4c145be59e14efd64e4f, type: 2}

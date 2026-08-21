@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80c9585100c74c6ba909790ec1d32159, type: 3}
+  m_Name: Neon tetra_Pattern
+  m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.Fishing_Pattern.PatternDataSO
+  loopPattern: 1
+  patternNodes:
+  - targetPositionX: -1
+    moveDuration: 1.5
+    waitTime: 1
+  - targetPositionX: -0.45
+    moveDuration: 0.2
+    waitTime: 1
+  - targetPositionX: 3.5
+    moveDuration: 1.5
+    waitTime: 1.5
+  - targetPositionX: 0.6
+    moveDuration: 1.5
+    waitTime: 1
+  - targetPositionX: -2.08
+    moveDuration: 0.3
+    waitTime: 1.65
