@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: ChunMackerel_Data
   m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.Fish.FishDataSO
   grade: 0
+  habitatRegion: 0
   fishName: "\uACE0\uB4F1\uC5B4"
-  fishSprite: {fileID: 0}
+  fishSprite: {fileID: 21300000, guid: 3d52fc42aabbdab4bb26728dada1d250, type: 3}
   fishPrefab: {fileID: 0}
   minLength: 10
   maxLength: 120

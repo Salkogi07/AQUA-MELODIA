@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: water drop fish_Data
   m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.Fish.FishDataSO
   grade: 1
+  habitatRegion: 0
   fishName: "\uBB3C\uBC29\uC6B8\uBB3C\uACE0\uAE30"
-  fishSprite: {fileID: 0}
+  fishSprite: {fileID: 21300000, guid: 1a9ed29f50410544486481fdbcf4ae5b, type: 3}
   fishPrefab: {fileID: 0}
   minLength: 10
   maxLength: 120

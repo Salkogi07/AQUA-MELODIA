@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: Red fish_Data
   m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.Fish.FishDataSO
   grade: 0
+  habitatRegion: 0
   fishName: "\uBE68\uAC04\uBB3C\uACE0\uAE30"
-  fishSprite: {fileID: 0}
+  fishSprite: {fileID: 21300000, guid: 3d52fc42aabbdab4bb26728dada1d250, type: 3}
   fishPrefab: {fileID: 4069598548445070687, guid: 28df409669ec4cf4e9166d17404b54e5, type: 3}
   minLength: 10
   maxLength: 120

@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: octopus_Data
   m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.Fish.FishDataSO
   grade: 1
+  habitatRegion: 0
   fishName: "\uBB38\uC5B4"
-  fishSprite: {fileID: 0}
+  fishSprite: {fileID: 21300000, guid: 84feae4949ac7d844b454e3ba702a763, type: 3}
   fishPrefab: {fileID: 4069598548445070687, guid: 3bc2b0ef465d456429a14d222eaf8213, type: 3}
   minLength: 10
   maxLength: 120

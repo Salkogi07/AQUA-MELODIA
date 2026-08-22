@@ -93,19 +93,19 @@ namespace FishingSystem.FishState
         {
             Debug.Log($"<color=cyan>[발악 패턴 종료]</color> 최종 완성도: {score:F1}%");
 
-            if (score >= 90f)
+            if (score >= 95f)
             {
                 Debug.Log("<color=#FFD700>🌟 [Perfect] 최고 품질(S등급)로 제압했습니다!</color>");
                 fishingRod.CurrentHookedFish.Quality = FishQuality.GradeS;
                 stateMachine.ChangeState(fishingRod.CaughtState);
             }
-            else if (score >= 60f)
+            else if (score >= 80f)
             {
                 Debug.Log("<color=#00FF00>✨ [Good] 우수 품질(A등급)로 제압했습니다!</color>");
                 fishingRod.CurrentHookedFish.Quality = FishQuality.GradeA;
                 stateMachine.ChangeState(fishingRod.CaughtState);
             }
-            else if (score >= 30f)
+            else if (score >= 70f)
             {
                 Debug.Log("<color=#FFFFFF>🐟 [Normal] 일반 품질(B등급)로 제압했습니다.</color>");
                 fishingRod.CurrentHookedFish.Quality = FishQuality.GradeB;
@@ -113,7 +113,7 @@ namespace FishingSystem.FishState
             }
             else
             {
-                // 점수가 30점 미만이면 낚시 실패!
+                // 점수가 80점 미만이면 낚시 실패!
                 Debug.Log("<color=#FF5555>💥 [Fail] 완성도가 너무 낮아 물고기가 도망갔습니다!</color>");
                 fishingRod.CurrentHookedFish = null;
                 stateMachine.ChangeState(fishingRod.FailedState);
