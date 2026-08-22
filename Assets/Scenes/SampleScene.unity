@@ -681,7 +681,7 @@ MonoBehaviour:
   startDotColor: {r: 0, g: 1, b: 0, a: 1}
   normalDotColor: {r: 1, g: 1, b: 1, a: 1}
   endDotColor: {r: 1, g: 0, b: 0, a: 1}
-  showDetector: 1
+  showDetector: 0
   detectorScale: {x: 0.3, y: 0.3, z: 0.3}
   detectorColor: {r: 0, g: 1, b: 0.0475955, a: 0.1764706}
 --- !u!1 &394223144

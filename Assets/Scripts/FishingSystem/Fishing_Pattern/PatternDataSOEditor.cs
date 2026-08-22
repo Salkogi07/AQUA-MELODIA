@@ -22,7 +22,7 @@ public class PatternDataSOEditor : Editor
     private bool simIsWaiting = false;
 
     // 가상 스탯 설정 (민첩성 상쇄 테스트용)
-    private float mockFishAgility = 3f;
+    private float mockFishAgility = 0f;
     private float mockRodAgility = 0f;
 
     private void OnEnable()
