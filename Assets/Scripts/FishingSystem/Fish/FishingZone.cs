@@ -60,6 +60,17 @@ namespace FishingSystem.Fish
             // 1. 미끼 사양에 맞춘 임시 등급 확률 테이블 계산 복사
             List<GradeChance> tempGradeChances = CalculateDynamicGradeChances(activeBait);
 
+            // [추가] 등급별 최종 확률 백분율 디버그 출력
+            if (enableDebugLog)
+            {
+                string gradeReport = "<color=magenta>📈 [미끼 적용 후 등급별 최종 확률]</color>";
+                foreach (var gc in tempGradeChances)
+                {
+                    gradeReport += $"\n   - {gc.grade}: <b>{gc.probability:F2}%</b>";
+                }
+                Debug.Log(gradeReport);
+            }
+
             // 2. 등급 주사위 굴리기 (미끼 보정 확률 적용)
             float roll = Random.Range(0f, 100f);
             float cumulative = 0f;
@@ -91,24 +102,27 @@ namespace FishingSystem.Fish
             int totalWeight = 0;
             Dictionary<FishSpawnEntry, int> modifiedWeightCache = new();
 
-            if (enableDebugLog)
-            {
-                Debug.Log($"<color=orange>⚖️ [{selectedGrade} 등급 후보군 가중치 계산]</color>");
-            }
-
             foreach (var entry in candidates)
             {
                 int modifiedWeight = EvaluateBaitWeightInfluence(entry, activeBait);
                 modifiedWeightCache[entry] = modifiedWeight;
                 totalWeight += modifiedWeight;
-
-                if (enableDebugLog)
-                {
-                    Debug.Log($" - 후보: <b>{entry.fishData.fishName}</b> | 최종 가중치: <b>{modifiedWeight}</b>");
-                }
             }
 
             if (totalWeight <= 0) return candidates[0].fishData;
+
+            // [추가] 각 후보 물고기의 실제 선택 확률(%) 계산 및 로그 출력
+            if (enableDebugLog)
+            {
+                string fishReport = $"<color=orange>⚖️ [{selectedGrade} 등급 내 물고기별 실제 당첨 확률]</color>";
+                foreach (var entry in candidates)
+                {
+                    int weight = modifiedWeightCache[entry];
+                    float actualPercent = (float)weight / totalWeight * 100f;
+                    fishReport += $"\n   - 물고기: <b>{entry.fishData.fishName}</b> | 가중치: {weight} | 실제 확률: <b>{actualPercent:F2}%</b>";
+                }
+                Debug.Log(fishReport);
+            }
 
             int weightRoll = Random.Range(0, totalWeight);
             int weightCumulative = 0;
@@ -163,7 +177,7 @@ namespace FishingSystem.Fish
                 {
                     float added = AddGradeProbability(adjustedChances, pref.targetFish.grade, pref.gradeChanceBoost);
                     totalBoostAmount += added;
-                    boostDetails += $"\n   - [저격보너스] {pref.targetFish.name} ({pref.targetFish.grade}): +{added}%";
+                    boostDetails += $"\n   - [저격보너스] {pref.targetFish.fishName} ({pref.targetFish.grade}): +{added}%";
                 }
             }
 
@@ -209,34 +223,39 @@ namespace FishingSystem.Fish
 
         private void NormalizeChances(List<GradeChance> list, float deductAmount)
         {
-            float remainingToDeduct = deductAmount;
-            
-            // 확률을 깎아낼 대상 순서 (Common -> Rare -> Epic 순으로 차감하며 보정)
-            FishGrade[] orderOfReduction = { FishGrade.Common, FishGrade.Rare, FishGrade.Epic };
+            if (list == null || list.Count == 0 || deductAmount <= 0f) return;
 
-            foreach (var grade in orderOfReduction)
+            float totalProb = 0f;
+            for (int i = 0; i < list.Count; i++)
+            {
+                totalProb += list[i].probability;
+            }
+
+            if (totalProb <= 0f) return;
+
+            if (deductAmount >= totalProb)
             {
                 for (int i = 0; i < list.Count; i++)
                 {
-                    if (list[i].grade == grade)
-                    {
-                        float currentProb = list[i].probability;
-                        float deduction = Mathf.Min(currentProb, remainingToDeduct);
-                        
-                        var updated = list[i];
-                        updated.probability -= deduction;
-                        list[i] = updated;
-
-                        remainingToDeduct -= deduction;
-                        if (remainingToDeduct <= 0f) return;
-                    }
+                    var updated = list[i];
+                    updated.probability = 0f;
+                    list[i] = updated;
                 }
+                return;
+            }
+
+            float keepRatio = 1f - (deductAmount / totalProb);
+
+            for (int i = 0; i < list.Count; i++)
+            {
+                var updated = list[i];
+                updated.probability *= keepRatio;
+                list[i] = updated;
             }
         }
 
         private int EvaluateBaitWeightInfluence(FishSpawnEntry entry, BaitDataSO bait)
         {
-            // Value 속성 대신 확실하게 검증된 GetValue() 호출로 대체[cite: 1, 3]
             if (bait == null) return entry.weight.GetValue();
 
             foreach (var pref in bait.preferredFishList)

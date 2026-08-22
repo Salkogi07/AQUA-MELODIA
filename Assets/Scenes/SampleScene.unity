@@ -240,7 +240,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb91f250e2cc4697bdb69136a793f877, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.Data.FishingDataManager
-  _maxCapacity: 10
+  _maxCapacity: 9
 --- !u!114 &64626360
 MonoBehaviour:
   m_ObjectHideFlags: 0
