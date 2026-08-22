@@ -43,5 +43,108 @@ namespace FishingSystem.Bait
 
         [Header("💡 [유형 2] 지역 전용 등급 부스터 (특정 지역 등급 출현율 % + 내부 가중치 스탯 동시 보정)")]
         public List<RegionGradeBaitBonus> regionGradeBonusList = new();
+        
+        /// <summary>
+        /// 미끼의 기본 설명 및 동적 보너스 수치를 서식 문자열로 생성하여 반환합니다.
+        /// </summary>
+        public string GetFormattedDescription()
+        {
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+            
+            // 기본 설명 추가
+            sb.AppendLine(description);
+            sb.AppendLine();
+            
+            // 보너스 효과 추가
+            sb.AppendLine("<color=#FFA500><b>[미끼 사용 효과]</b></color>");
+
+            bool hasEffects = false;
+
+            // 1. 특정 물고기 저격 보너스 정보 검사
+            if (preferredFishList != null && preferredFishList.Count > 0)
+            {
+                bool preferredSectionAdded = false;
+                
+                foreach (var pref in preferredFishList)
+                {
+                    if (pref.targetFish == null) continue;
+                    
+                    if (!preferredSectionAdded)
+                    {
+                        sb.AppendLine("<b><color=#88FF88>• 특정 수종 선호 효과:</color></b>");
+                        preferredSectionAdded = true;
+                        hasEffects = true;
+                    }
+
+                    string fishName = pref.targetFish.fishName;
+                    string bonusText = "";
+
+                    if (pref.gradeChanceBoost > 0f)
+                        bonusText += $"해당 등급 출현율 <color=#FFFF55>+{pref.gradeChanceBoost}%</color> ";
+                    
+                    if (pref.weightBonus != 0)
+                        bonusText += $"어종 개별 가중치 <color=#55FFFF>+{pref.weightBonus}</color>";
+
+                    sb.AppendLine($"  - {fishName} : {bonusText}");
+                }
+            }
+
+            // 2. 지역 전용 등급 부스터 보너스 정보 검사
+            if (regionGradeBonusList != null && regionGradeBonusList.Count > 0)
+            {
+                if (hasEffects) sb.AppendLine(); // 한 줄 줄바꿈 추가
+                
+                bool regionSectionAdded = false;
+
+                foreach (var bonus in regionGradeBonusList)
+                {
+                    if (bonus.gradeChanceBoost <= 0f) continue;
+
+                    if (!regionSectionAdded)
+                    {
+                        sb.AppendLine("<b><color=#88CCFF>• 지역별 환경 확률 보정:</color></b>");
+                        regionSectionAdded = true;
+                        hasEffects = true;
+                    }
+
+                    string regionStr = ConvertRegionToString(bonus.targetRegion);
+                    string gradeStr = ConvertGradeToString(bonus.targetGrade);
+
+                    sb.AppendLine($"  - [{regionStr}] 구역에서 <b>{gradeStr}</b> 등급 확률 <color=#FFFF55>+{bonus.gradeChanceBoost}%</color>");
+                }
+            }
+
+            if (!hasEffects)
+            {
+                sb.AppendLine("• 특별한 확률 변경 보너스 효과가 없습니다.");
+            }
+
+            return sb.ToString();
+        }
+
+        private string ConvertRegionToString(FishingRegion region)
+        {
+            return region switch
+            {
+                FishingRegion.Ocean => "바다",
+                FishingRegion.River => "강",
+                FishingRegion.Lake => "호수",
+                FishingRegion.DeepSea => "심해",
+                _ => region.ToString()
+            };
+        }
+
+        private string ConvertGradeToString(FishGrade grade)
+        {
+            return grade switch
+            {
+                FishGrade.Common => "일반",
+                FishGrade.Rare => "희귀",
+                FishGrade.Epic => "에픽",
+                FishGrade.Unique => "유니크",
+                FishGrade.Legend => "전설",
+                _ => grade.ToString()
+            };
+        }
     }
 }
