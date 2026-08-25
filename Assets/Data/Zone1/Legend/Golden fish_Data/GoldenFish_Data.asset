@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: GoldenFish_Data
   m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.Fish.FishDataSO
   grade: 4
+  habitatRegion: 0
   fishName: "\uD669\uAE08\uBB3C\uACE0\uAE30"
   fishSprite: {fileID: 0}
-  fishPrefab: {fileID: 0}
+  fishPrefab: {fileID: 4069598548445070687, guid: 28df409669ec4cf4e9166d17404b54e5, type: 3}
   minLength: 10
   maxLength: 120
   maxStamina: 1000

@@ -16,7 +16,7 @@ MonoBehaviour:
   habitatRegion: 0
   fishName: "\uACE0\uB4F1\uC5B4"
   fishSprite: {fileID: 21300000, guid: 3d52fc42aabbdab4bb26728dada1d250, type: 3}
-  fishPrefab: {fileID: 0}
+  fishPrefab: {fileID: 4069598548445070687, guid: 28df409669ec4cf4e9166d17404b54e5, type: 3}
   minLength: 10
   maxLength: 120
   maxStamina: 130
