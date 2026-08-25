@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59d86cf3eae64b5797630851886ab24a, type: 3}
+  m_Name: Blobfish_Data
+  m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.Fish.FishDataSO
+  grade: 2
+  habitatRegion: 0
+  fishName: "\uBD88\uB86D\uD53C\uC26C"
+  fishSprite: {fileID: 0}
+  fishPrefab: {fileID: 0}
+  minLength: 10
+  maxLength: 120
+  maxStamina: 620
+  strength: 3
+  agility: 2
+  patternData: {fileID: 11400000, guid: 9579a28d995fc6e45b6f15f1865046ce, type: 2}
+  escapePatternData: {fileID: 11400000, guid: 0cef4af5f8bed254ba120a080e1a065a, type: 2}

@@ -10,21 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c6b9be59a8800c7459ca6742bf500b57, type: 3}
-  m_Name: Bead fish_EscapePattern
+  m_Name: Squid_EscapePattern
   m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.Fishing_Pattern.EscapePatternDataSO
   points:
-  - {x: -0.94, y: 1.88}
-  - {x: 0.79, y: 1.85}
-  - {x: 1.66, y: 0.48}
-  - {x: 1.64, y: -0.85}
-  - {x: 0.44, y: -2.22}
-  - {x: -0.86, y: -2.25}
-  - {x: -1.96, y: -0.88}
-  - {x: -2.04, y: 0.4}
-  - {x: -1.24, y: 1.45}
+  - {x: 0.56, y: -0.62}
+  - {x: 0.06, y: 2.18}
+  - {x: -0.39, y: -0.68}
+  - {x: -2.84, y: -3.08}
+  - {x: 2.71, y: 0.3}
+  - {x: -1.56, y: -3.22}
+  - {x: 2.79, y: -1.72}
+  - {x: -3.14, y: -0.72}
+  - {x: 2.01, y: -2.9}
   dotsPerFrame: 3
   drawDelayMs: 10
   dotSpacing: 0.3
   detectionSpacing: 0.1
-  timeLimit: 3
-  inkBufferMultiplier: 1.6
+  timeLimit: 6
+  inkBufferMultiplier: 2

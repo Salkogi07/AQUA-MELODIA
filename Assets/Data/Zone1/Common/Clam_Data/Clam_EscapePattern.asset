@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: Clam_EscapePattern
   m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.Fishing_Pattern.EscapePatternDataSO
   points:
-  - {x: -0.41, y: -2.3}
-  - {x: 0.54, y: -2.28}
+  - {x: -0.21, y: -2.28}
+  - {x: 0.89, y: -2.32}
   - {x: -2.61, y: 0.02}
   - {x: -1.31, y: 2.05}
   - {x: 0.89, y: 1.98}
   - {x: 2.34, y: 0.08}
-  - {x: -0.86, y: -2.15}
+  - {x: -1.14, y: -2.28}
   dotsPerFrame: 3
   drawDelayMs: 10
   dotSpacing: 0.3

@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59d86cf3eae64b5797630851886ab24a, type: 3}
+  m_Name: Squid_Data
+  m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.Fish.FishDataSO
+  grade: 2
+  habitatRegion: 0
+  fishName: "\uC624\uC9D5\uC5B4"
+  fishSprite: {fileID: 0}
+  fishPrefab: {fileID: 0}
+  minLength: 10
+  maxLength: 120
+  maxStamina: 400
+  strength: 3
+  agility: 3
+  patternData: {fileID: 11400000, guid: 918c3ddff1cb3b1438859c7ef9af7fba, type: 2}
+  escapePatternData: {fileID: 11400000, guid: b06c52c82103754438e78904d4fd7d2d, type: 2}

@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: anchovy_EscapePattern
   m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.Fishing_Pattern.EscapePatternDataSO
   points:
-  - {x: 1.71, y: 0.48}
-  - {x: 1.34, y: -0.05}
-  - {x: 1.76, y: -0.5}
+  - {x: 1.71, y: 0.4}
+  - {x: 1.06, y: -0.12}
+  - {x: 1.69, y: -0.78}
   - {x: -2.29, y: 0.38}
-  - {x: -1.64, y: -0.1}
-  - {x: -2.26, y: -0.42}
+  - {x: -1.61, y: -0.2}
+  - {x: -2.26, y: -0.7}
   dotsPerFrame: 3
   drawDelayMs: 10
   dotSpacing: 0.3

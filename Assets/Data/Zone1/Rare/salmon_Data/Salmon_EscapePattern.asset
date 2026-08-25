@@ -25,5 +25,5 @@ MonoBehaviour:
   drawDelayMs: 10
   dotSpacing: 0.3
   detectionSpacing: 0.1
-  timeLimit: 3
-  inkBufferMultiplier: 1.2
+  timeLimit: 4.3
+  inkBufferMultiplier: 1.42
