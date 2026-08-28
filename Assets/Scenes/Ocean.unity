@@ -681,8 +681,8 @@ MonoBehaviour:
   startDotColor: {r: 0, g: 1, b: 0, a: 1}
   normalDotColor: {r: 1, g: 1, b: 1, a: 1}
   endDotColor: {r: 1, g: 0, b: 0, a: 1}
-  showDetector: 0
-  detectorScale: {x: 0.3, y: 0.3, z: 0.3}
+  showDetector: 1
+  detectorScale: {x: 0.4, y: 0.4, z: 0.4}
   detectorColor: {r: 0, g: 1, b: 0.0475955, a: 0.1764706}
 --- !u!1 &333966265
 GameObject:
@@ -1063,7 +1063,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 2103614873}
         m_TargetAssemblyTypeName: Scene.LoadSelectMapScene, Assembly-CSharp
-        m_MethodName: LoadScene
+        m_MethodName: LoadSceneByName
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1720,7 +1720,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed91700c061746b3ae2bb3fbd99843d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WorldTime.WorldLight
-  _worldTime: {fileID: 2103614871}
+  _worldTime: {fileID: 0}
   _gradient:
     serializedVersion: 2
     key0: {r: 0.13333334, g: 0.15294118, b: 0.33333334, a: 1}
@@ -3442,7 +3442,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df324e0bbde744e7b60b199471f17781, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WorldTime.WorldTimeDisplay
-  _worldTime: {fileID: 2103614871}
+  _worldTime: {fileID: 0}
 --- !u!1 &1343715655
 GameObject:
   m_ObjectHideFlags: 0
@@ -5601,8 +5601,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2103614870}
   - component: {fileID: 2103614872}
-  - component: {fileID: 2103614871}
   - component: {fileID: 2103614873}
+  - component: {fileID: 2103614874}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -5625,19 +5625,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2103614871
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2103614869}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 042b264ab4269f24581ba6b68a26fd19, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::WorldTime.WorldTime
-  _dayLengthInMinutes: 20
 --- !u!114 &2103614872
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5687,6 +5674,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe090b81579d4b02a37e51d42a311d14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Scene.LoadSelectMapScene
+--- !u!114 &2103614874
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2103614869}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 042b264ab4269f24581ba6b68a26fd19, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WorldTime.WorldTime
+  _dayLengthInMinutes: 20
 --- !u!1 &2144038892
 GameObject:
   m_ObjectHideFlags: 0

@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: NewFishingRod
   m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.Equipment.FishingRodDataSO
   rodName: "\uAE30\uBCF8 \uB09A\uC2EF\uB300"
-  rodPower: 10
+  description: "\uC774 \uB09A\uC2EF\uB300\uC5D0 \uB300\uD55C \uAE30\uBCF8 \uC124\uBA85\uC785\uB2C8\uB2E4."
+  rodPower: 5
   rodAgility: 3
   damageRateBonus: 0
   sweetSpotBonus: 0

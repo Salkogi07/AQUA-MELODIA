@@ -16,4 +16,7 @@ MonoBehaviour:
   baitSprite: {fileID: 0}
   description: "\uBBF8\uB07C\uC5D0 \uB300\uD55C \uC124\uBA85\uC785\uB2C8\uB2E4."
   preferredFishList: []
-  regionGradeBonusList: []
+  regionGradeBonusList:
+  - targetRegion: 0
+    targetGrade: 2
+    gradeChanceBoost: 90

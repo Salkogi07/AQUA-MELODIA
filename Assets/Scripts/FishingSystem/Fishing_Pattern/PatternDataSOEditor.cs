@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿#if UNITY_EDITOR
+using UnityEditor;
 using UnityEngine;
 using FishingSystem.Fishing_Pattern;
 using System.Collections.Generic;
@@ -334,3 +335,4 @@ public class PatternDataSOEditor : Editor
         }
     }
 }
+#endif

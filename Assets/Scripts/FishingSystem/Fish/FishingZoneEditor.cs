@@ -1,8 +1,8 @@
-﻿using UnityEngine;
+﻿#if UNITY_EDITOR
+using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
 using System.Linq;
-using FishingSystem.Bait;
 
 namespace FishingSystem.Fish
 {
@@ -216,3 +216,4 @@ namespace FishingSystem.Fish
         }
     }
 }
+#endif

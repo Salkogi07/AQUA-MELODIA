@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa70f28eed95494d83bcef1cbede4e0c, type: 3}
+  m_Name: Ocean
+  m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.Island.IslandDataSO
+  islandId: 1
+  islandName: Ocean
+  islandDescription: I like the sea.
+  requiredGold: 0
+  requiredFishList: []
+  features:
+  - featureName: "\uC9D1"
+    buttonName: Home
+    sceneName: Aquarium
+  - featureName: "\uC0C1\uC810"
+    buttonName: Store
+    sceneName: Store
+  - featureName: "\uB09A\uC2DC\uD130"
+    buttonName: Fishing
+    sceneName: Ocean
