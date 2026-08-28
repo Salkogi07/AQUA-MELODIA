@@ -23,4 +23,4 @@ MonoBehaviour:
   strength: 10
   agility: 3
   patternData: {fileID: 0}
-  escapePatternData: {fileID: 0}
+  escapePatternData: {fileID: 11400000, guid: a75de95e91cdfb64995426313dc3a4bc, type: 2}

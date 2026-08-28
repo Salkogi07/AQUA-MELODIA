@@ -11,10 +11,5 @@ public class Testing : MonoBehaviour
         {
             Time.timeScale = gameTimeSet;
         }
-        
-        if (Input.GetKeyDown(KeyCode.N))
-        {
-            LoadingManager.instance.LoadScene("Aquarium");
-        }
     }
 }
