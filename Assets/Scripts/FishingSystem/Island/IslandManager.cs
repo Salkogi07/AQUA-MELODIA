@@ -68,7 +68,7 @@ namespace FishingSystem.Island
             return true;
         }
 
-        private bool IsFishInEncyclopedia(FishDataSO targetFish)
+        public bool IsFishInEncyclopedia(FishDataSO targetFish)
         {
             if (FishingDataManager.Instance == null) return false;
             foreach (var kvp in FishingDataManager.Instance.Encyclopedia)

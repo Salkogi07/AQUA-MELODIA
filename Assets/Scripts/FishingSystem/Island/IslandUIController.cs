@@ -62,8 +62,8 @@ namespace FishingSystem.Island
                 // 미해금 상태: 해금 비용 및 조건 제시
                 if (unlockPanel != null) unlockPanel.SetActive(true);
                 if (featuresPanel != null) featuresPanel.SetActive(false);
-
-                if (txtUnlockCost != null) txtUnlockCost.text = $"{targetIsland.requiredGold} Gold";
+                
+                UpdateUnlockRequirementsDisplay();
                 
                 if (btnUnlock != null)
                 {
@@ -81,12 +81,48 @@ namespace FishingSystem.Island
                 RefreshUI();
             }
         }
+        
+        /// <summary>
+        /// txtUnlockCost 텍스트 컴포넌트에 골드 가격과 필요한 물고기 획득 상황을 일괄 업데이트합니다.
+        /// </summary>
+        private void UpdateUnlockRequirementsDisplay()
+        {
+            if (txtUnlockCost == null) return;
+
+            System.Text.StringBuilder sb = new();
+
+            // 1. 골드 비용 표시 빌드
+            sb.AppendLine($"<b>필요 금액:</b> {targetIsland.requiredGold} Gold");
+            sb.AppendLine(); // 가독성을 위한 줄바꿈 추가
+
+            // 2. 필요 물고기 목록 표시 빌드
+            if (targetIsland.requiredFishList == null || targetIsland.requiredFishList.Count == 0)
+            {
+                sb.AppendLine("<b>해금 어종 조건:</b> 없음");
+            }
+            else
+            {
+                sb.AppendLine("<b>해금 어종 조건:</b>");
+                foreach (var reqFish in targetIsland.requiredFishList)
+                {
+                    if (reqFish == null) continue;
+
+                    bool isCaught = IslandManager.Instance.IsFishInEncyclopedia(reqFish);
+                    string statusText = isCaught 
+                        ? "<color=#55FF55>[완료]</color>" 
+                        : "<color=#FF5555>[미완료]</color>";
+
+                    sb.AppendLine($"{reqFish.fishName} {statusText}");
+                }
+            }
+
+            // 하나의 텍스트에 모든 내용을 일괄 대입하여 화면에 노출합니다.
+            txtUnlockCost.text = sb.ToString();
+        }
 
         /// <summary>
         /// 섬 데이터의 features 리스트를 바탕으로 버튼들을 동적 생성합니다.
         /// </summary>
-        // IslandUIController.cs 내부 SpawnFeatureButtons() 함수의 일부분
-
         private void SpawnFeatureButtons()
         {
             foreach (Transform child in buttonContainer)

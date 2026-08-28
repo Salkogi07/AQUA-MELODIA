@@ -206,6 +206,9 @@ GameObject:
   - component: {fileID: 64626359}
   - component: {fileID: 64626360}
   - component: {fileID: 64626361}
+  - component: {fileID: 64626362}
+  - component: {fileID: 64626363}
+  - component: {fileID: 64626364}
   m_Layer: 0
   m_Name: DataManager
   m_TagString: Untagged
@@ -267,6 +270,44 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.Equipment.PlayerFishingEquipment
   equippedRod: {fileID: 11400000, guid: a999d0b4875df5b4cb88f36e6c1bb1e7, type: 2}
+--- !u!114 &64626362
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 64626357}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 042b264ab4269f24581ba6b68a26fd19, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WorldTime.WorldTime
+  _dayLengthInMinutes: 20
+--- !u!114 &64626363
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 64626357}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b4eade7d06c48c5ad8e67a36dabe702, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.Island.IslandManager
+--- !u!114 &64626364
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 64626357}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a270be00d5340e7980488d251d29827, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.House.HouseDataManager
+  _maxCapacity: 15
 --- !u!1 &152272356
 GameObject:
   m_ObjectHideFlags: 0
@@ -5602,7 +5643,6 @@ GameObject:
   - component: {fileID: 2103614870}
   - component: {fileID: 2103614872}
   - component: {fileID: 2103614873}
-  - component: {fileID: 2103614874}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -5674,19 +5714,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe090b81579d4b02a37e51d42a311d14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Scene.LoadSelectMapScene
---- !u!114 &2103614874
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2103614869}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 042b264ab4269f24581ba6b68a26fd19, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::WorldTime.WorldTime
-  _dayLengthInMinutes: 20
 --- !u!1 &2144038892
 GameObject:
   m_ObjectHideFlags: 0

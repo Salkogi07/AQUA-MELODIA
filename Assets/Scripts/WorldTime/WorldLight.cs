@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
+using R3; // R3 기능 탑재
 
 namespace WorldTime
 {
@@ -12,27 +13,32 @@ namespace WorldTime
         [SerializeField] private WorldTime _worldTime;
         
         [Header("시각 효과")]
-        [SerializeField] private Gradient _gradient;       // 시간에 따른 색상 (0: 자정, 0.5: 정오)
-        [SerializeField] private AnimationCurve _intensityCurve; // 시간에 따른 밝기
+        [SerializeField] private Gradient _gradient;       
+        [SerializeField] private AnimationCurve _intensityCurve; 
 
-        private void Awake()
+        private void Start()
         {
             _light = GetComponent<Light2D>();
-            _worldTime.WorldTimeChanged += OnWorldTimeChanged;
-        }
 
-        private void OnDestroy()
-        {
+            // 직렬화 할당이 비어 있을 경우 싱글톤 인스턴스 자동 탐색
+            if (_worldTime == null)
+            {
+                _worldTime = WorldTime.Instance;
+            }
+
             if (_worldTime != null)
-                _worldTime.WorldTimeChanged -= OnWorldTimeChanged;
+            {
+                // R3 스트림 구독 처리 및 생명주기에 맞춘 자동 해제 등록
+                _worldTime.CurrentTime
+                    .Subscribe(newTime => ApplyLightSettings(newTime))
+                    .AddTo(this);
+            }
         }
 
-        private void OnWorldTimeChanged(object sender, TimeSpan newTime)
+        private void ApplyLightSettings(TimeSpan time)
         {
-            // 하루 중 진행률 (0.0 ~ 1.0)
-            float timePercent = PercentOfDay(newTime);
+            float timePercent = PercentOfDay(time);
             
-            // 최종 색상 및 밝기 적용 (계절 보정 없이 직접 적용)
             _light.color = _gradient.Evaluate(timePercent);
             _light.intensity = _intensityCurve.Evaluate(timePercent);
         }

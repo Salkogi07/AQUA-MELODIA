@@ -1,24 +1,36 @@
 using UnityEngine;
 using System;
+using R3; // R3 기능 탑재
 
 namespace WorldTime
 {
     public class WorldTime : MonoBehaviour
     {
-        public event EventHandler<TimeSpan> WorldTimeChanged;
-        
+        public static WorldTime Instance { get; private set; }
+
         [Header("시간 설정")]
         [Tooltip("게임 내 하루가 실제 현실에서 몇 분 동안 지속될지 설정합니다.")]
         [SerializeField] private float _dayLengthInMinutes = 20f;
 
-        private TimeSpan _currentTime;
+        // R3 ReactiveProperty로 실시간 시간 변경 관리 (초기값: 07시)
+        private readonly ReactiveProperty<TimeSpan> _currentTime = new(TimeSpan.FromHours(7));
+        public ReadOnlyReactiveProperty<TimeSpan> CurrentTime => _currentTime;
+
         private float _timer;
 
-        private void Start()
+        private void Awake()
         {
-            // 00:00:00(자정)부터 시작합니다. 
-            //_currentTime = TimeSpan.Zero;
-            _currentTime = TimeSpan.FromHours(7);
+            // 다른 씬으로 넘어가도 파괴되지 않고 시간이 계속 유지되는 싱글톤 처리
+            if (Instance == null)
+            {
+                Instance = this;
+                DontDestroyOnLoad(gameObject);
+            }
+            else
+            {
+                Destroy(gameObject);
+                return;
+            }
         }
 
         private void Update()
@@ -30,25 +42,21 @@ namespace WorldTime
         {
             _timer += Time.deltaTime;
             
-            // 게임 내 1분을 처리하기 위한 실제 현실의 초 계산
             float realSecondsForGameMinute = (_dayLengthInMinutes * 60f) / WorldTimeConstants.MinutesInDay;
 
             if (_timer >= realSecondsForGameMinute)
             {
-                _currentTime = _currentTime.Add(TimeSpan.FromMinutes(1));
+                TimeSpan nextTime = _currentTime.Value.Add(TimeSpan.FromMinutes(1));
                 
-                // 24시간이 지나면 다시 0시로 초기화
-                if (_currentTime.TotalDays >= 1)
+                // 24시간 초과 시 자정(0시) 기준으로 보정
+                if (nextTime.TotalDays >= 1)
                 {
-                    _currentTime = _currentTime.Subtract(TimeSpan.FromDays(1));
+                    nextTime = nextTime.Subtract(TimeSpan.FromDays(1));
                 }
                 
+                _currentTime.Value = nextTime;
                 _timer = 0;
-                WorldTimeChanged?.Invoke(this, _currentTime);
             }
         }
-
-        // 현재 시간을 외부에서 확인하고 싶을 때를 위한 속성
-        public TimeSpan CurrentTime => _currentTime;
     }
 }

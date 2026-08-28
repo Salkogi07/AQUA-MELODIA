@@ -13,17 +13,15 @@ MonoBehaviour:
   m_Name: Ocean
   m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.Island.IslandDataSO
   islandId: 1
-  islandName: Ocean
-  islandDescription: I like the sea.
+  islandName: "\uBC14\uB2E4"
+  islandDescription: "\uC8FC\uC778\uACF5\uC774 \uC0B4\uACE0 \uC788\uB294 \uC544\uC8FC
+    \uAE30\uBCF8\uC801\uC778 \uBC14\uB2E4\uC774\uB2E4."
   requiredGold: 0
   requiredFishList: []
   features:
-  - featureName: "\uC9D1"
-    buttonName: Home
+  - buttonName: "\uC9D1"
     sceneName: Aquarium
-  - featureName: "\uC0C1\uC810"
-    buttonName: Store
+  - buttonName: "\uC0C1\uC810"
     sceneName: Store
-  - featureName: "\uB09A\uC2DC\uD130"
-    buttonName: Fishing
+  - buttonName: "\uB09A\uC2DC\uD130"
     sceneName: Ocean

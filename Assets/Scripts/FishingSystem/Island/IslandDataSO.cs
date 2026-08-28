@@ -7,9 +7,6 @@ namespace FishingSystem.Island
     [System.Serializable]
     public struct IslandFeature
     {
-        [Tooltip("기능 분류 이름 (예: Marina, Market, DeepSea 등)")]
-        public string featureName;
-
         [Tooltip("실제 UI 버튼에 표시될 이름 (예: 선착장 가기, 현지 마켓 입장)")]
         public string buttonName;
         
