@@ -19,4 +19,4 @@ MonoBehaviour:
   regionGradeBonusList:
   - targetRegion: 0
     targetGrade: 2
-    gradeChanceBoost: 90
+    gradeChanceBoost: 30

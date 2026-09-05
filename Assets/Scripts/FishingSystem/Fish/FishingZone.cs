@@ -167,46 +167,51 @@ namespace FishingSystem.Fish
 
             if (bait == null) return adjustedChances;
 
+            // 어떤 등급들이 보너스를 받았는지 추적하기 위한 리스트
+            HashSet<FishGrade> boostedGrades = new HashSet<FishGrade>();
             float totalBoostAmount = 0f;
             string boostDetails = "";
 
-            // [조건 1] 특정 저격 물고기 미끼에 의한 등급 확률 향상
+            // [조건 1] 특정 저격 물고기 미끼
             foreach (var pref in bait.preferredFishList)
             {
                 if (pref.targetFish != null && pref.gradeChanceBoost > 0f)
                 {
-                    float added = AddGradeProbability(adjustedChances, pref.targetFish.grade, pref.gradeChanceBoost);
-                    totalBoostAmount += added;
-                    boostDetails += $"\n   - [저격보너스] {pref.targetFish.fishName} ({pref.targetFish.grade}): +{added}%";
+                    AddGradeProbability(adjustedChances, pref.targetFish.grade, pref.gradeChanceBoost);
+                    boostedGrades.Add(pref.targetFish.grade);
+                    totalBoostAmount += pref.gradeChanceBoost;
+                    boostDetails += $"\n   - [저격보너스] {pref.targetFish.fishName} ({pref.targetFish.grade}): +{pref.gradeChanceBoost}%";
                 }
             }
 
-            // [조건 2] 지역 기반 특정 등급 미끼에 의한 등급 확률 향상
+            // [조건 2] 지역 기반 등급 미끼
             foreach (var bonus in bait.regionGradeBonusList)
             {
                 if (bonus.targetRegion == this.zoneRegion && bonus.gradeChanceBoost > 0f)
                 {
-                    float added = AddGradeProbability(adjustedChances, bonus.targetGrade, bonus.gradeChanceBoost);
-                    totalBoostAmount += added;
-                    boostDetails += $"\n   - [지역보너스] {bonus.targetRegion} / {bonus.targetGrade}: +{added}%";
+                    AddGradeProbability(adjustedChances, bonus.targetGrade, bonus.gradeChanceBoost);
+                    boostedGrades.Add(bonus.targetGrade);
+                    totalBoostAmount += bonus.gradeChanceBoost;
+                    boostDetails += $"\n   - [지역보너스] {bonus.targetRegion} / {bonus.targetGrade}: +{bonus.gradeChanceBoost}%";
                 }
             }
 
-            // [정규화] 상승한 보너스 확률 합계만큼 하위 등급(Common 등)에서 감산 처리하여 전체 확률 100% 균형을 맞춤
+            // [정규화] 보너스를 받은 등급은 유지하고, 나머지를 깎아서 100%를 맞춤
             if (totalBoostAmount > 0f)
             {
-                NormalizeChances(adjustedChances, totalBoostAmount);
+                NormalizeChancesSmart(adjustedChances, boostedGrades);
                 
                 if (enableDebugLog)
                 {
-                    Debug.Log($"<color=magenta>📈 [미끼 등급 확률 보정 내역]</color>{boostDetails}\n   - 총 상승 보정치: +{totalBoostAmount}% (하위 등급 자동 차감 완료)");
+                    Debug.Log($"<color=magenta>📈 [미끼 등급 확률 보정 내역]</color>{boostDetails}\n   - 보정 완료 (보너스 등급 우선순위 적용)");
                 }
             }
 
             return adjustedChances;
         }
 
-        private float AddGradeProbability(List<GradeChance> list, FishGrade targetGrade, float amount)
+        // 단순 더하기로 변경 (Normalize는 나중에 한꺼번에 수행)
+        private void AddGradeProbability(List<GradeChance> list, FishGrade targetGrade, float amount)
         {
             for (int i = 0; i < list.Count; i++)
             {
@@ -215,42 +220,73 @@ namespace FishingSystem.Fish
                     var updated = list[i];
                     updated.probability += amount;
                     list[i] = updated;
-                    return amount;
+                    return;
                 }
             }
-            return 0f;
         }
 
-        private void NormalizeChances(List<GradeChance> list, float deductAmount)
+        /// <summary>
+        /// 보너스를 받은 등급의 확률은 보호하고, 나머지 등급에서 확률을 차감하여 100%를 맞춥니다.
+        /// </summary>
+        private void NormalizeChancesSmart(List<GradeChance> list, HashSet<FishGrade> boostedGrades)
         {
-            if (list == null || list.Count == 0 || deductAmount <= 0f) return;
+            float total = 0f;
+            foreach (var gc in list) total += gc.probability;
 
-            float totalProb = 0f;
-            for (int i = 0; i < list.Count; i++)
+            // 이미 100% 이하라면 정규화 불필요 (또는 부족분은 Common에 채움)
+            if (total <= 100f) return;
+
+            float excess = total - 100f; // 깎아야 할 초과량
+
+            // 1. 보너스를 받지 않은 등급들의 총합을 구함
+            float nonBoostedTotal = 0f;
+            foreach (var gc in list)
             {
-                totalProb += list[i].probability;
+                if (!boostedGrades.Contains(gc.grade))
+                    nonBoostedTotal += gc.probability;
             }
 
-            if (totalProb <= 0f) return;
-
-            if (deductAmount >= totalProb)
+            if (nonBoostedTotal >= excess)
             {
+                // 보너스 안 받은 애들만 깎아서 해결 가능한 경우
+                float reductionRatio = (nonBoostedTotal - excess) / nonBoostedTotal;
                 for (int i = 0; i < list.Count; i++)
                 {
-                    var updated = list[i];
-                    updated.probability = 0f;
-                    list[i] = updated;
+                    if (!boostedGrades.Contains(list[i].grade))
+                    {
+                        var updated = list[i];
+                        updated.probability *= reductionRatio;
+                        list[i] = updated;
+                    }
                 }
-                return;
             }
-
-            float keepRatio = 1f - (deductAmount / totalProb);
-
-            for (int i = 0; i < list.Count; i++)
+            else
             {
-                var updated = list[i];
-                updated.probability *= keepRatio;
-                list[i] = updated;
+                // 보너스 안 받은 애들을 다 0으로 만들어도 excess가 남는 경우 (보너스 수치가 너무 큼)
+                // 보너스 안 받은 애들은 전부 0
+                for (int i = 0; i < list.Count; i++)
+                {
+                    if (!boostedGrades.Contains(list[i].grade))
+                    {
+                        var updated = list[i];
+                        updated.probability = 0f;
+                        list[i] = updated;
+                    }
+                }
+
+                // 남은 초과량은 보너스 받은 애들끼리 비율 맞춰서 100%로 압축
+                float boostedTotal = 0f;
+                foreach (var gc in list) boostedTotal += gc.probability;
+                
+                for (int i = 0; i < list.Count; i++)
+                {
+                    if (boostedGrades.Contains(list[i].grade))
+                    {
+                        var updated = list[i];
+                        updated.probability = (updated.probability / boostedTotal) * 100f;
+                        list[i] = updated;
+                    }
+                }
             }
         }
 
