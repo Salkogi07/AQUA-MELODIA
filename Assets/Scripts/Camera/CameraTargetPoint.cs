@@ -1,39 +1,57 @@
 ﻿using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 public class CameraTargetPoint : MonoBehaviour
 {
     [Header("Camera Target Settings")]
-    [Tooltip("이 위치로 이동할 때의 카메라 Size (작을수록 확대됨)")]
-    public float targetZoomSize = 5f;
-    [Tooltip("기지모 색상 (구분하기 쉽게 변경 가능)")]
+    [Tooltip("이 위치로 이동할 때의 줌 배율 (1.0 = 기본, 2.0 = 2배 확대)")]
+    public float targetZoomFactor = 2f;
+
+    [Tooltip("기지모 색상")]
     public Color gizmoColor = Color.green;
 
-    // 에디터 화면에서 카메라가 비출 영역을 기지모로 그려줍니다.
+    // 에디터 화면에서 Pixel Perfect 카메라 기준 실제 비춰질 영역을 박스로 표시
     private void OnDrawGizmos()
     {
-        // 2D 카메라의 화면 비율 (16:9 기준, 실제 카메라가 있다면 카메라 비율 사용)
-        float aspect = 16f / 9f; 
+        PixelPerfectCamera ppc = null;
         if (Camera.main != null)
         {
-            aspect = Camera.main.aspect;
+            ppc = Camera.main.GetComponent<PixelPerfectCamera>();
         }
 
-        // 2D Orthographic 카메라의 세로 길이는 Size * 2, 가로는 세로 * 비율입니다.
-        float height = targetZoomSize * 2f;
-        float width = height * aspect;
+        float width, height;
+
+        if (ppc != null)
+        {
+            // Pixel Perfect Camera의 Reference Resolution 및 PPU 기반 실제 픽셀 범위 연산
+            float zoom = targetZoomFactor > 0 ? targetZoomFactor : 1f;
+            float targetPPU = ppc.assetsPPU * zoom;
+
+            width = ppc.refResolutionX / targetPPU;
+            height = ppc.refResolutionY / targetPPU;
+        }
+        else
+        {
+            // 예외 처리 (기본 16:9 비율)
+            height = (5f / (targetZoomFactor > 0 ? targetZoomFactor : 1f)) * 2f;
+            width = height * (16f / 9f);
+        }
 
         Gizmos.color = gizmoColor;
-        // 위치에 십자선 그리기
+        
+        // Target 위치 십자선
         Gizmos.DrawLine(transform.position + Vector3.up * 0.5f, transform.position + Vector3.down * 0.5f);
         Gizmos.DrawLine(transform.position + Vector3.left * 0.5f, transform.position + Vector3.right * 0.5f);
-        
-        // 카메라가 비출 실제 영역(사각형) 그리기
+
+        // 연출 시 비춰질 정확한 카메라 영역 WireBox
         Gizmos.DrawWireCube(transform.position, new Vector3(width, height, 0));
     }
-    
-    // 이 위치로 카메라를 연출하는 편의용 함수
+
+    /// <summary>
+    /// 이 위치와 줌 배율로 카메라 연출을 실행하는 함수
+    /// </summary>
     public void PlayCameraAction(float duration = 1.5f)
     {
-        CameraManager.Instance.MoveCameraTo(transform.position, targetZoomSize, duration);
+        CameraManager.Instance.MoveCameraTo(transform.position, targetZoomFactor, duration);
     }
 }

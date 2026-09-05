@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 using System.Collections;
 
 public class CameraManager : MonoBehaviour
@@ -7,11 +8,13 @@ public class CameraManager : MonoBehaviour
 
     [Header("Camera Settings")]
     [SerializeField] private Camera mainCamera;
+    [SerializeField] private PixelPerfectCamera pixelPerfectCamera;
+    
     [Tooltip("카메라 이동 시 부드러운 정도를 조절하는 커브")]
     [SerializeField] private AnimationCurve transitionCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
 
     private Vector3 originalPosition;
-    private float originalOrthoSize;
+    private float baseOrthoSize;
     private Coroutine cameraCoroutine;
 
     private void Awake()
@@ -22,26 +25,30 @@ public class CameraManager : MonoBehaviour
         else
             Destroy(gameObject);
 
-        if (mainCamera == null)
+        if (mainCamera == null) mainCamera = Camera.main;
+        if (pixelPerfectCamera == null && mainCamera != null)
         {
-            mainCamera = Camera.main;
+            pixelPerfectCamera = mainCamera.GetComponent<PixelPerfectCamera>();
         }
 
-        // 초기 카메라 상태 저장
+        // 초기 위치 및 기준 Orthographic Size 저장
         originalPosition = mainCamera.transform.position;
-        originalOrthoSize = mainCamera.orthographicSize;
+        if (mainCamera != null)
+        {
+            baseOrthoSize = mainCamera.orthographicSize;
+        }
     }
 
     /// <summary>
-    /// 지정된 위치와 줌 크기로 카메라를 이동시킵니다.
+    /// 지정된 위치와 줌 배율(zoomFactor)로 카메라를 부드럽게 이동시킵니다.
     /// </summary>
     /// <param name="targetPosition">목표 위치</param>
-    /// <param name="targetOrthoSize">목표 줌 크기 (작을수록 확대)</param>
+    /// <param name="zoomFactor">줌 배율 (1.0 = 기본, 2.0 = 2배 확대)</param>
     /// <param name="duration">이동에 걸리는 시간</param>
-    public void MoveCameraTo(Vector2 targetPosition, float targetOrthoSize, float duration)
+    public void MoveCameraTo(Vector2 targetPosition, float zoomFactor, float duration)
     {
         if (cameraCoroutine != null) StopCoroutine(cameraCoroutine);
-        cameraCoroutine = StartCoroutine(CameraTransitionRoutine(targetPosition, targetOrthoSize, duration));
+        cameraCoroutine = StartCoroutine(CameraTransitionRoutine(targetPosition, zoomFactor, duration));
     }
 
     /// <summary>
@@ -50,32 +57,47 @@ public class CameraManager : MonoBehaviour
     public void ResetCamera(float duration)
     {
         if (cameraCoroutine != null) StopCoroutine(cameraCoroutine);
-        cameraCoroutine = StartCoroutine(CameraTransitionRoutine(originalPosition, originalOrthoSize, duration));
+        cameraCoroutine = StartCoroutine(CameraTransitionRoutine(originalPosition, 1.0f, duration));
     }
 
-    private IEnumerator CameraTransitionRoutine(Vector2 targetPos, float targetSize, float duration)
+    private IEnumerator CameraTransitionRoutine(Vector2 targetPos, float targetZoomFactor, float duration)
     {
         Vector3 startPos = mainCamera.transform.position;
-        // 2D 카메라의 Z축(일반적으로 -10)은 유지해야 화면이 깨지지 않습니다.
         Vector3 finalPos = new Vector3(targetPos.x, targetPos.y, startPos.z);
-        
+
         float startSize = mainCamera.orthographicSize;
+        // targetZoomFactor가 2.0이면 목표 크기는 절반(1/2)으로 줄어들어 화면이 2배 확대됩니다.
+        float finalSize = baseOrthoSize / Mathf.Max(0.001f, targetZoomFactor);
+
+        // 1. 연출 도중 끊김(드드득거림) 방지를 위해 PixelPerfectCamera 잠시 끄기
+        if (pixelPerfectCamera != null)
+        {
+            pixelPerfectCamera.enabled = false;
+        }
+
         float timeElapsed = 0f;
 
         while (timeElapsed < duration)
         {
             timeElapsed += Time.deltaTime;
             float t = timeElapsed / duration;
-            float curveT = transitionCurve.Evaluate(t); // 커브를 적용해 더 자연스럽게 연출
+            float curveT = transitionCurve.Evaluate(t);
 
+            // 위치 및 크기(Orthographic Size) 부드러운 보간
             mainCamera.transform.position = Vector3.Lerp(startPos, finalPos, curveT);
-            mainCamera.orthographicSize = Mathf.Lerp(startSize, targetSize, curveT);
+            mainCamera.orthographicSize = Mathf.Lerp(startSize, finalSize, curveT);
 
             yield return null;
         }
 
-        // 최종 값 정확히 맞추기
+        // 2. 최종 위치/크기 맞추기
         mainCamera.transform.position = finalPos;
-        mainCamera.orthographicSize = targetSize;
+        mainCamera.orthographicSize = finalSize;
+
+        // 3. 줌 연출이 끝나고 기본 배율(1.0)로 돌아왔을 때만 PixelPerfectCamera 재활성화
+        if (pixelPerfectCamera != null && Mathf.Approximately(targetZoomFactor, 1.0f))
+        {
+            pixelPerfectCamera.enabled = true;
+        }
     }
 }
