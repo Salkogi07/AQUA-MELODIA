@@ -9,6 +9,7 @@ namespace FishingSystem.House
         [Header("어항 영역 설정")]
         [Tooltip("물고기가 헤엄칠 수 있는 영역을 결정하는 BoxCollider2D (Trigger 체크 필수)")]
         [SerializeField] private BoxCollider2D swimArea;
+        public BoxCollider2D SwimArea => swimArea;
 
         [Header("수영 물리 스펙")]
         public float minSwimSpeed = 0.5f;
@@ -63,6 +64,29 @@ namespace FishingSystem.House
                 AquariumFish swimBehavior = spawned.AddComponent<AquariumFish>();
                 swimBehavior.Initialize(swimArea, minSwimSpeed, maxSwimSpeed, directionChangeDelay, originalSpriteFacesRight);
             }
+        }
+        
+        public void SpawnSingleFishAtPosition(FishData fish, Vector3 worldPos)
+        {
+            if (fish == null || fish.Data == null || fish.Data.fishPrefab == null) return;
+
+            // 1. Z축 보정: 어항의 위치나 배경보다 약간 앞에 오도록 설정 (보통 0 혹은 어항의 Z값)
+            worldPos.z = transform.position.z;
+
+            // 2. 프리팹 생성
+            GameObject spawned = Instantiate(fish.Data.fishPrefab, worldPos, Quaternion.identity, transform);
+            _spawnedFishes.Add(spawned);
+
+            // 3. 수영 인공지능 부착 및 초기화
+            if (!spawned.TryGetComponent<AquariumFish>(out var swimBehavior))
+            {
+                swimBehavior = spawned.AddComponent<AquariumFish>();
+            }
+    
+            // 현재 Aquarium에 설정된 스펙을 그대로 전달
+            swimBehavior.Initialize(swimArea, minSwimSpeed, maxSwimSpeed, directionChangeDelay, originalSpriteFacesRight);
+    
+            Debug.Log($"🐟 {fish.Data.fishName}가 {worldPos} 위치에 생성되었습니다.");
         }
 
         private void ClearAquarium()

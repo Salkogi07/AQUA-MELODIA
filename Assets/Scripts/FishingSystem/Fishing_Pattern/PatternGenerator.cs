@@ -31,6 +31,21 @@ namespace FishingSystem.Fishing_Pattern
         [SerializeField] private Vector3 detectorScale = Vector3.one;
         [SerializeField] private Color detectorColor = new Color(1f, 1f, 0f, 0.5f);
 
+        [Header("에디터 기즈모 설정 (Scene View Preview)")]
+        [SerializeField] private bool _drawGizmos = true;
+        [Tooltip("씬 뷰에서 미리보기할 패턴 에셋을 지정합니다.")]
+        [SerializeField] private EscapePatternDataSO _previewPatternData;
+        [Tooltip("패턴 데이터 편집기(EscapePatternDataSOEditor)의 CANVAS_LIMIT과 일치하게 설정하십시오.")]
+        [SerializeField] private Vector2 _canvasLimit = new Vector2(4f, 4f);
+        [SerializeField] private Color _boundaryColor = new Color(1f, 0f, 0f, 0.4f);
+        [SerializeField] private Color _pathLineColor = Color.cyan;
+
+        [Header("동적 크기 조절 설정")]
+        [Tooltip("실제 인게임에서 생성될 패턴의 크기 비율입니다 (0.5 = 50% 축소 생성)")]
+        [Range(0.1f, 2.0f)]
+        [SerializeField] private float _generationScale = 1.0f;
+        public float GenerationScale { get => _generationScale; set => _generationScale = Mathf.Clamp(value, 0.1f, 2.0f); }
+
         private readonly Subject<PatternDot> _onDotSpawned = new();
         public Observable<PatternDot> OnDotSpawned => _onDotSpawned;
 
@@ -77,7 +92,7 @@ namespace FishingSystem.Fishing_Pattern
             int currentFrameDotCount = 0;
             try
             {
-                Vector2 startOrigin = originPosition + points[0];
+                Vector2 startOrigin = originPosition + (points[0] * _generationScale);
                 PatternDot firstDot = dotPoolManager.GetDot();
                 firstDot.transform.position = startOrigin;
                 firstDot.SetColor(startDotColor);
@@ -88,8 +103,8 @@ namespace FishingSystem.Fishing_Pattern
 
                 for (int i = 0; i < points.Count - 1; i++)
                 {
-                    Vector2 start = originPosition + points[i];
-                    Vector2 end = originPosition + points[i + 1];
+                    Vector2 start = originPosition + (points[i] * _generationScale);
+                    Vector2 end = originPosition + (points[i + 1] * _generationScale);
                     float segmentLength = Vector2.Distance(start, end);
 
                     int visualCount = Mathf.FloorToInt(segmentLength / currentVisualSpacing);
@@ -142,7 +157,7 @@ namespace FishingSystem.Fishing_Pattern
             if (points.Count < 2) return;
 
             PatternDetector firstDetector = detectorPoolManager.GetDetector();
-            firstDetector.transform.position = origin + points[0];
+            firstDetector.transform.position = origin + (points[0] * _generationScale);
             firstDetector.InitializeDetector(detectorScale, detectorColor, showDetector);
             _activeDetectors.Add(firstDetector);
 
@@ -150,8 +165,8 @@ namespace FishingSystem.Fishing_Pattern
 
             for (int i = 0; i < points.Count - 1; i++)
             {
-                Vector2 start = origin + points[i];
-                Vector2 end = origin + points[i + 1];
+                Vector2 start = origin + (points[i] * _generationScale);
+                Vector2 end = origin + (points[i + 1] * _generationScale);
                 
                 Vector2 direction = end - start;
                 float segmentLength = direction.magnitude;
@@ -177,7 +192,7 @@ namespace FishingSystem.Fishing_Pattern
                 distanceLeftFromPreviousSegment = currentDistance - segmentLength;
             }
 
-            Vector2 finalPos = origin + points[^1];
+            Vector2 finalPos = origin + (points[^1] * _generationScale);
             if (_activeDetectors.Count > 0 && Vector2.Distance(_activeDetectors[^1].transform.position, finalPos) > (spacing * 0.5f))
             {
                 PatternDetector finalDetector = detectorPoolManager.GetDetector();
@@ -209,6 +224,58 @@ namespace FishingSystem.Fishing_Pattern
                 _patternCts.Cancel();
                 _patternCts.Dispose();
                 _patternCts = null;
+            }
+        }
+
+        private void OnDrawGizmosSelected()
+        {
+            if (!_drawGizmos) return;
+
+            Vector3 origin = transform.position;
+
+            // [수정] 배율(_generationScale)이 반영된 사각형 경계 영역 크기 계산
+            Gizmos.color = _boundaryColor;
+            Vector3 boundarySize = new Vector3(
+                _canvasLimit.x * 2f * _generationScale, 
+                _canvasLimit.y * 2f * _generationScale, 
+                0.05f
+            );
+            
+            Gizmos.DrawWireCube(origin, boundarySize);
+
+            Gizmos.color = new Color(_boundaryColor.r, _boundaryColor.g, _boundaryColor.b, 0.08f);
+            Gizmos.DrawCube(origin, boundarySize);
+
+            // 2. 프리뷰 패턴 표시 (크기 배율인 _generationScale을 곱해 적용된 크기로 그림)
+            if (_previewPatternData != null)
+            {
+                IReadOnlyList<Vector2> points = _previewPatternData.Points;
+                if (points == null || points.Count == 0) return;
+
+                Vector3 previousPosition = origin + (Vector3)(points[0] * _generationScale);
+
+                Gizmos.color = Color.green;
+                Gizmos.DrawSphere(previousPosition, 0.12f);
+
+                for (int i = 1; i < points.Count; i++)
+                {
+                    Vector3 currentPosition = origin + (Vector3)(points[i] * _generationScale);
+
+                    Gizmos.color = _pathLineColor;
+                    Gizmos.DrawLine(previousPosition, currentPosition);
+
+                    if (i == points.Count - 1)
+                    {
+                        Gizmos.color = Color.red; 
+                    }
+                    else
+                    {
+                        Gizmos.color = Color.yellow; 
+                    }
+                    Gizmos.DrawSphere(currentPosition, 0.09f);
+
+                    previousPosition = currentPosition;
+                }
             }
         }
     }
