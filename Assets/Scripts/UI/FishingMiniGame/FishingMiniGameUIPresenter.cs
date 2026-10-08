@@ -51,11 +51,18 @@ namespace FishingSystem.UI.FishingMiniGame
                 view.UpdateFishHp(hp);
             }).AddTo(this);
 
-            // 오차범위 계산 병합 구독
+            // 조준 허용 범위(초록) 너비 구독
+            this.model.SweetSpotSize.Subscribe(size =>
+            {
+                view.UpdateSweetSpotSize(size);
+            }).AddTo(this);
+
+            // 오차범위 계산 병합 구독 (MiniGameState 판정과 동일 기준)
             Observable.CombineLatest(
-                    this.model.PlayerReelRatio, 
-                    this.model.FishUiRatio, 
-                    (player, fish) => Mathf.Abs(player - fish) <= this.model.EffectiveSweetSpotTolerance
+                    this.model.PlayerReelRatio,
+                    this.model.FishUiRatio,
+                    this.model.SweetSpotSize,
+                    (player, fish, size) => Mathf.Abs(player - fish) <= size * 0.5f
                 )
                 .Subscribe(isSafe => 
                 {

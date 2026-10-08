@@ -59,7 +59,9 @@ namespace FishingSystem.FishState
                 await UniTask.Delay(System.TimeSpan.FromSeconds(waitTime), cancellationToken: token);
 
                 // 2. 대기가 끝나고 찌를 물기 직전(BitingState 진입 직전)에 실제로 물고기를 추첨합니다.
-                FishDataSO foundFish = foundZone.GetRandomFish();
+                // 테스트 씬에서는 지정한 물고기만 등장
+                FishDataSO foundFish = FishTestOverride.Instance != null ? FishTestOverride.Instance.PickFish() : null;
+                if (foundFish == null) foundFish = foundZone.GetRandomFish();
                 if (foundFish == null)
                 {
                     Debug.LogWarning("⚠️ 입질 타이밍에 물고기를 추첨하는 데 실패했습니다. 조건에 맞는 물고기 데이터가 없거나 확률 설정 오류일 수 있습니다.");

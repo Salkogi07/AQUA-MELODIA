@@ -53,7 +53,9 @@ namespace FishingSystem.FishState
         
         [Header("🎮 미니게임 규칙 및 릴(Reel) 설정")]
         [Tooltip("마우스 휠 1틱당 이동하는 조준점 속도")]
-        public float wheelSensitivity = 0.05f; 
+        public float wheelSensitivity = 0.05f;
+        [Tooltip("조준점이 휠 입력 목표 위치를 따라가는 속도 (높을수록 즉각적, 낮을수록 부드러움)")]
+        public float reelSmoothSpeed = 12f;
         [Tooltip("물고기 위치와 내 조준점 위치의 허용 오차 (0.1 = 10%)")]
         public float sweetSpotTolerance = 0.1f; 
         

@@ -30,7 +30,13 @@ namespace FishingSystem.FishState
         
         private float stressIncreaseMultiplier = 1f;
         private float stressDecreaseMultiplier = 1f;
-        
+
+        // 조준 허용 범위 반경 (UI 초록 범위 너비의 절반, 0~1 비율)
+        private float sweetSpotHalfWidth;
+
+        // 휠 입력이 누적되는 목표 위치 (PlayerReelRatio가 부드럽게 따라감)
+        private float targetReelRatio;
+
         public MiniGameState(FishingRod fishingRod, FishingStateMachine stateMachine, string animBoolName) : base(fishingRod, stateMachine, animBoolName) { }
 
         public override void Enter()
@@ -54,6 +60,7 @@ namespace FishingSystem.FishState
             fishingRod.EscapeTimerRatio.Value = 1f;
 
             fishingRod.PlayerReelRatio.Value = 0.5f;
+            targetReelRatio = 0.5f;
             fishingRod.LineStress.Value = 0f;
             fishingRod.FishHpRatio.Value = 1f;
             fishingRod.IsMiniGameActive.Value = true;
@@ -67,6 +74,10 @@ namespace FishingSystem.FishState
             float rodAgility = fishingRod.EffectiveRodAgility > 0f ? fishingRod.EffectiveRodAgility : 0f;
             float remainingAgility = Mathf.Max(0f, fishAgility - rodAgility);
             speedMultiplier = Mathf.Clamp(1f + (remainingAgility * 0.2f), 1.0f, 5.0f);
+
+            // 조준 허용 범위 (낚싯대 sweetSpotBonus로 넓어지고, 물고기가 빠를수록 좁아짐)
+            sweetSpotHalfWidth = fishingRod.EffectiveSweetSpotTolerance / speedMultiplier;
+            fishingRod.SweetSpotSize.Value = sweetSpotHalfWidth * 2f;
 
             // 3. 탄성 vs 저항 상호작용 계산
             CalculateElasticityResistance();
@@ -132,10 +143,15 @@ namespace FishingSystem.FishState
 
             if (scrollDelta != 0)
             {
-                fishingRod.PlayerReelRatio.Value += scrollDelta * fishingRod.wheelSensitivity;
-                fishingRod.PlayerReelRatio.Value = Mathf.Clamp01(fishingRod.PlayerReelRatio.Value);
+                // 초록 범위 가장자리가 바 끝에 닿을 때까지 이동 가능
+                float minReel = Mathf.Min(sweetSpotHalfWidth, 0.5f);
+                targetReelRatio = Mathf.Clamp(targetReelRatio + scrollDelta * fishingRod.wheelSensitivity, minReel, 1f - minReel);
                 reelingTimer = reelingTimeout;
             }
+
+            // 휠 틱 단위 점프 대신 목표 위치로 부드럽게 보간 (프레임레이트 독립)
+            float smoothT = 1f - Mathf.Exp(-fishingRod.reelSmoothSpeed * Time.deltaTime);
+            fishingRod.PlayerReelRatio.Value = Mathf.Lerp(fishingRod.PlayerReelRatio.Value, targetReelRatio, smoothT);
 
             if (reelingTimer > 0f)
             {
@@ -152,17 +168,13 @@ namespace FishingSystem.FishState
             float mappedFishRatio = Mathf.InverseLerp(fishingRod.patternMinX, fishingRod.patternMaxX, currentFishPositionX);
             fishingRod.FishUiRatio.Value = mappedFishRatio;
 
-            // 조준 영역 계산 (물고기 속도가 빠를수록 정밀 조준 필요)
-            float dynamicTolerance = fishingRod.EffectiveSweetSpotTolerance / speedMultiplier;
-
-            // 💡 [신규] 조준 허용 범위 표시용 프로퍼티 실시간 갱신 (UI 렌더링에 사용)
             float playerPos = fishingRod.PlayerReelRatio.Value;
-            fishingRod.SweetSpotSize.Value = dynamicTolerance * 2f; // 전체 직경 너비
-            fishingRod.SweetSpotMin.Value = Mathf.Clamp01(playerPos - dynamicTolerance);
-            fishingRod.SweetSpotMax.Value = Mathf.Clamp01(playerPos + dynamicTolerance);
+            fishingRod.SweetSpotMin.Value = Mathf.Clamp01(playerPos - sweetSpotHalfWidth);
+            fishingRod.SweetSpotMax.Value = Mathf.Clamp01(playerPos + sweetSpotHalfWidth);
 
+            // 물고기 아이콘 중심이 초록 범위 안에 있으면 성공
             float difference = Mathf.Abs(playerPos - fishingRod.FishUiRatio.Value);
-            bool isInsideSweetSpot = difference <= dynamicTolerance;
+            bool isInsideSweetSpot = difference <= sweetSpotHalfWidth;
 
             if (isInsideSweetSpot)
             {
