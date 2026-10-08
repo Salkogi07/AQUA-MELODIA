@@ -90,6 +90,11 @@ namespace FishingSystem.FishState
         public ReactiveProperty<float> LineStress { get; private set; } = new(0f); 
         public ReactiveProperty<float> FishHpRatio { get; private set; } = new(1f); 
         public ReactiveProperty<bool> IsMiniGameActive { get; private set; } = new(false); 
+        public ReactiveProperty<float> EscapeTimerRatio { get; private set; } = new(1f);
+        public ReactiveProperty<float> RemainingTime { get; private set; } = new(40f);
+        public ReactiveProperty<float> SweetSpotSize { get; private set; } = new(0.2f);
+        public ReactiveProperty<float> SweetSpotMin { get; private set; } = new(0.4f);
+        public ReactiveProperty<float> SweetSpotMax { get; private set; } = new(0.6f);
 
         // 캐스팅 충전 프로퍼티 (R3)
         public ReactiveProperty<float> CastPower { get; private set; } = new(0f);
@@ -355,7 +360,7 @@ namespace FishingSystem.FishState
             }
         }
 
-        // 현재 장착한 낚싯대의 민첩 상쇄 스펙 (장착 해제 시 기본 baseline인 5f 반환)
+        // 현재 장착한 낚싯대의 민첩 상쇄 스펙
         public float EffectiveRodAgility
         {
             get
@@ -364,6 +369,18 @@ namespace FishingSystem.FishState
                 if (equip != null && equip.EquippedRod != null)
                     return equip.EquippedRod.rodAgility;
                 return 5f; 
+            }
+        }
+        
+        // 현재 장착된 낚싯대의 탄성 스펙 반환
+        public float EffectiveRodElasticity
+        {
+            get
+            {
+                var equip = PlayerFishingEquipment.Instance != null ? PlayerFishingEquipment.Instance : playerEquipment;
+                if (equip != null && equip.EquippedRod != null)
+                    return equip.EquippedRod.rodElasticity;
+                return 10f;
             }
         }
         
@@ -412,6 +429,11 @@ namespace FishingSystem.FishState
             IsStruggleActive.Dispose();
             StruggleInkRatio.Dispose();
             ShowcaseFish.Dispose();
+            EscapeTimerRatio.Dispose();
+            RemainingTime.Dispose();
+            SweetSpotSize.Dispose();
+            SweetSpotMin.Dispose();
+            SweetSpotMax.Dispose();
         }
         
         public void OnAnimationEvent_ThrowBobber()

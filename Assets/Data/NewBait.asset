@@ -18,5 +18,5 @@ MonoBehaviour:
   preferredFishList: []
   regionGradeBonusList:
   - targetRegion: 0
-    targetGrade: 4
+    targetGrade: 0
     gradeChanceBoost: 100

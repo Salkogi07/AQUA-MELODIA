@@ -26,6 +26,8 @@ namespace FishingSystem.Fish
         public float strength = 10f;
         [Tooltip("물고기가 얼마나 빨리 이동 할지 설정")]
         public float agility = 3f;
+        [Tooltip("물고기의 저항 스탯: 낚싯대의 탄성보다 높을수록 조준 실패 시 스트레스 증가 속도가 가속됩니다.")]
+        public float resistance = 10f;
         
         [Header("패턴 데이터")]
         [Tooltip("미니게임 진행 시 물고기의 움직임 패턴")]

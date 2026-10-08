@@ -22,8 +22,14 @@ namespace FishingSystem.FishState
         private float reelingTimer = 0f; 
         private float reelingTimeout = 0.15f; 
 
-        // [개선] 룰(HandleRules)과 무브먼트 스레드 간의 속도 비율 동기화를 위한 클래스 필드화
         private float speedMultiplier = 1f;
+        
+        private const float BASE_FISHING_TIME = 40f;
+        private float remainingFishingTime = 40f;
+        private const float OVERTIME_STRESS_ACCELERATION = 0.08f;
+        
+        private float stressIncreaseMultiplier = 1f;
+        private float stressDecreaseMultiplier = 1f;
         
         public MiniGameState(FishingRod fishingRod, FishingStateMachine stateMachine, string animBoolName) : base(fishingRod, stateMachine, animBoolName) { }
 
@@ -40,7 +46,12 @@ namespace FishingSystem.FishState
             centerTransitionProgress = 0f;
 
             fishingRod.ResetBobberPhysics();
-            fishingRod.SetLineState(FishingSystem.Fishing_Rod.FishingLineState.Taut);
+            fishingRod.SetLineState(Fishing_Rod.FishingLineState.Taut);
+
+            // 1. 게이지 및 타이머 초기화
+            remainingFishingTime = BASE_FISHING_TIME;
+            fishingRod.RemainingTime.Value = remainingFishingTime;
+            fishingRod.EscapeTimerRatio.Value = 1f;
 
             fishingRod.PlayerReelRatio.Value = 0.5f;
             fishingRod.LineStress.Value = 0f;
@@ -51,15 +62,37 @@ namespace FishingSystem.FishState
             reelingTimer = 0f;
             anim.SetFloat("reeling", 0f);
 
-            // 1. 민첩 및 상쇄 비율을 미니게임 진입 시점에 선 연산 및 필드 저장
+            // 2. 민첩 상쇄 계산
             float fishAgility = hookedFish.Data.agility > 0f ? hookedFish.Data.agility : 0f;
             float rodAgility = fishingRod.EffectiveRodAgility > 0f ? fishingRod.EffectiveRodAgility : 0f;
             float remainingAgility = Mathf.Max(0f, fishAgility - rodAgility);
-
-            // 민첩 상쇄 차감 공식 적용 (상쇄 실패한 만큼 speedMultiplier가 1.0~5.0배 사이로 가산)
             speedMultiplier = Mathf.Clamp(1f + (remainingAgility * 0.2f), 1.0f, 5.0f);
 
+            // 3. 탄성 vs 저항 상호작용 계산
+            CalculateElasticityResistance();
+
             FishMovementRoutineAsync(cts.Token).Forget();
+        }
+
+        private void CalculateElasticityResistance()
+        {
+            float fishResist = hookedFish.Data.resistance;
+            float rodElasticity = fishingRod.EffectiveRodElasticity;
+            float diff = fishResist - rodElasticity;
+
+            if (diff > 0f)
+            {
+                // [저항 > 탄성] 플레이어 조작 실패 시 스트레스 증가 속도 가속
+                stressIncreaseMultiplier = 1f + (diff * 0.08f);
+                stressDecreaseMultiplier = 1f;
+            }
+            else
+            {
+                // [탄성 >= 저항] 스트레스 증가 속도 완화(약간 감소) & 줄어드는 속도 증가
+                float advantage = Mathf.Abs(diff);
+                stressIncreaseMultiplier = Mathf.Max(0.5f, 1f - (advantage * 0.04f));
+                stressDecreaseMultiplier = 1f + (advantage * 0.1f);
+            }
         }
 
         public override void Update()
@@ -70,9 +103,27 @@ namespace FishingSystem.FishState
                 if (centerTransitionProgress > 1f) centerTransitionProgress = 1f;
             }
 
+            UpdateTimer();
             HandleInput();
             HandleRules();
             UpdateVisuals();
+        }
+
+        // 💡 [신규] 40초 타이머 및 시간 초과 페널티 처리
+        private void UpdateTimer()
+        {
+            remainingFishingTime -= Time.deltaTime;
+            fishingRod.RemainingTime.Value = remainingFishingTime;
+            fishingRod.EscapeTimerRatio.Value = Mathf.Clamp01(remainingFishingTime / BASE_FISHING_TIME);
+
+            // 40초 초과 시 스트레스 자연 증가 페널티 (시간이 지날수록 점점 더 빠르게 누적)
+            if (remainingFishingTime < 0f)
+            {
+                float overtime = Mathf.Abs(remainingFishingTime);
+                // 탄성/저항 계수 영향을 받지 않는 독립적인 자연 증가 페널티
+                float overtimeNaturalStress = overtime * OVERTIME_STRESS_ACCELERATION * Time.deltaTime;
+                fishingRod.LineStress.Value += overtimeNaturalStress;
+            }
         }
 
         private void HandleInput()
@@ -101,38 +152,42 @@ namespace FishingSystem.FishState
             float mappedFishRatio = Mathf.InverseLerp(fishingRod.patternMinX, fishingRod.patternMaxX, currentFishPositionX);
             fishingRod.FishUiRatio.Value = mappedFishRatio;
 
-            // 물고기가 날뛰는 속도(speedMultiplier)가 빠를수록 조준 영역(Sweet Spot) 크기를 동적으로 대폭 축소합니다.
-            // 속도가 빨라질수록 맞추어야 할 범위가 매우 정밀해지므로, 정적인 방치 플레이가 원천적으로 불가능해집니다.
+            // 조준 영역 계산 (물고기 속도가 빠를수록 정밀 조준 필요)
             float dynamicTolerance = fishingRod.EffectiveSweetSpotTolerance / speedMultiplier;
 
-            float difference = Mathf.Abs(fishingRod.PlayerReelRatio.Value - fishingRod.FishUiRatio.Value);
+            // 💡 [신규] 조준 허용 범위 표시용 프로퍼티 실시간 갱신 (UI 렌더링에 사용)
+            float playerPos = fishingRod.PlayerReelRatio.Value;
+            fishingRod.SweetSpotSize.Value = dynamicTolerance * 2f; // 전체 직경 너비
+            fishingRod.SweetSpotMin.Value = Mathf.Clamp01(playerPos - dynamicTolerance);
+            fishingRod.SweetSpotMax.Value = Mathf.Clamp01(playerPos + dynamicTolerance);
+
+            float difference = Mathf.Abs(playerPos - fishingRod.FishUiRatio.Value);
             bool isInsideSweetSpot = difference <= dynamicTolerance;
 
             if (isInsideSweetSpot)
             {
-                // 물고기 힘(Strength) 과 낚싯대 힘(EffectiveRodPower)의 비율 계산
+                // 체력 깎기
                 float fishStrength = hookedFish.Data.strength > 0f ? hookedFish.Data.strength : 1f;
                 float rodPower = fishingRod.EffectiveRodPower;
                 
-                float powerMultiplier = rodPower / fishStrength;
-                powerMultiplier = Mathf.Clamp(powerMultiplier, 0.25f, 3.0f); 
-
+                float powerMultiplier = Mathf.Clamp(rodPower / fishStrength, 0.25f, 3.0f);
                 float finalStaminaDamage = fishingRod.EffectiveDamageRate * powerMultiplier;
                 hookedFish.CurrentStamina -= finalStaminaDamage * Time.deltaTime;
                 
-                fishingRod.LineStress.Value -= fishingRod.stressDecreaseRate * Time.deltaTime;
+                // 💡 [탄성 효과 적용] 조준 성공 시 스트레스 감소 속도 증폭
+                fishingRod.LineStress.Value -= (fishingRod.stressDecreaseRate * stressDecreaseMultiplier) * Time.deltaTime;
             }
             else
             {
-                // 물고기가 날뛰는 속도가 빠를수록, 조준 범위를 벗어났을 때 누적되는 낚싯줄 텐션 스트레스가 배율로 증가합니다.
-                // 휠을 조작하지 않고 방치할 시 아주 빠른 속도(약 2~3초 내외)로 줄이 끊어지게 유도합니다.
-                float dynamicStressIncrease = fishingRod.stressIncreaseRate * speedMultiplier;
+                // 💡 [저항/탄성 효과 적용] 조준 실패 시 스트레스 증가 속도 보정
+                float dynamicStressIncrease = (fishingRod.stressIncreaseRate * speedMultiplier) * stressIncreaseMultiplier;
                 fishingRod.LineStress.Value += dynamicStressIncrease * Time.deltaTime;
             }
 
             fishingRod.LineStress.Value = Mathf.Clamp01(fishingRod.LineStress.Value);
             fishingRod.FishHpRatio.Value = hookedFish.CurrentStamina / hookedFish.Data.maxStamina;
 
+            // 물고기 기력 소진 -> 발악 상태 전환
             if (hookedFish.CurrentStamina <= 0)
             {
                 cts?.Cancel();
@@ -140,9 +195,10 @@ namespace FishingSystem.FishState
                 return;
             }
 
+            // 낚싯줄 터짐 실패 (시간 초과 또는 잦은 조준 실패로 100% 도달)
             if (fishingRod.LineStress.Value >= 1f)
             {
-                FailMiniGame("💥 물고기가 거칠게 요동쳐 낚싯줄이 압력을 견디지 못하고 끊어졌습니다!");
+                FailMiniGame("💥 물고기가 거칠게 저항하여 낚싯줄이 압력을 견디지 못하고 끊어졌습니다!");
                 return;
             }
         }
@@ -150,7 +206,6 @@ namespace FishingSystem.FishState
         private void UpdateVisuals()
         {
             float currentBaselineX = Mathf.Lerp(landedBobberPosition.x, fishingRod.currentZoneCenterX, centerTransitionProgress);
-
             Vector3 targetPos = initialBobberPosition;
             targetPos.x = currentBaselineX + currentFishPositionX; 
             fishingRod.bobber.position = targetPos;
@@ -175,7 +230,6 @@ namespace FishingSystem.FishState
                     float startX = currentFishPositionX;
                     float timeElapsed = 0f;
 
-                    // 미니게임 시작 시 캐싱해 둔 상쇄 속도 비율(speedMultiplier) 적용
                     float effectiveDuration = duration / speedMultiplier;
 
                     if (effectiveDuration > 0f)

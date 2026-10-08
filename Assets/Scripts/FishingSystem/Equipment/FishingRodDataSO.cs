@@ -13,11 +13,12 @@ namespace FishingSystem.Equipment
         public string description = "이 낚싯대에 대한 기본 설명입니다.";
 
         [Header("💪 낚싯대 기초 스펙")]
-        [Tooltip("물고기의 strength 스탯과 비례식으로 매핑할 파워 (기본값: 10)")]
+        [Tooltip("물고기의 strength 스탯과 비례식으로 매핑할 파워")]
         public float rodPower = 10f;
-
-        [Tooltip("물고기의 agility 스탯을 상쇄하여 물고기의 속도를 낮출 민첩 (기본값: 5)")]
+        [Tooltip("물고기의 agility 스탯을 상쇄하여 물고기의 속도를 낮출 민첩")]
         public float rodAgility = 5f;
+        [Tooltip("물고기의 저항보다 높을수록 스트레스 증가 속도가 줄어들고, 감소 속도가 빨라집니다.")]
+        public float rodElasticity = 10f;
         
         [Header("🎮 미니게임 가산 스펙")]
         [Tooltip("물고기 기력을 더 빨리 소진시킬 추가 기력 깎기 보너스 (초당)")]
@@ -32,25 +33,18 @@ namespace FishingSystem.Equipment
         public string GetFormattedDescription()
         {
             System.Text.StringBuilder sb = new System.Text.StringBuilder();
-            
-            // 기본 설명 추가
             sb.AppendLine(description);
             sb.AppendLine();
-            
-            // 상세 스펙 추가
             sb.AppendLine("<color=#FFA500><b>[장비 장착 효과]</b></color>");
-            sb.AppendLine($"• 낚싯대 파워: <color=#FF5555>{rodPower}</color>");
-            sb.AppendLine($"• 낚싯대 민첩: <color=#55FF55>{rodAgility}</color>");
+            sb.AppendLine($"• 강도: <color=#FF5555>{rodPower}</color>");
+            sb.AppendLine($"• 릴성: <color=#55FF55>{rodAgility}</color>");
+            sb.AppendLine($"• 탄성: <color=#55AAFF>{rodElasticity}</color>");
             
             if (damageRateBonus > 0f)
-            {
                 sb.AppendLine($"• 추가 기력 감소: <color=#FFFF55>+{damageRateBonus}/초</color>");
-            }
             
             if (sweetSpotBonus > 0f)
-            {
                 sb.AppendLine($"• 조준 허용 범위 확장: <color=#55FFFF>+{sweetSpotBonus * 100f:F0}%p</color>");
-            }
             
             return sb.ToString();
         }
