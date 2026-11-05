@@ -19,8 +19,9 @@ MonoBehaviour:
   fishPrefab: {fileID: 4069598548445070687, guid: 28df409669ec4cf4e9166d17404b54e5, type: 3}
   minLength: 10
   maxLength: 120
-  maxStamina: 125
-  strength: 2
+  maxStamina: 100
+  strength: 3
   agility: 2
+  resistance: 2
   patternData: {fileID: 11400000, guid: 334646bb4ac00ae48b5df3af9643a35c, type: 2}
   escapePatternData: {fileID: 11400000, guid: cae52554146984045896db21ea9bf093, type: 2}

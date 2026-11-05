@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Normal_fish EscapePattern
   m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.Fishing_Pattern.EscapePatternDataSO
   points:
-  - {x: 0.03, y: 1.91}
-  - {x: -0.03, y: -1.74}
+  - {x: -0, y: 2.68}
+  - {x: -0.04, y: -2.32}
   dotsPerFrame: 3
   drawDelayMs: 10
   dotSpacing: 0.3

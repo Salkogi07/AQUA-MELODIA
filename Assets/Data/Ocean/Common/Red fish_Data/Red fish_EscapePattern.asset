@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: Red fish_EscapePattern
   m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.Fishing_Pattern.EscapePatternDataSO
   points:
-  - {x: -1.24, y: 1.32}
-  - {x: 1.41, y: 0.58}
-  - {x: -1.24, y: -0.08}
-  - {x: 1.24, y: -1.92}
-  - {x: -1.19, y: -0.68}
-  - {x: -1.19, y: -2.05}
+  - {x: -1.39, y: 2.08}
+  - {x: 2.03, y: 0.99}
+  - {x: -1.39, y: 0.55}
+  - {x: 1.63, y: -2.4}
+  - {x: -1.27, y: -1.2}
+  - {x: -1.23, y: -2.68}
   dotsPerFrame: 3
   drawDelayMs: 10
   dotSpacing: 0.3

@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 59d86cf3eae64b5797630851886ab24a, type: 3}
-  m_Name: Japanese sea bass_Data
+  m_Name: bass_Data
   m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.Fish.FishDataSO
   grade: 0
   habitatRegion: 0
@@ -19,8 +19,9 @@ MonoBehaviour:
   fishPrefab: {fileID: 0}
   minLength: 10
   maxLength: 120
-  maxStamina: 75
+  maxStamina: 50
   strength: 1
   agility: 2
+  resistance: 1
   patternData: {fileID: 11400000, guid: d6ca351d3c8fc2f46ace77a4b3795a23, type: 2}
   escapePatternData: {fileID: 11400000, guid: 94ae0afd0408e6d459e2ce4f48bc448d, type: 2}
