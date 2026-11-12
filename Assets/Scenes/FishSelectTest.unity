@@ -164,7 +164,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FishingSystem.Fish.FishTestOverride
   testFishList:
-  - {fileID: 11400000, guid: a99bd635bcd11d742bf5244bd884f27c, type: 2}
+  - {fileID: 11400000, guid: e3342180821a21843bebc67f5f581beb, type: 2}
 --- !u!1 &46377761
 GameObject:
   m_ObjectHideFlags: 0
